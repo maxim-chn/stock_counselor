@@ -1,0 +1,1 @@
+The service is responsible for matching the user preferences with the company which data is most similar to the preferences.
