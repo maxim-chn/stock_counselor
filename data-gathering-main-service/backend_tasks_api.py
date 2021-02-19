@@ -1,5 +1,5 @@
 """
-Communicate with an in-memory database of that manages the backend tasks.
+Communicates with an in-memory database that manages the backend tasks.
 """
 
 import json
@@ -9,7 +9,6 @@ from os import path
 class BackendTasksApi:
   """
   database_connection - dictionary
-
   """
   def __init__(self, database_connection=dict()):
     # TODO: connect to module that communicates with RAM

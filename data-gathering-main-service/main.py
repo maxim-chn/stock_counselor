@@ -1,8 +1,8 @@
 """
-It represents the Boundary logic for Data Gathering Main Service.
-Here we reveal the API for the main service by implementing a HTTP server.
+It represents the Boundary logic for the Data Gathering Main Service.
+Here we reveal the external API for the main service by implementing a HTTP server.
 The incoming requests are referred to the StockDataMinerController which
-holds the Controller object.
+holds the Controller logic.
 """
 
 from bottle import Bottle, request, response

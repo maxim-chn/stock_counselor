@@ -9,6 +9,9 @@ from backend_tasks_api import BackendTasksApi
 import logging
 
 class StockDataMinerControllerApi:
+    """
+    backend_tasks - BackendTasksApi
+    """
     def __init__(self):
       self._backend_tasks = BackendTasksApi()
       
