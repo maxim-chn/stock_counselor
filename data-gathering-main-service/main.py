@@ -1,12 +1,19 @@
-# This is a sample Python script.
-from bottle import route, run, Bottle, request, response
-from stock_data_miner_api_file import StockDataMinerApi
+"""
+It represents the Boundary logic for Data Gathering Main Service.
+Here we reveal the API for the main service by implementing a HTTP server.
+The incoming requests are referred to the StockDataMinerController which
+holds the Controller object.
+"""
+
+from bottle import Bottle, request, response
+from stock_data_miner_controller_api import StockDataMinerControllerApi
 import logging
 from datetime import datetime
 from functools import wraps
 
+
 def setupLogger():
-  logger = logging.getLogger('stock_data_miner')
+  logger = logging.getLogger('data-gathering-main-service')
   logger.setLevel(logging.DEBUG)
   file_handler = logging.FileHandler('main.log')
   formatter = logging.Formatter('%(msg)s')
@@ -29,6 +36,7 @@ def log_to_logger(fn):
 
     return _log_to_logger
 
+
 if __name__ == '__main__':
     setupLogger()
 
@@ -42,9 +50,8 @@ if __name__ == '__main__':
 
     @app.route('/collect_stock_data/<acronym_name>')
     def collect_stock_data(acronym_name):
-      api = StockDataMinerApi()
+      api = StockDataMinerControllerApi()
       result = api.collectStockData(acronym_name)
       return result
 
     app.run(host='localhost', port=8080, quiet=True)
-
