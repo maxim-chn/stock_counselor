@@ -1,0 +1,7 @@
+{
+  "obtain_company_id": {
+    "url": "https://efts.sec.gov/LATEST/search-index",
+    "headers": {"Content-Type": "application/json", "Accept": "application/json"},
+    "payload": {"keysTyped":"REPLACE_WITH_COMPANY_ACRONYM","narrow":true}
+  }
+}

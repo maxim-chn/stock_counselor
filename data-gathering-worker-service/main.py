@@ -1,3 +1,7 @@
+"""
+Executes the backend tasks that are created by the Data Gathering Main Service
+"""
+
 import logging
 from time import sleep
 from worker_api import WorkerApi
@@ -23,4 +27,3 @@ if __name__ == '__main__':
       continue
 
     worker.getDataFromSec(acronym)
-

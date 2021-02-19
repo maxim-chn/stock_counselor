@@ -1,7 +1,7 @@
 """
-Communicate with in-memory database of stock data miner tasks
-
+Communicates with an in-memory database that manages the backend tasks.
 """
+
 from json import dump, load
 from logging import getLogger
 from os import listdir, path
@@ -10,8 +10,8 @@ from os import listdir, path
 class BackendTasksApi:
   """
   database_connection - dictionary
-
   """
+
   def __init__(self, database_connection=dict()):
     # TODO: connect to module that communicates with RAM
     # TODO: implement singleton
