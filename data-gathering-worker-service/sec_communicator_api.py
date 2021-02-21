@@ -4,8 +4,8 @@ Reveals an internal API for retrieving data from U.S. Securities And Exchange Co
 
 from json import dumps, load
 from logging import getLogger
-from os import listdir, path
-from requests import post
+from os import path
+from requests import post, get
 
 
 class SecCommunicatorApi:
@@ -15,6 +15,61 @@ class SecCommunicatorApi:
   """
   def __init__(self):
     self._urls = self._loadUrls()
+
+  def get10kFilingsWithCompanyId(self, company_id):
+    msg = '%s - %s() - Start - company_id: %s' % (
+      "SecCommunicatorApi",
+      "get10kFilingsWithCompanyId",
+      company_id
+    )
+    getLogger('data-gathering-worker-service').debug(msg)
+
+    result = None
+    config = self._urls["obtain_10k_filings"]
+    dst_url = config["url"]
+    req_headers = config["headers"]
+    req_params = config["params"]
+    req_params["CIK"] = company_id
+
+    try:
+      res = get(dst_url, headers=req_headers, params=req_params)
+
+      if not res.status_code == 200:
+        err_msg = "actual response status code VS expected: %d VS %d" % (res.status_code, 200)
+        raise RuntimeError(err_msg)
+
+      if not res.headers["Content-Type"] == req_headers["Accept"]:
+        err_msg = "actual response content-type VS expected: %s VS %s" % (
+          res.headers["Content-Type"],
+          req_headers["Accept"]
+        )
+        raise RuntimeError(err_msg)
+
+      result = res.text
+
+    except RuntimeError as err:
+      msg = '%s - %s() - Error - %s' % (
+        "SecCommunicatorApi",
+        "get10kFilingsWithCompanyId",
+        err
+      )
+      getLogger('data-gathering-worker-service').error(msg)
+
+    finally:
+      if result:
+        msg = '%s - %s() - Finish - result has %d characters' % (
+          "SecCommunicatorApi",
+          "get10kFilingsWithCompanyId",
+          len(result)
+        )
+      else:
+        msg = '%s - %s() - Finish - result: None' % (
+          "SecCommunicatorApi",
+          "get10kFilingsWithCompanyId"
+        )
+      getLogger('data-gathering-worker-service').debug(msg)
+
+      return result
 
   def getCompanyIdWithAcronym(self, acronym):
     msg = '%s - %s() - Start - acronym: %s' % (

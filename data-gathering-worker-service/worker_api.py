@@ -46,7 +46,10 @@ class WorkerApi:
     result = None
 
     self._backend_tasks.updateTaskByCompanyAcronym(acronym, "obtaining company id")
-    company_id = self._sec_communicator.getCompanyIdWithAcronym(acronym)
+    company_id = self._sec_communicator.getCompanyIdWithAcronym(acronym) #state1
+    if company_id:
+      self._backend_tasks.updateTaskByCompanyAcronym(acronym, "obtaining 10-K filings")
+      html_document_with_10k_filings = self._sec_communicator.get10kFilingsWithCompanyId(company_id) #state2
 
     msg = '%s - %s() - Finish - result: %s\n' % (
       "WorkerApi",
@@ -56,3 +59,5 @@ class WorkerApi:
     getLogger('data-gathering-worker-service').debug(msg)
 
     return result
+
+

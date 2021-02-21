@@ -3,5 +3,10 @@
     "url": "https://efts.sec.gov/LATEST/search-index",
     "headers": {"Content-Type": "application/json", "Accept": "application/json"},
     "payload": {"keysTyped":"REPLACE_WITH_COMPANY_ACRONYM","narrow":true}
+  },
+  "obtain_10k_filings": {
+    "url": "https://www.sec.gov/cgi-bin/browse-edgar",
+    "headers": {"Accept": "text/html"},
+    "params":{"action": "getcompany", "CIK": "REPLACE_WITH_COMPANY_ID", "type": "10-k", "count": "10"}
   }
 }
