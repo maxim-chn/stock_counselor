@@ -16,7 +16,6 @@ class WorkerApi:
     self._backend_tasks = BackendTasksApi()
     self._sec_communicator = SecCommunicatorApi()
 
-
   def getCompanyAcronymForGathering(self):
     msg = '\n%s - %s() - Start' % (
       "WorkerApi",
@@ -46,10 +45,20 @@ class WorkerApi:
     result = None
 
     self._backend_tasks.updateTaskByCompanyAcronym(acronym, "obtaining company id")
-    company_id = self._sec_communicator.getCompanyIdWithAcronym(acronym) #state1
+    company_id = self._sec_communicator.getCompanyIdWithAcronym(acronym)
+    html_document_with_10k_search_results = None
+    accesion_numbers = None
+
     if company_id:
       self._backend_tasks.updateTaskByCompanyAcronym(acronym, "obtaining 10-K filings")
-      html_document_with_10k_filings = self._sec_communicator.get10kFilingsWithCompanyId(company_id) #state2
+      html_document_with_10k_search_results = self._sec_communicator.get10kSearchResultsWithCompanyId(
+        company_id
+      )
+
+    if html_document_with_10k_search_results:
+      accesion_numbers = self._sec_communicator.get10kAccNoFromHtmlDocument(
+        html_document_with_10k_search_results
+      )
 
     msg = '%s - %s() - Finish - result: %s\n' % (
       "WorkerApi",

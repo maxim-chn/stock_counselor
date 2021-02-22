@@ -6,7 +6,7 @@ from json import dumps, load
 from logging import getLogger
 from os import path
 from requests import post, get
-
+from sec_communicator.parser_for_10k_search_results import ParserFor10kSearchResults
 
 class SecCommunicatorApi:
 
@@ -15,11 +15,34 @@ class SecCommunicatorApi:
   """
   def __init__(self):
     self._urls = self._loadUrls()
+    self._parser_for_10k_search_results = ParserFor10kSearchResults()
 
-  def get10kFilingsWithCompanyId(self, company_id):
+  def get10kAccNoFromHtmlDocument(self, html_with_search_results):
+    msg = '\n%s - %s() - Start' % (
+      "SecCommunicatorApi",
+      "get10kAccNoFromHtmlDocument"
+    )
+    getLogger('data-gathering-worker-service').debug(msg)
+
+    result = None
+
+    self._parser_for_10k_search_results.initFlagsAndResult()
+    self._parser_for_10k_search_results.feed(html_with_search_results)
+    result = self._parser_for_10k_search_results.getResult()
+
+    msg = '\n%s - %s() - Finish - result: %s' % (
+      "SecCommunicatorApi",
+      "get10kAccNoFromHtmlDocument",
+      result
+    )
+    getLogger('data-gathering-worker-service').debug(msg)
+
+    return result
+
+  def get10kSearchResultsWithCompanyId(self, company_id):
     msg = '%s - %s() - Start - company_id: %s' % (
       "SecCommunicatorApi",
-      "get10kFilingsWithCompanyId",
+      "get10kSearchResultsWithCompanyId",
       company_id
     )
     getLogger('data-gathering-worker-service').debug(msg)
@@ -50,7 +73,7 @@ class SecCommunicatorApi:
     except RuntimeError as err:
       msg = '%s - %s() - Error - %s' % (
         "SecCommunicatorApi",
-        "get10kFilingsWithCompanyId",
+        "get10kSearchResultsWithCompanyId",
         err
       )
       getLogger('data-gathering-worker-service').error(msg)
@@ -59,13 +82,13 @@ class SecCommunicatorApi:
       if result:
         msg = '%s - %s() - Finish - result has %d characters' % (
           "SecCommunicatorApi",
-          "get10kFilingsWithCompanyId",
+          "get10kSearchResultsWithCompanyId",
           len(result)
         )
       else:
         msg = '%s - %s() - Finish - result: None' % (
           "SecCommunicatorApi",
-          "get10kFilingsWithCompanyId"
+          "get10kSearchResultsWithCompanyId"
         )
       getLogger('data-gathering-worker-service').debug(msg)
 
