@@ -7,6 +7,7 @@ from logging import getLogger
 from os import path
 from requests import post, get
 from sec_communicator.parser_for_10k_search_results import ParserFor10kSearchResults
+from sec_communicator.parser_for_income_statements_ids import ParserForIncomeStatementsIds
 
 class SecCommunicatorApi:
 
@@ -16,6 +17,86 @@ class SecCommunicatorApi:
   def __init__(self):
     self._urls = self._loadUrls()
     self._parser_for_10k_search_results = ParserFor10kSearchResults()
+    self._parser_for_income_statements_ids = ParserForIncomeStatementsIds()
+
+  def get10KReportWithCikAndAccNo(self, company_id, accession_number):
+    msg = '%s - %s() - Start - company_id: %s, accession_number: %s' % (
+      "SecCommunicatorApi",
+      "get10KReportWithCikAndAccNo",
+      company_id,
+      accession_number
+    )
+    getLogger('data-gathering-worker-service').debug(msg)
+
+    result = None
+    config = self._urls["obtain_income_statement_ids"]
+    dst_url = config["url"]
+    req_headers = config["headers"]
+    req_params = config["params"]
+    req_params["accession_number"] = accession_number
+    req_params["cik"] = company_id
+
+    try:
+      res = get(dst_url, headers=req_headers, params=req_params)
+
+      if not res.status_code == 200:
+        err_msg = "actual response status code VS expected: %d VS %d" % (res.status_code, 200)
+        raise RuntimeError(err_msg)
+
+      if not res.headers["Content-Type"] == req_headers["Accept"]:
+        err_msg = "actual response content-type VS expected: %s VS %s" % (
+          res.headers["Content-Type"],
+          req_headers["Accept"]
+        )
+        raise RuntimeError(err_msg)
+
+      result = res.text
+
+    except RuntimeError as err:
+      msg = '%s - %s() - Error - %s' % (
+        "SecCommunicatorApi",
+        "get10KReportWithCikAndAccNo",
+        err
+      )
+      getLogger('data-gathering-worker-service').error(msg)
+
+    finally:
+      if result:
+        msg = '%s - %s() - Finish - result has %d characters' % (
+          "SecCommunicatorApi",
+          "get10KReportWithCikAndAccNo",
+          len(result)
+        )
+      else:
+        msg = '%s - %s() - Finish - result: None' % (
+          "SecCommunicatorApi",
+          "get10KReportWithCikAndAccNo"
+        )
+      getLogger('data-gathering-worker-service').debug(msg)
+
+      return result
+
+
+  def getIncomeStatementsIdsFromHtmlDocument(self, html_with_10k_report):
+    msg = '\n%s - %s() - Start' % (
+      "SecCommunicatorApi",
+      "getIncomeStatementsIdsFromHtmlDocument"
+    )
+    getLogger('data-gathering-worker-service').debug(msg)
+
+    result = None
+    self._parser_for_income_statements_ids.initFlagsAndResult()
+    self._parser_for_income_statements_ids.feed(html_with_10k_report)
+    result = self._parser_for_income_statements_ids.getResults()
+
+    msg = '\n%s - %s() - Finish - result: %s' % (
+      "SecCommunicatorApi",
+      "getIncomeStatementsIdsFromHtmlDocument",
+      result
+    )
+    getLogger('data-gathering-worker-service').debug(msg)
+
+    return result
 
   def get10kAccNoFromHtmlDocument(self, html_with_search_results):
     msg = '\n%s - %s() - Start' % (
