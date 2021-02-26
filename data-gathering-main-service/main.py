@@ -13,10 +13,10 @@ from functools import wraps
 
 
 def setupLogger():
-  logger = logging.getLogger('data-gathering-main-service')
+  logger = logging.getLogger("data-gathering-main-service")
   logger.setLevel(logging.DEBUG)
-  file_handler = logging.FileHandler('main.log')
-  formatter = logging.Formatter('%(msg)s')
+  file_handler = logging.FileHandler("main.log")
+  formatter = logging.Formatter("%(msg)s")
   file_handler.setLevel(logging.DEBUG)
   file_handler.setFormatter(formatter)
   logger.addHandler(file_handler)
@@ -26,7 +26,7 @@ def log_to_logger(fn):
     def _log_to_logger(*args, **kwargs):
       request_time = datetime.now()
       actual_response = fn(*args, **kwargs)
-      logger = logging.getLogger('stock_data_miner')
+      logger = logging.getLogger("data-gathering-main-service")
       logger.info('%s %s %s %s %s' % (request.remote_addr,
                                       request_time,
                                       request.method,
