@@ -3,29 +3,22 @@ Communicates with an in-memory database that manages the backend tasks.
 """
 
 from json import dump, load
-from logging import getLogger
+from common_classes.loggable import Loggable
 from os import listdir, path
 
-
-class BackendTasksApi:
+class BackendTasksApi(Loggable):
   """
   database_connection - dictionary
   """
-
   def __init__(self, database_connection=dict()):
     # TODO: connect to module that communicates with RAM
     # TODO: implement singleton
+    super().__init__("BackendTasksApi")
     self._database_connection = database_connection
 
 
   def updateTaskByCompanyAcronym(self, company_acronym, progress):
-    msg = '%s - %s() - Start - company_acronym: %s, progress: %s' % (
-      "BackendTasksApi",
-      "updateTaskByCompanyAcronym",
-      company_acronym,
-      progress
-    )
-    getLogger('data-gathering-worker-service').debug(msg)
+    self._debug("updateTaskByCompanyAcronym", "Start - company_acronym: %s, progress: %s" % (company_acronym, progress))
 
     task = self.getTaskByCompanyAcronym(company_acronym)
     task["progress"] = progress
@@ -35,23 +28,13 @@ class BackendTasksApi:
         dump(task, write_file)
     result = "task has been updated"
 
-    msg = '%s - %s() - Finish - result: %s' % (
-      "BackendTasksApi",
-      "updateTaskByCompanyAcronym",
-      result
-    )
-    getLogger('data-gathering-worker-service').debug(msg)
-
+    self._debug("updateTaskByCompanyAcronym", "Finish - result: %s" % result)
     return result
 
   def getAcronymOfTaskWithProgressInitiated(self):
-    msg = '%s - %s() - Start' % (
-      "BackendTasksApi",
-      "getAcronymOfTaskWithProgressInitiated"
-    )
-    getLogger('data-gathering-worker-service').debug(msg)
-
+    self._debug("getAcronymOfTaskWithProgressInitiated", "Start")
     result = None
+
     directory = self._getRelativeLocationOfBackendTasks()
     for filename in listdir(directory):
       if filename.endswith(".json"):
@@ -60,37 +43,19 @@ class BackendTasksApi:
           result = task["acronym"]
           break
 
-    msg = '%s - %s() - Finish - result: %s' % (
-      "BackendTasksApi",
-      "getAcronymOfTaskWithProgressInitiated",
-      result
-    )
-    getLogger('data-gathering-worker-service').debug(msg)
-
+    self._debug("getAcronymOfTaskWithProgressInitiated", "Finish - result: %s" % result)
     return result
 
-
   def getTaskByCompanyAcronym(self, company_acronym):
-    msg = '%s - %s() - Start - company_acronym: %s' % (
-      "BackendTasksApi",
-      "getTaskByCompanyAcronym",
-      company_acronym
-    )
-    getLogger('data-gathering-worker-service').debug(msg)
+    self._debug("getTaskByCompanyAcronym", "Start - company_acronym: %s" % company_acronym)
+    result = None
 
     relative_location = self._getRelativeLocation(company_acronym)
-    result = None
     if path.exists(relative_location):
       with open(relative_location, "r") as read_file:
         result = load(read_file)
 
-    msg = '%s - %s() - Finish - result: %s' % (
-      "BackendTasksApi",
-      "getTaskByCompanyAcronym",
-      result
-    )
-    getLogger('data-gathering-worker-service').debug(msg)
-
+    self._debug("getTaskByCompanyAcronym", "Finish - result: %s" % result)
     return result
 
   def _getRelativeLocation(self, company_acronym):

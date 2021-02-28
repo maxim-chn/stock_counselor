@@ -4,46 +4,28 @@ It reveals an internal API for executing the backend tasks related to company da
 
 from backend_tasks_api import BackendTasksApi
 from datetime import datetime
-from logging import getLogger
+from common_classes.loggable import Loggable
 from sec_communicator_api import SecCommunicatorApi
 from sys import getsizeof
 
-class WorkerApi:
-
+class WorkerApi(Loggable):
   """
   backend_tasks - BackendTasksApi
   sec_communicator - SecCommunicatorApi
   """
   def __init__(self):
+    super().__init__("WorkerApi")
     self._backend_tasks = BackendTasksApi()
     self._sec_communicator = SecCommunicatorApi()
 
   def getCompanyAcronymForGathering(self):
-    msg = '\n%s - %s() - Start' % (
-      "WorkerApi",
-      "getCompanyAcronymForGathering"
-    )
-    getLogger('data-gathering-worker-service').debug(msg)
-
+    self._debug("getCompanyAcronymForGathering", "Start")
     result = self._backend_tasks.getAcronymOfTaskWithProgressInitiated()
-
-    msg = '%s - %s() - Finish - result: %s\n' % (
-      "WorkerApi",
-      "getCompanyAcronymForGathering",
-      result
-    )
-    getLogger('data-gathering-worker-service').debug(msg)
-
+    self._debug("getCompanyAcronymForGathering", "Finish - result: %s\n" % result)
     return result
 
   def getDataFromSec(self, acronym):
-    msg = '\n%s - %s() - Start - acronym: %s' % (
-      "WorkerApi",
-      "getDataFromSec",
-      acronym
-    )
-    getLogger('data-gathering-worker-service').debug(msg)
-
+    self._debug("getDataFromSec", "Start - acronym: %s" % acronym)
     result = {}
 
     self._backend_tasks.updateTaskByCompanyAcronym(acronym, "obtaining company id")
@@ -94,14 +76,5 @@ class WorkerApi:
               result[date_str]["data"] = result[date_str]["data"] | financial_data[0]
               result[date_str]["currency_units"] = financial_data[1]
 
-
-    msg = '%s - %s() - Finish - result: %d bytes\n' % (
-      "WorkerApi",
-      "getDataFromSec",
-      getsizeof(result)
-    )
-    getLogger('data-gathering-worker-service').debug(msg)
-
+    self._debug("getDataFromSec", "Finish - result: %d bytes\n" % getsizeof(result))
     return result
-
-
