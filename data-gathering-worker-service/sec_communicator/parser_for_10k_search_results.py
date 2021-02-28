@@ -1,5 +1,4 @@
 from html.parser import HTMLParser
-from logging import getLogger
 from re import search
 
 class ParserFor10kSearchResults(HTMLParser):
@@ -29,12 +28,6 @@ class ParserFor10kSearchResults(HTMLParser):
           acc_no = match.group(1)
           acc_no = acc_no.translate({ord(c): None for c in '-'})
         self._retrieved_acc_no = acc_no
-        msg = '\n%s - %s() - Retrieve - accession_number: %s' % (
-          "ParserFor10kSearchResults",
-          "handle_starttag",
-          self._retrieved_acc_no
-        )
-        getLogger('data-gathering-worker-service').debug(msg)
       return
 
   def handle_endtag(self, tag):
@@ -66,12 +59,6 @@ class ParserFor10kSearchResults(HTMLParser):
     if self._retrieved_acc_no:
       if "201" in data or "202" in data:
         self._result[data] = self._retrieved_acc_no
-        msg = '\n%s - %s() - Retrieve - data: %s' % (
-          "ParserFor10kSearchResults",
-          "handle_data",
-          data
-        )
-        getLogger('data-gathering-worker-service').debug(msg)
         self._retrieved_acc_no = None
         self._data_10k_flag = False
         return

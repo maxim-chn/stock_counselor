@@ -1,5 +1,4 @@
 from html.parser import HTMLParser
-from logging import getLogger
 
 class ParserForIncomeStatementsIds(HTMLParser):
   def getResults(self):

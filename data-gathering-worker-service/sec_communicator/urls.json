@@ -7,7 +7,7 @@
   "obtain_10k_filings": {
     "url": "https://www.sec.gov/cgi-bin/browse-edgar",
     "headers": {"Accept": "text/html"},
-    "params":{"action": "getcompany", "CIK": "REPLACE_WITH_COMPANY_ID", "type": "10-k", "count": "10"}
+    "params":{"action": "getcompany", "CIK": "REPLACE_WITH_COMPANY_ID", "type": "10-k", "count": "5"}
   },
   "obtain_income_statement_ids": {
     "url": "https://www.sec.gov/cgi-bin/viewer",
@@ -18,5 +18,9 @@
       "accession_number": "REPLACE_WITH_COMPANY_ACC_NO",
       "xbrl_type": "v"
     }
+  },
+  "obtain_income_statement_data": {
+    "url": "https://www.sec.gov/Archives/edgar/data",
+    "headers": {"Accept": "text/html"}
   }
 }
