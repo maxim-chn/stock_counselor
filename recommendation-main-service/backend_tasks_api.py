@@ -17,30 +17,30 @@ class BackendTasksApi(Loggable):
     self._database_connection = database_connection
 
 
-  def createTaskByCompanyAcronym(self, company_acronym, progress):
+  def createTaskByUserId(self, user_id, progress):
     self._debug(
-      "createTaskByCompanyAcronym",
-      "Start - company_acronym: %s, progress: %s" % (company_acronym, progress)
+      "createTaskByUserId",
+      "Start - user_id: %s, progress: %s" % (user_id, progress)
     )
-    task = {"acronym": company_acronym, "progress": progress}
-    relative_location = self._getRelativeLocation(company_acronym)
+    task = {"user_id": user_id, "progress": progress}
+    relative_location = self._getRelativeLocation(user_id)
     with open(relative_location, "w") as write_file:
         json.dump(task, write_file)
     result = "task has been created"
 
-    self._debug("createTaskByCompanyAcronym","Finish - result: %s" % result)
+    self._debug("createTaskByUserId", "Finish - result: %s" % result)
     return result
 
-  def getTaskByCompanyAcronym(self, company_acronym):
-    self._debug("getTaskByCompanyAcronym", "Start - company_acronym: %s" % company_acronym)
+  def getTaskByUserId(self, user_id):
+    self._debug("getTaskByUserId", "Start - user_id: %s" % user_id)
     result = None
 
-    relative_location = self._getRelativeLocation(company_acronym)
+    relative_location = self._getRelativeLocation(user_id)
     if path.exists(relative_location):
       with open(relative_location, "r") as read_file:
         result = json.load(read_file)
 
-    self._debug("getTaskByCompanyAcronym", "Start - result: %s" % result)
+    self._debug("getTaskByUserId", "Start - result: %s" % result)
     return result
 
   def _getRelativeLocation(self, company_acronym):
@@ -48,5 +48,5 @@ class BackendTasksApi(Loggable):
       path.dirname(__file__),
       "backend_tasks",
       "remove_in_alpha",
-      '%s.json' % (company_acronym)
+      '%s.json' % company_acronym
     )
