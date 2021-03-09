@@ -76,5 +76,5 @@ class WorkerApi(Loggable):
               result[date_str]["data"] = result[date_str]["data"] | financial_data[0]
               result[date_str]["currency_units"] = financial_data[1]
 
-    self._debug("getDataFromSec", "Finish - result: %d bytes\n" % getsizeof(result))
+    self._debug("getDataFromSec", "Finish - result: %s \n" % result)
     return result

@@ -43,10 +43,10 @@ class BackendTasksApi(Loggable):
     self._debug("getTaskByUserId", "Start - result: %s" % result)
     return result
 
-  def _getRelativeLocation(self, company_acronym):
+  def _getRelativeLocation(self, user_id):
     return path.join(
       path.dirname(__file__),
       "backend_tasks",
       "remove_in_alpha",
-      '%s.json' % company_acronym
+      '%s.json' % user_id
     )

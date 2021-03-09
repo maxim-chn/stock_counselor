@@ -17,62 +17,62 @@ class BackendTasksApi(Loggable):
     self._database_connection = database_connection
 
 
-  def updateTaskByCompanyAcronym(self, company_acronym, progress):
-    self._debug("updateTaskByCompanyAcronym", "Start - company_acronym: %s, progress: %s" % (company_acronym, progress))
+  def updateTaskByUserId(self, user_id, progress):
+    self._debug("updateTaskByUserId", "Start - company_acronym: %s, progress: %s" % (user_id, progress))
 
-    task = self.getTaskByCompanyAcronym(company_acronym)
+    task = self.getTaskByUserId(user_id)
     task["progress"] = progress
 
-    relative_location = self._getRelativeLocation(company_acronym)
+    relative_location = self._getRelativeLocation(user_id)
     with open(relative_location, "w") as write_file:
         dump(task, write_file)
     result = "task has been updated"
 
-    self._debug("updateTaskByCompanyAcronym", "Finish - result: %s" % result)
+    self._debug("updateTaskByUserId", "Finish - result: %s" % result)
     return result
 
-  def getAcronymOfTaskWithProgressInitiated(self):
-    self._debug("getAcronymOfTaskWithProgressInitiated", "Start")
+  def getUserIdOfTaskWithProgressInitiated(self):
+    self._debug("getUserIdOfTaskWithProgressInitiated", "Start")
     result = None
 
     directory = self._getRelativeLocationOfBackendTasks()
     for filename in listdir(directory):
       if filename.endswith(".json"):
-        task = self.getTaskByCompanyAcronym(filename.replace(".json", ""))
+        task = self.getTaskByUserId(filename.replace(".json", ""))
         if task["progress"] == "task initiated":
-          result = task["acronym"]
+          result = task["user_id"]
           break
 
-    self._debug("getAcronymOfTaskWithProgressInitiated", "Finish - result: %s" % result)
+    self._debug("getUserIdOfTaskWithProgressInitiated", "Finish - result: %s" % result)
     return result
 
-  def getTaskByCompanyAcronym(self, company_acronym):
-    self._debug("getTaskByCompanyAcronym", "Start - company_acronym: %s" % company_acronym)
+  def getTaskByUserId(self, user_id):
+    self._debug("getTaskByUserId", "Start - company_acronym: %s" % user_id)
     result = None
 
-    relative_location = self._getRelativeLocation(company_acronym)
+    relative_location = self._getRelativeLocation(user_id)
     if path.exists(relative_location):
       with open(relative_location, "r") as read_file:
         result = load(read_file)
 
-    self._debug("getTaskByCompanyAcronym", "Finish - result: %s" % result)
+    self._debug("getTaskByUserId", "Finish - result: %s" % result)
     return result
 
-  def _getRelativeLocation(self, company_acronym):
+  def _getRelativeLocation(self, user_id):
     return path.join(
-      path.dirname( __file__ ),
+      path.dirname(__file__),
       "..",
-      "data-gathering-main-service",
+      "recommendation-main-service",
       "backend_tasks",
       "remove_in_alpha",
-      '%s.json' % company_acronym
+      '%s.json' % user_id
     )
 
   def _getRelativeLocationOfBackendTasks(self):
     return path.join(
-      path.dirname( __file__ ),
+      path.dirname(__file__),
       "..",
-      "data-gathering-main-service",
+      "recommendation-main-service",
       "backend_tasks",
       "remove_in_alpha"
     )
