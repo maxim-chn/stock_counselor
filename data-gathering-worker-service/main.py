@@ -1,8 +1,8 @@
-"""
-Executes the backend tasks that are created by the Data Gathering Main Service
-"""
+"""Executes the backend tasks that are created by the Data Gathering Main Service"""
 
+from json import dump
 import logging
+from os import path
 from time import sleep
 from worker_api import WorkerApi
 
@@ -26,4 +26,12 @@ if __name__ == '__main__':
       sleep(5)
       continue
 
-    worker.getDataFromSec(acronym)
+    company_financial_data = worker.getDataFromSec(acronym)
+    if company_financial_data:
+      with open(path.join(
+          path.dirname(__file__), "remove_in_alpha", "%s.json" % (company_financial_data["acronym"])),
+          "w"
+        ) as write_file:
+          dump(company_financial_data, write_file)
+
+    print("Finished " + acronym)

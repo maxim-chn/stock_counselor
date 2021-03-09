@@ -1,7 +1,7 @@
 """
-It represents the Boundary logic for the Data Gathering Main Service.
-Here we reveal the external API for the main service by implementing a HTTP server.
-The incoming requests are referred to the StockDataMinerController which
+This is our Boundary logic.
+We reveal here the external API for the main service by implementing a HTTP server.
+The incoming requests are transfered over to the StockDataMinerController which
 holds the Controller logic.
 """
 

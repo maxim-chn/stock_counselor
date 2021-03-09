@@ -1,46 +1,54 @@
-"""
-This is our Controller logic.
-It reveals an internal API with the methods that map the request to gather data about a company
-to a backend task.
-The backend task will later be picked up by an external worker service.
-"""
-
 from backend_tasks_api import BackendTasksApi
 from common_classes.loggable import Loggable
 
 class StockDataMinerControllerApi(Loggable):
+  """
+  This is our Controller Logic., an internal API with the methods that map a request to gather data
+  about a company to a backend task.
+  The backend task will later be picked up by a relevant worker service.
+  """
+  def __init__(self):
+    super().__init__("StockDataMinerControllerApi")
+    self._backend_tasks = BackendTasksApi()
+
+  def collectStockData(self, company_acronym):
     """
-    backend_tasks - BackendTasksApi
+    Returns a str that represents the backend task progress for a collection of financial data about a certain
+    company.
+
+    Keyword arguments:
+      company_acronym -- str -- an unique identifier of a company at a stock exchange (i.e. NASDAQ).
     """
-    def __init__(self):
-      super().__init__("StockDataMinerControllerApi")
-      self._backend_tasks = BackendTasksApi()
-      
+    self._debug("collectStockData", "Start - company_acronym: %s" % company_acronym)
+    if self.isCollectionInProgress(company_acronym):
+      result = "Collection is Already in Progress"
+    else:
+      self.createNewCollectionTask(company_acronym)
+      result = "Stock Data Collection has been Started"
 
-    def collectStockData(self, company_acronym):
-      self._debug("collectStockData", "Start - company_acronym: %s" % company_acronym)
-      result = None
+    self._debug("collectStockData", "Finish - result: %s\n" % result)
+    return result
 
-      if self.isCollectionInProgress(company_acronym):
-        result = "Collection is Already in Progress"
-      else:
-        self.createNewCollectionTask(company_acronym)
-        result = "Stock Data Collection has been Started"
+  def createNewCollectionTask(self, company_acronym):
+    """
+    Returns a str that represents the backend task progress for a collection of financial data about a certain
+    company.
 
-      self._debug("collectStockData", "Finish - result: %s\n" % result)
-      return result
+    Keyword arguments:
+      company_acronym -- str -- an unique identifier of a company at a stock exchange (i.e. NASDAQ).
+    """
+    self._debug("createNewCollectionTask", "Start - company_acronym: %s" % company_acronym)
+    result = self._backend_tasks.createTaskByCompanyAcronym(company_acronym, "task initiated")
+    self._debug("createNewCollectionTask", "Result - result: %s" % result)
+    return result
 
-    def createNewCollectionTask(self, company_acronym):
-      self._debug("createNewCollectionTask", "Start - company_acronym: %s" % company_acronym)
-      result = self._backend_tasks.createTaskByCompanyAcronym(company_acronym, "task initiated")
-
-      self._debug("createNewCollectionTask", "Result - result: %s" % result)
-      return result
-
-    def isCollectionInProgress(self, company_acronym):
-      self._debug("isCollectionInProgress", "Start - company_acronym: %s" % company_acronym)
-      background_task = self._backend_tasks.getTaskByCompanyAcronym(company_acronym)
-      result = background_task is not None
-
-      self._debug("isCollectionInProgress", "Finish - result: %s" % result)
-      return result
+  def isCollectionInProgress(self, company_acronym):
+    """
+    Keyword arguments:
+      company_acronym -- str -- an unique identifier of a company at a stock exchange (i.e. NASDAQ).
+    """
+    self._debug("isCollectionInProgress", "Start - company_acronym: %s" % company_acronym)
+    background_task = self._backend_tasks.getTaskByCompanyAcronym(company_acronym)
+    result = background_task is not None
+    self._debug("isCollectionInProgress", "Finish - result: %s" % result)
+    return result

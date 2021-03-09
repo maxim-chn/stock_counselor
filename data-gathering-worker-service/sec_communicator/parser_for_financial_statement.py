@@ -62,8 +62,11 @@ class ParserForFinancialStatement(HTMLParser):
         return
 
   def handle_data(self, data):
-    if self._table_tag_flag and self._strong_tag_flag and "$ in" in data:
-      self._currency_units = data.split("$ in ")[1]
+    if self._table_tag_flag and self._strong_tag_flag:
+      if "$ in" in data:
+        self._currency_units = data.split("$ in ")[1]
+      elif "$) in" in data:
+        self._currency_units = data.split("$) in ")[1]
       return
 
     if self._td_tag_flag and self._class_pl_flag and self._a_tag_flag:
