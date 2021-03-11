@@ -27,6 +27,8 @@ class ModelApi(Loggable):
 
 
   def __next__(self):
+    if len(self._financial_document_ids) == 0:
+      raise StopIteration()
     financial_document_id = self._financial_document_ids.pop(0)
     file_path = path.join(
       path.dirname(__file__),
