@@ -6,7 +6,7 @@ holds the Controller logic.
 """
 
 from bottle import Bottle, request, response
-from stock_data_miner_controller_api import StockDataMinerControllerApi
+from controller import StockDataMinerControllerApi
 import logging
 from datetime import datetime
 from functools import wraps

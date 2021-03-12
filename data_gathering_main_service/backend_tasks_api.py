@@ -4,7 +4,7 @@ from os import path
 from common.loggable_api import Loggable
 from common.backend_task_progress import BackendTaskProgress
 
-class BackendTasksApi(Loggable):
+class BackendTasks(Loggable):
   """
   CRUDs the backend_tasks directly through the file system.
   TODO: implement direct communication with an in-memory database, i.e. Redis, and remove any file system use in v1.0
