@@ -10,7 +10,7 @@ from functools import wraps
 
 
 def setupLogger():
-  logger = logging.getLogger("recommendation-main-service")
+  logger = logging.getLogger("recommendation_main_service")
   logger.setLevel(logging.DEBUG)
   file_handler = logging.FileHandler("main.log")
   formatter = logging.Formatter("%(msg)s")
@@ -23,7 +23,7 @@ def log_to_logger(fn):
     def _log_to_logger(*args, **kwargs):
       request_time = datetime.now()
       actual_response = fn(*args, **kwargs)
-      logger = logging.getLogger("recommendation-main-service")
+      logger = logging.getLogger("recommendation_main_service")
       logger.info('%s %s %s %s %s' % (request.remote_addr,
                                       request_time,
                                       request.method,

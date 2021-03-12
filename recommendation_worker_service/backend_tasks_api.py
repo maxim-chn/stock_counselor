@@ -62,7 +62,7 @@ class BackendTasksApi(Loggable):
     return path.join(
       path.dirname(__file__),
       "..",
-      "recommendation-main-service",
+      "recommendation_main_service",
       "backend_tasks",
       "remove_in_alpha",
       '%s.json' % user_id
@@ -72,7 +72,7 @@ class BackendTasksApi(Loggable):
     return path.join(
       path.dirname(__file__),
       "..",
-      "recommendation-main-service",
+      "recommendation_main_service",
       "backend_tasks",
       "remove_in_alpha"
     )

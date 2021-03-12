@@ -81,7 +81,7 @@ class BackendTasksApi(Loggable):
     return path.join(
       path.dirname( __file__ ),
       "..",
-      "data-gathering-main-service",
+      "data_gathering_main_service",
       "backend_tasks",
       "remove_in_alpha",
       '%s.json' % company_acronym
@@ -95,7 +95,7 @@ class BackendTasksApi(Loggable):
     return path.join(
       path.dirname( __file__ ),
       "..",
-      "data-gathering-main-service",
+      "data_gathering_main_service",
       "backend_tasks",
       "remove_in_alpha"
     )

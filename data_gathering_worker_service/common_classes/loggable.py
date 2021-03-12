@@ -4,7 +4,7 @@ class Loggable:
 
   def __init__(self, class_name):
     self._class_name = class_name
-    self._log_id = "recommendation-main-service"
+    self._log_id = "data_gathering_worker_service"
 
   def _error(self, function_name, message):
     to_log = "%s - %s() - Error - %s" % (self._class_name, function_name, message)

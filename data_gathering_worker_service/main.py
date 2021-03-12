@@ -7,7 +7,7 @@ from time import sleep
 from worker_api import WorkerApi
 
 def setupLogger():
-  logger = logging.getLogger('data-gathering-worker-service')
+  logger = logging.getLogger('data_gathering_worker_service')
   logger.setLevel(logging.DEBUG)
   file_handler = logging.FileHandler('main.log')
   formatter = logging.Formatter('%(msg)s')
