@@ -13,13 +13,13 @@ class Loggable:
     self._log_id = id
 
   def _debug(self, function_name, message):
-    to_log = "%s - %s() - Debug - %s" % (self._class_name, function_name, message)
+    to_log = "%s - %s() - DEBUG - %s" % (self._class_name, function_name, message)
     getLogger(self._log_id).debug(to_log)
 
   def _error(self, function_name, message):
-    to_log = "%s - %s() - Error - %s" % (self._class_name, function_name, message)
+    to_log = "%s - %s() - ERROR - %s" % (self._class_name, function_name, message)
     getLogger(self._log_id).error(to_log)
 
   def _info(self, function_name, message):
-    to_log = "%s - %s() - Info - %s" % (self._class_name, function_name, message)
+    to_log = "%s - %s() - INFO - %s" % (self._class_name, function_name, message)
     getLogger(self._log_id).info(to_log)

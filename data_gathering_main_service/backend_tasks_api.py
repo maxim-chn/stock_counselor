@@ -9,8 +9,12 @@ class BackendTasks(Loggable):
   CRUDs the backend_tasks directly through the file system.
   TODO: implement direct communication with an in-memory database, i.e. Redis, and remove any file system use in v1.0
   """
-  def __init__(self):
-    super().__init__("BackendTasksApi")
+  def __init__(self, log_id):
+    """
+    Keyword arguments:
+      log_id -- str.
+    """
+    super().__init__(log_id, "BackendTasksApi")
 
   def createTaskByCompanyAcronym(self, acronym):
     """
@@ -23,7 +27,7 @@ class BackendTasks(Loggable):
       "progress": BackendTaskProgress.STARTED.value
     }
     backend_task_path = self._getBackendTaskPath(acronym)
-    with open(backend_task_path, "w") as write_file:
+    with open(backend_task_path, "w+") as write_file:
         json.dump(task, write_file)
     self._debug("createTaskByCompanyAcronym","Finish")
 
@@ -49,9 +53,11 @@ class BackendTasks(Loggable):
     Keyword arguments:
       acronym -- str -- an unique identifier of a company at a stock exchange (i.e. NASDAQ).
     """
+    print(path.dirname(__file__))
     return path.join(
       path.dirname(__file__),
       "..",
+      "common",
       "backend_tasks_db",
       "data_gathering",
       "%s.json" % company_acronym

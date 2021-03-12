@@ -1,4 +1,4 @@
-from backend_tasks_api import BackendTasks
+from data_gathering_main_service.backend_tasks_api import BackendTasks
 from common.backend_task_progress import BackendTaskProgress
 from common.loggable_api import Loggable
 from enum import Enum
@@ -14,9 +14,13 @@ class Controller(Loggable):
   The available methods connect between an input from the Boundary and the backend tasks.
   """
 
-  def __init__(self):
-    super().__init__("StockDataMinerControllerApi")
-    self._backend_tasks = BackendTasks()
+  def __init__(self, log_id):
+    """
+    Keyword arguments:
+      log_id -- str.
+    """
+    super().__init__(log_id, "Controller")
+    self._backend_tasks = BackendTasks(log_id)
 
   def collectFinancialData(self, company_acronym):
     """
