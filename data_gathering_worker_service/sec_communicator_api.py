@@ -1,290 +1,239 @@
-from common_classes.loggable import Loggable
+from common.loggable_api import Loggable
+from data_gathering_worker_service.sec_communicator.parser_for_10k_search_results import ParserFor10kSearchResults
+from data_gathering_worker_service.sec_communicator.parser_for_income_statements_ids import FinancialStatementsIdsParser
+from data_gathering_worker_service.sec_communicator.parser_for_financial_statement import FinancialStatementParser
 from json import dumps, load
 from os import path
 from requests import post, get
-from sec_communicator.parser_for_10k_search_results import ParserFor10kSearchResults
-from sec_communicator.parser_for_income_statements_ids import ParserForIncomeStatementsIds
-from sec_communicator.parser_for_financial_statement import ParserForFinancialStatement
 
-class SecCommunicatorApi(Loggable):
+class SecCommunicator(Loggable):
   """
-  Reveals an internal API for retrieving financial data from the
-  U.S. Securities And Exchange Commission website at https://www.sec.gov/
+  Reveals an internal API for retrieving financial data from the U.S. Securities And Exchange Commission
+  official website at https://www.sec.gov/
   """
 
-  def __init__(self):
-    super().__init__("SecCommunicatorApi")
-    self._urls = self._loadHttpRequestsToSecConfigurations()
+  def __init__(self, log_id):
+    super().__init__(log_id, "SecCommunicator")
+    self._reqs_to_sec_config = self._loadHttpRequestsToSecConfigurations()
     self._parser_for_10k_search_results = ParserFor10kSearchResults()
-    self._parser_for_income_statements_ids = ParserForIncomeStatementsIds()
-    self._parser_for_financial_statement = ParserForFinancialStatement()
+    self._financial_statements_ids_parser = FinancialStatementsIdsParser()
+    self._financial_statement_parser = FinancialStatementParser()
 
   def get10kAccessionNumbers(self, available_financial_reports):
     """
-    Returns a dict where a key is a str with the 10-K financial report date and
-    a value is it's unique id at the https://www.sec.gov/.
-
+    Returns a dict:
+     - key -- str -- represents 10-K financial report date.
+     - value -- str -- an unique 10-K financial report id at the https://www.sec.gov/
     Keyword arguments:
-      available_financial_reports -- str -- HTML Document with the financial reports available for a company.
+      available_financial_reports -- str -- HTML Document with the financial statements available for a company.
     """
     self._debug("get10kAccessionNumbers", "Start")
-    result = None
-
     self._parser_for_10k_search_results.initFlagsAndResult()
     self._parser_for_10k_search_results.feed(available_financial_reports)
     result = self._parser_for_10k_search_results.getResult()
-
     self._debug("get10kAccessionNumbers", "Finish - result: %s" % result)
     return result
 
   def get10KReport(self, company_id, accession_number):
     """
-    Returns a str with the HTML Document that contains 10-K financial report for a company.
+    Returns a str or None. It is a HTML Document with the 10-K financial report.
     The report is expected to include the available financial statements types, i.e. Balance Sheets.
-    None is returned in case the method faces an unexpected execution.
-
     Keyword arguments:
+      accession_number -- str -- unique 10-K report id at the https://www.sec.gov/
       company_id -- str -- unique company id at the https://www.sec.gov/
-      accession_number -- str -- unique 10-K report id at the https://www.sec.gov/.
     """
     self._debug(
-      "get10KReport",
-      "Start - company_id: %s, accession_number: %s" % (company_id, accession_number)
+      "get10KReport", "Start - company_id: %s, accession_number: %s" % (company_id, accession_number)
     )
     result = None
-
-    config = self._urls["obtain_income_statement_ids"]
+    config = self._reqs_to_sec_config["obtain_income_statement_ids"]
     dst_url = config["url"]
     req_headers = config["headers"]
     req_params = config["params"]
     req_params["accession_number"] = accession_number
     req_params["cik"] = company_id
-
     try:
-      res = get(dst_url, headers=req_headers, params=req_params)
-
-      if not res.status_code == 200:
-        err_msg = "actual response status code VS expected: %d VS %d" % (res.status_code, 200)
-        raise RuntimeError(err_msg)
-
-      if not res.headers["Content-Type"] == req_headers["Accept"]:
-        err_msg = "actual response content-type VS expected: %s VS %s" % (
-          res.headers["Content-Type"],
-          req_headers["Accept"]
-        )
-        raise RuntimeError(err_msg)
-
-      result = res.text
-
+      sec_response = get(dst_url, headers=req_headers, params=req_params)
+      self._isSecReponseStatusCodeValid(sec_response, 200)
+      self._isSecResponseContentTypeValid(sec_response, req_headers["Accept"])
+      result = sec_response.text
     except RuntimeError as err:
       self._error("get10KReport", "Error - %s" % err)
-
     finally:
       if result:
         self._debug("get10KReport", "Finish - result has %d characters" % len(result))
       else:
         self._debug("get10KReport", "Finish - result: None")
-
       return result
 
   def get10kReportsSearchResults(self, company_id):
     """
-    Returns a str with the HTML Document that contains search results for the 10-K financial reports for a
-    certain company, i.e. Microsoft, at the https://www.sec.gov/.
-    None is returned if the method faces an unexpected execution.
-
+    Returns a str or None. It is a HTML Document with the search results for the 10-K financial reports.
     Keyword arguments:
-      company_id -- str -- unique id of a company, i.e. Microsoft at the https://www.sec.gov/.
+      company_id -- str -- unique company id at the https://www.sec.gov/
     """
     self._debug("get10kReportsSearchResults", "Start - company_id: %s" % company_id)
     result = None
-
-    config = self._urls["obtain_10k_filings"]
+    config = self._reqs_to_sec_config["obtain_10k_filings"]
     dst_url = config["url"]
     req_headers = config["headers"]
     req_params = config["params"]
     req_params["CIK"] = company_id
-
     try:
-      res = get(dst_url, headers=req_headers, params=req_params)
-
-      if not res.status_code == 200:
-        err_msg = "actual response status code VS expected: %d VS %d" % (res.status_code, 200)
-        raise RuntimeError(err_msg)
-
-      if not res.headers["Content-Type"] == req_headers["Accept"]:
-        err_msg = "actual response content-type VS expected: %s VS %s" % (
-          res.headers["Content-Type"],
-          req_headers["Accept"]
-        )
-        raise RuntimeError(err_msg)
-
-      result = res.text
-
+      sec_response = get(dst_url, headers=req_headers, params=req_params)
+      self._isSecReponseStatusCodeValid(sec_response, 200)
+      self._isSecResponseContentTypeValid(sec_response, req_headers["Accept"])
+      result = sec_response.text
     except RuntimeError as err:
       self._error("get10kReportsSearchResults", "Error - %s" % err)
-
     finally:
       if result:
         self._debug("get10kReportsSearchResults", "Finish - result has %d characters" % len(result))
       else:
         self._debug("get10kReportsSearchResults", "Finish - result: None")
-
       return result
 
   def getCompanyId(self, acronym):
     """
-    Returns a str that represents the unique id of a company, i.e. Microsoft, at the https://www.sec.gov/.
-    None is returned in case the method faces an unexpected execution flow.
-
+    Returns a str or None. It is the unique id of a company, i.e. Microsoft, at the https://www.sec.gov/.
     Keyword arguments:
-      acronym -- str -- the id at the stock exchange, i.e. NASDAQ, of a company.
+      acronym -- str -- the company symbol at the stock exchange, i.e. NASDAQ.
     """
     self._debug("getCompanyId", "Start - acronym: %s" % acronym)
     result = None
-
-    config = self._urls["obtain_company_id"]
+    config = self._reqs_to_sec_config["obtain_company_id"]
     dst_url = config["url"]
     req_headers = config["headers"]
     req_payload = config["payload"]
     req_payload["keysTyped"] = acronym
-
     try:
-      res = post(dst_url, data=dumps(req_payload), headers=req_headers)
-
-      if not res.status_code == 200:
-        err_msg = "actual response status code VS expected: %d VS %d" % (res.status_code, 200)
-        raise RuntimeError(err_msg)
-
-      if not res.headers["Content-Type"] == req_headers["Accept"]:
-        err_msg = "actual response content-type VS expected: %s VS %s" % (
-          res.headers["Content-Type"],
-          req_headers["Accept"]
-        )
-        raise RuntimeError(err_msg)
-
-      res_payload = res.json()
-      actual_acronym = res_payload["hits"]["hits"][0]["_source"]["tickers"].lower()
-
-      if not actual_acronym == acronym:
-        err_msg = "actual response acronym VS expected: %s VS %s" % (
-          actual_acronym,
-          acronym
-        )
-        raise RuntimeError(err_msg)
-      result = res_payload["hits"]["hits"][0]["_id"]
-
+      sec_response = post(dst_url, data=dumps(req_payload), headers=req_headers)
+      self._isSecReponseStatusCodeValid(sec_response, 200)
+      self._isSecResponseContentTypeValid(sec_response, req_headers["Accept"])
+      response_data = sec_response.json()
+      self._isCompanyAcronymInSecResponseValid(response_data, acronym)
+      result = response_data["hits"]["hits"][0]["_id"]
     except (IndexError, RuntimeError) as err:
       self._error("getCompanyId", "Error - %s" % err)
-
     finally:
       self._debug("getCompanyId", "Finish - result: %s" % result)
-
       return result
 
   def getDataFromFinancialStatement(self, financial_statement):
     """
-    Returns a tuple.
-      At index 0 there is a dict with the financial data where a key is a str with date
-      and a value is a dict with the financial data.
-      At index 1 there is a str with the currency units.
-
+    Returns a tuple:
+      - index 0 -- dict -- includes the retrieved financial data from https://www.sec.gov/.
+      - index 1 -- str -- currency units.
     Keyword arguments:
-      financial_statement -- str -- HTML Document with financial data, i.e Balance Sheets.
+      financial_statement -- str -- HTML Document with the financial data.
     """
     self._debug("getDataFromFinancialStatement", "Start")
-    self._parser_for_financial_statement.initFlagsAndResult()
-    self._parser_for_financial_statement.feed(financial_statement)
-    result = self._parser_for_financial_statement.getResult()
-
+    self._financial_statement_parser.initFlagsAndResult()
+    self._financial_statement_parser.feed(financial_statement)
+    result = self._financial_statement_parser.getResult()
     self._debug(
       "getDataFromFinancialStatement",
       "Finish - result: %s financial values, %s currency format" % (len(result[0].keys()), result[1])
     )
     return result
 
-  def getFinancialStatement(self, company_id, accession_number, income_statement_id):
+  def getFinancialStatement(self, company_id, accession_number, financial_statement_type):
     """
-    Returns a str that contains HTML Document with the financial data statement, i.e Balance Sheets.
-    In case the method faces an unexpected execution, None is returned.
-
+    Returns a str or None. It is a HTML Document with the financial data statement, i.e Balance Sheets.
     Keyword arguments:
-       company_id -- str -- unique company id at the https://www.sec.gov/
        accession_number -- str -- unique 10-K report id at the https://www.sec.gov/
-       income_statement_id -- str -- financial statemet type id, i.e. R2 for Balance Sheets (not consistent)
+       company_id -- str -- unique company id at the https://www.sec.gov/
+       financial_statement_type -- str -- financial statement type id, i.e. R2.
     """
     self._debug(
       "getFinancialStatement",
       "Start - company_id: %s, accession_number: %s, income_statement_id: %s" % (
-        company_id, accession_number, income_statement_id
+        company_id, accession_number, financial_statement_type
       )
     )
     result = None
-
-    config = self._urls["obtain_income_statement_data"]
-    dst_url = config["url"]
+    config = self._reqs_to_sec_config["obtain_income_statement_data"]
+    dst_url = "%s/%s/%s/%s.htm" % (config["url"], company_id, accession_number, financial_statement_type)
     req_headers = config["headers"]
-    dst_url += "/"+company_id+"/"+accession_number+"/"+income_statement_id+".htm"
-
     try:
-      res = get(dst_url, headers=req_headers)
-
-      if not res.status_code == 200:
-        err_msg = "actual response status code VS expected: %d VS %d" % (res.status_code, 200)
-        raise RuntimeError(err_msg)
-
-      if not res.headers["Content-Type"] == req_headers["Accept"]:
-        err_msg = "actual response content-type VS expected: %s VS %s" % (
-          res.headers["Content-Type"],
-          req_headers["Accept"]
-        )
-        raise RuntimeError(err_msg)
-
-      result = res.text
-
+      sec_response = get(dst_url, headers=req_headers)
+      self._isSecReponseStatusCodeValid(sec_response, 200)
+      self._isSecResponseContentTypeValid(sec_response, req_headers["Accept"])
+      result = sec_response.text
     except RuntimeError as err:
       self._error("getFinancialStatement", "Error - %s" % err)
-
     finally:
       if result:
         self._debug("getFinancialStatement", "Finish result has %d characters" % len(result))
       else:
         self._debug("getFinancialStatement", "Finish - result: None")
-
       return result
 
-  def getFinancialStatementsIds(self, report_10k):
+  def getFinancialStatementsTypes(self, report_10k):
     """
-    Returns a list of str where each str represents the available types of
-    financial statements, i.e. Balance Sheets, for the 10K Report.
-
+    Returns a list of strings. Each str represents the available type of financial statements.
     Keyword arguments:
-      report_10k -- str -- HTML Document with the 10-K financial report.
+      report_10k -- str -- a HTML Document with the 10-K financial report.
     """
-    self._debug("getFinancialStatementsIds", "Start")
-    result = None
-
-    self._parser_for_income_statements_ids.initFlagsAndResult()
-    self._parser_for_income_statements_ids.feed(report_10k)
-    result = self._parser_for_income_statements_ids.getResults()
-
-    self._debug("getFinancialStatementsIds", "Finish - result: %s" % result)
+    self._debug("getFinancialStatementsTypes", "Start")
+    self._financial_statements_ids_parser.initFlagsAndResult()
+    self._financial_statements_ids_parser.feed(report_10k)
+    result = self._financial_statements_ids_parser.getResults()
+    self._debug("getFinancialStatementsTypes", "Finish - result: %s" % result)
     return result
 
   def _getHttpRequestsToSecConfigFile(self):
     """
-    Returns a str that is the location of the configuration file for the HTTP requests to the
-    https://www.sec.gov/.
+    TODO: remove in v1.0.
+    Returns a path to the configuration file for the HTTP requests to the https://www.sec.gov/
     """
     return path.join(
       path.dirname( __file__ ),
       "sec_communicator",
-      'http_requests_to_sec.json'
+      "http_requests_to_sec.json"
     )
+
+  def _isCompanyAcronymInSecResponseValid(self, response_data, expected_val):
+    """
+    Raises a RuntimeError in case the company acrpnym in the response is not as expected.
+    Keyword arguments:
+      expected_val -- str -- company acronym.
+      response_data -- dict -- a JSON format of the response from SEC.
+    """
+    actual_acronym = response_data["hits"]["hits"][0]["_source"]["tickers"].lower()
+    if not actual_acronym == expected_val:
+      raise RuntimeError(
+        "Actual Company Acronym in SEC Response VS Expected: %s VS %s" % (actual_acronym, expected_val)
+      )
+
+  def _isSecResponseContentTypeValid(self, response, expected_val):
+    """
+    Raises a RuntimeError in case the response content-type header value is different
+    from the request's accept header.
+    Keyword arguments:
+      expected_val -- str -- request's accept header value.
+      response -- LocalResponse -- a HTTP response object that belongs to the Bottle framework.
+    """
+    if not response.headers["Content-Type"] == expected_val:
+      raise RuntimeError("Response Content-Type VS Request Accept header: %s VS %s" % (
+        response.headers["Content-Type"], expected_val
+      ))
+
+  def _isSecReponseStatusCodeValid(self, response, expected_val):
+    """
+    Raises a RuntimeError in case the actual status code is different from the expected.
+    Keyword arguments:
+      expected_val -- int -- represents a HTTP response status code.
+      response -- LocalResponse -- a HTTP response object that belongs to the Bottle framework.
+    """
+    if not response.status_code == expected_val:
+      raise RuntimeError(
+        "Actual Response Status Code VS Expected: %d VS %d" % (response.status_code, expected_val)
+      )
 
   def _loadHttpRequestsToSecConfigurations(self):
     """
-    Returns a dict with the configurations for the HTTP Requests to the http://www.sec.gov/.
+    Returns a dict. It is the configurations for the HTTP Requests to the http://www.sec.gov/.
     """
     with open(self._getHttpRequestsToSecConfigFile(), "r") as read_file:
         result = load(read_file)

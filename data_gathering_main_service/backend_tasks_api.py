@@ -1,4 +1,4 @@
-import json
+from json import dump, load
 from os import path
 
 from common.loggable_api import Loggable
@@ -14,7 +14,7 @@ class BackendTasks(Loggable):
     Keyword arguments:
       log_id -- str.
     """
-    super().__init__(log_id, "BackendTasksApi")
+    super().__init__(log_id, "BackendTasks")
 
   def createTaskByCompanyAcronym(self, acronym):
     """
@@ -28,7 +28,7 @@ class BackendTasks(Loggable):
     }
     backend_task_path = self._getBackendTaskPath(acronym)
     with open(backend_task_path, "w+") as write_file:
-        json.dump(task, write_file)
+        dump(task, write_file)
     self._debug("createTaskByCompanyAcronym","Finish")
 
   def getTaskByCompanyAcronym(self, acronym):
@@ -42,7 +42,7 @@ class BackendTasks(Loggable):
     backend_task_path = self._getBackendTaskPath(acronym)
     if path.exists(backend_task_path):
       with open(backend_task_path, "r") as read_file:
-        result = json.load(read_file)
+        result = load(read_file)
     self._debug("getTaskByCompanyAcronym", "Finish - result: %s" % result)
     return result
 
@@ -51,9 +51,8 @@ class BackendTasks(Loggable):
     TODO: remove in v1.0.
     Returns the path to the file with the backend_task in the file-system.
     Keyword arguments:
-      acronym -- str -- an unique identifier of a company at a stock exchange (i.e. NASDAQ).
+      company_acronym -- str -- an unique identifier of a company at a stock exchange (i.e. NASDAQ).
     """
-    print(path.dirname(__file__))
     return path.join(
       path.dirname(__file__),
       "..",

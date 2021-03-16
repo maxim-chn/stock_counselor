@@ -1,6 +1,6 @@
 from html.parser import HTMLParser
 
-class ParserForIncomeStatementsIds(HTMLParser):
+class FinancialStatementsIdsParser(HTMLParser):
   def getResults(self):
     return self._results
 

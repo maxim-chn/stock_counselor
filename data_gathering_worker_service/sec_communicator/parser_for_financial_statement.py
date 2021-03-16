@@ -2,7 +2,7 @@ from re import sub
 
 from html.parser import HTMLParser
 
-class ParserForFinancialStatement(HTMLParser):
+class FinancialStatementParser(HTMLParser):
   def getResult(self):
     result = (self._financial_values, self._currency_units)
     return result
