@@ -38,7 +38,7 @@ class BackendTasks(Loggable):
       user_id -- str -- an unique identifier of a user inside our program.
     """
     self._debug("getTaskByUserId", "Start - user_id: %s" % user_id)
-    result = None
+    result = dict()
     backend_task_path = self._getBackendTaskPath(user_id)
     if path.exists(backend_task_path):
       with open(backend_task_path, "r") as read_file:

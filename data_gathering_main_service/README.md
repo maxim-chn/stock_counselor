@@ -1,1 +1,0 @@
-The service is responsible for gathering the data about the companies from the relevant sources on the Internet.

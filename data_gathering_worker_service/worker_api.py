@@ -1,12 +1,21 @@
-from common.backend_task_progress import BackendTaskProgress
 from common.loggable_api import Loggable
 from datetime import datetime
 from data_gathering_worker_service.backend_tasks_api import BackendTasks
 from data_gathering_worker_service.sec_communicator_api import SecCommunicator
+from enum import Enum
 from json import dump
 from logging import getLogger, DEBUG, FileHandler, Formatter
 from os import path
 from time import sleep
+
+class GatheringProgress(Enum):
+  QUERYING_FOR_10K_REPORT_CONTENTS = "Looking for the 10-K Report Contents at the SEC website"
+  QUERYING_FOR_10K_IDS = "Looking for Company 10-K Report Ids at the SEC website"
+  QUERYING_FOR_AVAILABLE_10K_REPORTS = "Looking for the Available Company 10-K Reports at the SEC website"
+  QUERYING_FOR_10K_REPORT = "Looking for the Company 10-K Report at the SEC website"
+  QUERYING_FOR_COMPANY_ID = "Looking for the Company Id at the SEC website"
+  QUERYING_FOR_FINANCIAL_STMNT_CONTENTS = "Looking for the Financial Statement Contents at the SEC website"
+  QUERYING_FOR_FINANCIAL_STMNT_TYPES = "Looking for Company 10-K Financial Statements Types at the SEC website"
 
 class Worker(Loggable):
   """
@@ -56,17 +65,17 @@ class Worker(Loggable):
       "currency_units": None,
       "data_from_source": dict()
     }
-    self._backend_tasks.updateTaskByCompanyAcronym(acronym, BackendTaskProgress.QUERYING_FOR_COMPANY_ID.value)
+    self._backend_tasks.updateTaskByCompanyAcronym(acronym, GatheringProgress.QUERYING_FOR_COMPANY_ID.value)
     company_id = self._sec_communicator.getCompanyId(acronym)
 
     if company_id:
       self._backend_tasks.updateTaskByCompanyAcronym(
-        acronym, BackendTaskProgress.QUERYING_FOR_AVAILABLE_10K_REPORTS.value
+        acronym, GatheringProgress.QUERYING_FOR_AVAILABLE_10K_REPORTS.value
       )
       html_with_10k_search_results = self._sec_communicator.get10kReportsSearchResults(company_id)
 
       if html_with_10k_search_results:
-        self._backend_tasks.updateTaskByCompanyAcronym(acronym,BackendTaskProgress.QUERYING_FOR_10K_IDS.value)
+        self._backend_tasks.updateTaskByCompanyAcronym(acronym, GatheringProgress.QUERYING_FOR_10K_IDS.value)
         accession_numbers = self._sec_communicator.get10kAccessionNumbers(html_with_10k_search_results)
 
         if accession_numbers:
@@ -77,7 +86,7 @@ class Worker(Loggable):
               continue
             result["data_from_source"][date_str] = dict()
             self._backend_tasks.updateTaskByCompanyAcronym(
-              acronym, BackendTaskProgress.QUERYING_FOR_10K_REPORT_CONTENTS.value
+              acronym, GatheringProgress.QUERYING_FOR_10K_REPORT_CONTENTS.value
             )
             html_with_10k_report = self._sec_communicator.get10KReport(company_id, accession_number)
 
@@ -85,13 +94,13 @@ class Worker(Loggable):
               continue
 
             self._backend_tasks.updateTaskByCompanyAcronym(
-              acronym, BackendTaskProgress.QUERYING_FOR_FINANCIAL_STMNT_TYPES.value
+              acronym, GatheringProgress.QUERYING_FOR_FINANCIAL_STMNT_TYPES.value
             )
             financial_statement_types = self._sec_communicator.getFinancialStatementsTypes(html_with_10k_report)
 
             for financial_statement_type in financial_statement_types:
               self._backend_tasks.updateTaskByCompanyAcronym(
-                acronym, BackendTaskProgress.QUERYING_FOR_FINANCIAL_STMNT_CONTENTS.value
+                acronym, GatheringProgress.QUERYING_FOR_FINANCIAL_STMNT_CONTENTS.value
               )
               html_with_financial_statement = self._sec_communicator.getFinancialStatement(
                 company_id,
