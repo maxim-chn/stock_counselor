@@ -18,8 +18,8 @@ class BackendTasks(Loggable):
 
   def getCompanyAcronymFromNewTask(self):
     """
-    Returns a str that contains company acronym (symbol at a stock exchange) in case there is a new backend task.
-    Returns None, otherwise.
+    Returns a str or None.
+    The str contains company acronym (symbol at a stock exchange).
     """
     self._debug("getCompanyAcronymFromNewTask", "Start")
     result = None
@@ -35,8 +35,8 @@ class BackendTasks(Loggable):
 
   def getTaskByCompanyAcronym(self, acronym):
     """
-    Returns a dict that represents a backend task.
-    Returns None in case the task is not found.
+    Returns a dict or None.
+    The dict represents a backend task.
     Keyword arguments:
       acronym -- str -- an unique identifier of a company at a stock exchange (i.e. NASDAQ).
     """
@@ -51,7 +51,8 @@ class BackendTasks(Loggable):
 
   def updateTaskByCompanyAcronym(self, acronym, progress):
     """
-    Returns BackendTaskProgress. It represents whether the task progress update has succeeded.
+    Returns the BackendTaskProgress.
+    It represents whether the task progress update has succeeded.
     Keyword arguments:
       acronym -- str -- an unique identifier of a company at a stock exchange (i.e. NASDAQ).
       progress -- str -- represents the task's progress.
@@ -71,7 +72,8 @@ class BackendTasks(Loggable):
   def _getBackendTaskPath(self, company_acronym):
     """
     TODO: remove in v1.0.
-    Returns the path to the file with the backend_task in the file-system.
+    Returns a path.
+    It is the location to the file with the backend_task in the file-system.
     Keyword arguments:
       company_acronym -- str -- an unique identifier of a company at a stock exchange (i.e. NASDAQ).
     """
@@ -87,7 +89,8 @@ class BackendTasks(Loggable):
   def _getBackendTasksPath(self):
     """
     TODO: remove in v1.0.
-    Returns the path to the directory with the backend tasks related to the financial data gathering.
+    Returns a path.
+    It is the location to the directory with the backend tasks related to the financial data gathering.
     """
     return path.join(
       path.dirname( __file__ ),

@@ -30,7 +30,8 @@ class Entity(Loggable):
   def _getCompanyFinancialDataStoragePath(self, company_acronym):
     """
     TODO: remove in v1.0
-    Returns the path to the storage file for the company's financial data.
+    Returns a path.
+    It is the location to the storage file for the company's financial data.
     Keyword arguments:
       company_acronym -- str -- the company symbol at the stock exchange, i.e. NASDAQ.
     """

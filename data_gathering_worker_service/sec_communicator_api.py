@@ -36,7 +36,8 @@ class SecCommunicator(Loggable):
 
   def get10KReport(self, company_id, accession_number):
     """
-    Returns a str or None. It is a HTML Document with the 10-K financial report.
+    Returns a str or None.
+    The str is a HTML Document with the 10-K financial report.
     The report is expected to include the available financial statements types, i.e. Balance Sheets.
     Keyword arguments:
       accession_number -- str -- unique 10-K report id at the https://www.sec.gov/
@@ -68,7 +69,8 @@ class SecCommunicator(Loggable):
 
   def get10kReportsSearchResults(self, company_id):
     """
-    Returns a str or None. It is a HTML Document with the search results for the 10-K financial reports.
+    Returns a str or None.
+    The str is a HTML Document with the search results for the 10-K financial reports.
     Keyword arguments:
       company_id -- str -- unique company id at the https://www.sec.gov/
     """
@@ -95,7 +97,8 @@ class SecCommunicator(Loggable):
 
   def getCompanyId(self, acronym):
     """
-    Returns a str or None. It is the unique id of a company, i.e. Microsoft, at the https://www.sec.gov/.
+    Returns a str or None.
+    The str is the unique id of a company, i.e. Microsoft, at the https://www.sec.gov/.
     Keyword arguments:
       acronym -- str -- the company symbol at the stock exchange, i.e. NASDAQ.
     """
@@ -139,7 +142,8 @@ class SecCommunicator(Loggable):
 
   def getFinancialStatement(self, company_id, accession_number, financial_statement_type):
     """
-    Returns a str or None. It is a HTML Document with the financial data statement, i.e Balance Sheets.
+    Returns a str or None.
+    The str is a HTML Document with the financial data statement, i.e Balance Sheets.
     Keyword arguments:
        accession_number -- str -- unique 10-K report id at the https://www.sec.gov/
        company_id -- str -- unique company id at the https://www.sec.gov/
@@ -171,7 +175,8 @@ class SecCommunicator(Loggable):
 
   def getFinancialStatementsTypes(self, report_10k):
     """
-    Returns a list of strings. Each str represents the available type of financial statements.
+    Returns a list of strings.
+    Each str represents the available type of financial statements.
     Keyword arguments:
       report_10k -- str -- a HTML Document with the 10-K financial report.
     """
