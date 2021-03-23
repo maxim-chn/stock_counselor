@@ -47,6 +47,12 @@ class BackendTasks(Loggable):
     return result
 
   def _getBackendTaskPath(self, user_id):
+    """
+    TODO: remove in v1.0
+    Returns a path to the backend task.
+    Keyword arguments:
+      user_id -- str -- an unique identifier of a user inside our program.
+    """
     return path.join(
       path.dirname(__file__),
       "..",

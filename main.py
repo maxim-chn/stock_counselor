@@ -1,12 +1,15 @@
-from data_gathering_main_service.boundary import startDataGatheringMainService
-from data_gathering_worker_service.worker_api import Worker
+from data_gathering_main_service.boundary_api import startDataGatheringMainService
+from data_gathering_worker_service.worker_api import Worker as DataGatheringWorker
 from recommendation_main_service.boundary import startRecommendationMainService
+from recommendation_worker_service.worker_api import Worker as RecommendationWorker
 from sys import argv
 
 if __name__ == '__main__':
   if argv[1] == "data_gathering_main_service":
     startDataGatheringMainService()
   elif argv[1] == "data_gathering_worker_service":
-    Worker().startDataGatheringWorkerService()
+    DataGatheringWorker().startDataGatheringWorkerService()
   elif argv[1] == "recommendation_main_service":
     startRecommendationMainService()
+  elif argv[1] == "recommendation_worker_service":
+    RecommendationWorker().startRecommendationWorkerService()

@@ -1,79 +1,103 @@
-"""
-Communicates with an in-memory database that manages the backend tasks.
-"""
-
+from common.backend_task_progress import BackendTaskProgress
+from common.loggable_api import Loggable
 from json import dump, load
-from common_classes.loggable import Loggable
 from os import listdir, path
 
-class BackendTasksApi(Loggable):
+class BackendTasks(Loggable):
   """
-  database_connection - dictionary
+  CRUDs the backend_tasks directly through the file system.
+  TODO: implement direct communication with an in-memory database, i.e. Redis, and remove any file system use in v1.0
   """
-  def __init__(self, database_connection=dict()):
-    # TODO: connect to module that communicates with RAM
-    # TODO: implement singleton
-    super().__init__("BackendTasksApi")
-    self._database_connection = database_connection
 
+  def __init__(self, log_id):
+    """
+    Keyword arguments:
+      log_id -- str.
+    """
+    super().__init__(log_id, "BackendTasks")
 
   def updateTaskByUserId(self, user_id, progress):
-    self._debug("updateTaskByUserId", "Start - company_acronym: %s, progress: %s" % (user_id, progress))
-
+    """
+    Returns BackendTaskProgress.
+    It represents if the task progress update has succeeded.
+    Keyword arguments:
+      progress -- str -- represents the task's progress.
+      user_id -- str -- unique identifier of a user inside our program.
+    """
+    self._debug("updateTaskByUserId", "Start - user_id: %s, progress: %s" % (user_id, progress))
+    result = BackendTaskProgress.FAILED_TO_UPDATE_PROGRESS
     task = self.getTaskByUserId(user_id)
-    task["progress"] = progress
-
-    relative_location = self._getRelativeLocation(user_id)
-    with open(relative_location, "w") as write_file:
+    if task:
+      task["progress"] = progress
+      backend_task_path = self._getBackendTaskPath(user_id)
+      with open(backend_task_path, "w") as write_file:
         dump(task, write_file)
-    result = "task has been updated"
-
-    self._debug("updateTaskByUserId", "Finish - result: %s" % result)
+      result = BackendTaskProgress.UPDATED_PROGRESS
+    self._debug("updateTaskByUserId", "Finish - result: %s" % result.value)
     return result
 
-  def getUserIdOfTaskWithProgressInitiated(self):
-    self._debug("getUserIdOfTaskWithProgressInitiated", "Start")
+  def getUserIdFromNewTask(self):
+    """
+    Returns a str or None.
+    The str is a user_id.
+    """
+    self._debug("getUserIdFromNewTask", "Start")
     result = None
-
-    directory = self._getRelativeLocationOfBackendTasks()
-    for filename in listdir(directory):
+    be_tasks_directory = self._getBackendTasksPath()
+    for filename in listdir(be_tasks_directory):
       if filename.endswith(".json"):
         task = self.getTaskByUserId(filename.replace(".json", ""))
-        if task["progress"] == "task initiated":
-          result = task["user_id"]
-          break
-
-    self._debug("getUserIdOfTaskWithProgressInitiated", "Finish - result: %s" % result)
+        if "progress" in task.keys():
+          if task["progress"] == BackendTaskProgress.STARTED.value:
+            result = task["user_id"]
+            break
+    self._debug("getUserIdFromNewTask", "Finish - result: %s" % result)
     return result
 
   def getTaskByUserId(self, user_id):
-    self._debug("getTaskByUserId", "Start - company_acronym: %s" % user_id)
-    result = None
-
-    relative_location = self._getRelativeLocation(user_id)
-    if path.exists(relative_location):
-      with open(relative_location, "r") as read_file:
+    """
+    Returns a dict.
+    It represents the backend task for calculating investment recommendation for a user.
+    Keyword arguments:
+      user_id -- str -- unique identifier of a user inside our program.
+    """
+    self._debug("getTaskByUserId", "Start - user_id: %s" % user_id)
+    result = dict()
+    backend_task_path = self._getBackendTaskPath(user_id)
+    if path.exists(backend_task_path):
+      with open(backend_task_path, "r") as read_file:
         result = load(read_file)
-
     self._debug("getTaskByUserId", "Finish - result: %s" % result)
     return result
 
-  def _getRelativeLocation(self, user_id):
+  def _getBackendTaskPath(self, user_id):
+    """
+    TODO: remove in v1.0.
+    Returns a path.
+    It is the location of the file with the backend_task in the file-system.
+    Keyword arguments:
+      user_id -- str -- an unique identifier of a user inside our program.
+    """
     return path.join(
       path.dirname(__file__),
       "..",
-      "recommendation_main_service",
-      "backend_tasks",
-      "remove_in_alpha",
-      '%s.json' % user_id
+      "common",
+      "backend_tasks_db",
+      "recommendation_tasks_db",
+      "%s.json" % user_id
     )
 
-  def _getRelativeLocationOfBackendTasks(self):
+  def _getBackendTasksPath(self):
+    """
+    TODO: remove in v1.0.
+    Returns a path.
+    It is the location to the directory with the backend tasks related to the investment recommendation calculation.
+    """
     return path.join(
       path.dirname(__file__),
       "..",
-      "recommendation_main_service",
-      "backend_tasks",
-      "remove_in_alpha"
+      "common",
+      "backend_tasks_db",
+      "recommendation_tasks_db"
     )
 

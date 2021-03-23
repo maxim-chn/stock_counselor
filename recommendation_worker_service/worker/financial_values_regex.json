@@ -1,7 +1,7 @@
 {
-  "cash": "^[a-z, ,/t,:,\\,,-]*assets[a-z, ,/t,:,\\,,-]*cash[a-z, ,/t,:,\\,,-]*cash equivalents[a-z, ,/t,:,\\,,-]*$",
-  "goodwill": "^[a-z, ,\\t,:,\\,,-]*[assets,investments]+[a-z, ,\\t,:,\\,,-]*goodwill[ ,\\t]*$",
-  "long_term_debt": "^[a-z, , \\t,\\,,-]*liabilities[a-z, , \\t,:,\\,,-]*long-term debt[ , \\t]*$",
-  "total_assets": "^[a-z, ,/t,:,\\,,-]*assets[a-z, ,/t,:,\\,,-]*total[ ,/t]*assets[a-z, ,/t,:,\\,,-]*$",
-  "total_liabilities": "^[a-z, ,/t,:,\\,,-]*liabilities[a-z, ,/t,:,\\,,-]*total[ ,/t]*liabilities[a-z, ,/t,:,\\,,-]*$"
+  "cash": "^[a-z, ,/t,:,\\,,-]*cash[a-z, ,/t,:,\\,,-]*cash equivalents[a-z, ,/t,:,\\,,-]*$",
+  "goodwill": "^[a-z, ,\\t,:,\\,,-]*goodwill[ ,\\t]*$",
+  "long_term_debt": "^[a-z, , \\t,\\,,-]*long-term debt[ , \\t]*$",
+  "total_assets": "^[a-z, ,/t,:,\\,,-]*total[ ,/t]*assets[a-z, ,/t,:,\\,,-]*$",
+  "total_liabilities": "^[a-z, ,/t,:,\\,,-]*total[ ,/t]*liabilities[a-z, ,/t,:,\\,,-]*$"
 }

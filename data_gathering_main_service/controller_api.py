@@ -4,6 +4,9 @@ from common.loggable_api import Loggable
 from enum import Enum
 
 class CollectionProgress(Enum):
+  """
+  Represents the State of the Financial Data Collection Task
+  """
   STARTED = "Financial Data Collection has been Started"
   IN_PROGRESS = "Financial Data Collection is in Progress"
   FINISHED = "Financial Data has been Collected"

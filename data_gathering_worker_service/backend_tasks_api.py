@@ -54,7 +54,7 @@ class BackendTasks(Loggable):
     Returns BackendTaskProgress. It represents whether the task progress update has succeeded.
     Keyword arguments:
       acronym -- str -- an unique identifier of a company at a stock exchange (i.e. NASDAQ).
-      progress -- BackendTaskProgress -- represents the task's progress.
+      progress -- str -- represents the task's progress.
     """
     self._debug("updateTaskByCompanyAcronym", "Start - acronym: %s, progress: %s" % (acronym, progress))
     result = BackendTaskProgress.FAILED_TO_UPDATE_PROGRESS

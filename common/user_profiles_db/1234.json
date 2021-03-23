@@ -1,12 +1,12 @@
 {
-  "equity_to_goodwill": {
-    "lower_boundary": 0,
-    "upper_boundary": 100,
-    "weight": 1
-  },
   "cash_to_long_term_debt": {
     "lower_boundary": 10,
     "upper_boundary": 30,
     "weight": 0.7
+  },
+  "equity_to_goodwill": {
+    "lower_boundary": 0,
+    "upper_boundary": 100,
+    "weight": 1
   }
 }
