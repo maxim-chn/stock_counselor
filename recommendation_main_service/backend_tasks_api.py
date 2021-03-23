@@ -33,7 +33,8 @@ class BackendTasks(Loggable):
 
   def getTaskByUserId(self, user_id):
     """
-    Returns a dict with the information about a backend task.
+    Returns a dict.
+    It is the backend task for the calculation of the investment recommendation for a user.
     Keyword arguments:
       user_id -- str -- an unique identifier of a user inside our program.
     """
@@ -49,7 +50,8 @@ class BackendTasks(Loggable):
   def _getBackendTaskPath(self, user_id):
     """
     TODO: remove in v1.0
-    Returns a path to the backend task.
+    Returns a path.
+    It is the location of a backend task.
     Keyword arguments:
       user_id -- str -- an unique identifier of a user inside our program.
     """

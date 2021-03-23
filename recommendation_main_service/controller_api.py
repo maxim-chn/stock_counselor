@@ -25,10 +25,10 @@ class RecommendationController(Loggable):
 
   def calculateRecommendation(self, user_id):
     """
-    Returns a str. It represents the backend task progress for the investment recommendation calculation for
-    a certain user.
+    Returns a str.
+    It represents the backend task progress for the investment recommendation calculation for a certain user.
     Keyword arguments:
-      user_id -- str -- an unique identifier of a user inside our program.
+      user_id -- str -- unique identifier of a user inside our program.
     """
     self._debug("calculateRecommendation", "Start - user_id: %s" % user_id)
     progress = self._calculationProgress(user_id)
@@ -44,7 +44,8 @@ class RecommendationController(Loggable):
 
   def _calculationProgress(self, user_id):
     """
-    Returns a str. It is a value of the BackendTaskProgress Enum.
+    Returns a str or None.
+    The str is a value of the BackendTaskProgress Enum.
     Keyword arguments:
       user_id -- str -- an unique identifier of a user inside our program.
     """
