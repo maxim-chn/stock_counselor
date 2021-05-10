@@ -137,7 +137,7 @@ def initContainer(port, username, password, container_name):
 def loadConfiguration():
   file_path = path.join(
     path.dirname(__file__),
-    "config.json"
+    "mongodb.json"
   )
   with open(file_path, "r") as read_file:
     result = load(read_file)
