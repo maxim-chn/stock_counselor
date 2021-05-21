@@ -1,5 +1,6 @@
-from json import dump, load
+from json import dumps, load
 from os import path
+import pika
 
 from common.loggable_api import Loggable
 from common.backend_task_progress import BackendTaskProgress
@@ -15,6 +16,8 @@ class BackendTasks(Loggable):
       log_id -- str.
     """
     super().__init__(log_id, "BackendTasks")
+    self._config = self._loadRabbitMqConfigurations()
+
 
   def createTaskByCompanyAcronym(self, acronym):
     """
@@ -26,10 +29,25 @@ class BackendTasks(Loggable):
       "acronym": acronym,
       "progress": BackendTaskProgress.STARTED.value
     }
-    backend_task_path = self._getBackendTaskPath(acronym)
-    with open(backend_task_path, "w+") as write_file:
-        dump(task, write_file)
-    self._debug("createTaskByCompanyAcronym","Finish")
+    message_server_connection = self._getConnectionToRabbitMq(
+      self._config["connection"]["host"],
+      self._config["connection"]["server_port"],
+      self._config["connection"]["vhost"],
+      self._config["connection"]["username"],
+      self._config["connection"]["password"]
+    )
+    if message_server_connection:
+      channel = message_server_connection.channel()
+      channel.queue_declare(queue=self._config["connection"]["channel"]["name"])
+      channel.basic_publish(
+        exchange=self._config["connection"]["channel"]["exchange"],
+        routing_key=self._config["connection"]["channel"]["name"],
+        body=dumps(task)
+      )
+      message_server_connection.close()
+      self._debug("createTaskByCompanyAcronym", "Finish - the task has been written")
+    else:
+      self._debug("createTaskByCompanyAcronym","Finish - the task has not been written")
 
   def getTaskByCompanyAcronym(self, acronym):
     """
@@ -39,25 +57,43 @@ class BackendTasks(Loggable):
     """
     self._debug("getTaskByCompanyAcronym", "Start - acronym: %s" % acronym)
     result = dict()
-    backend_task_path = self._getBackendTaskPath(acronym)
-    if path.exists(backend_task_path):
-      with open(backend_task_path, "r") as read_file:
-        result = load(read_file)
+    # backend_task_path = self._getBackendTaskPath(acronym)
+    # if path.exists(backend_task_path):
+    #   with open(backend_task_path, "r") as read_file:
+    #     result = load(read_file)
     self._debug("getTaskByCompanyAcronym", "Finish - result: %s" % result)
     return result
 
-  def _getBackendTaskPath(self, company_acronym):
+  def _getConnectionToRabbitMq(self, host, port, vhost, username, password):
     """
-    TODO: remove in v1.0.
-    Returns the path to the file with the backend_task in the file-system.
-    Keyword arguments:
-      company_acronym -- str -- an unique identifier of a company at a stock exchange (i.e. NASDAQ).
+    Returns pika.adapters.blocking_connection.BlockingConnection or None
     """
-    return path.join(
-      path.dirname(__file__),
-      "..",
-      "common",
-      "backend_tasks_db",
-      "data_gathering",
-      "%s.json" % company_acronym
+    self._debug(
+      "_getConnectionToRabbitMqQueue",
+      "Start - host: %s, port: %s, vhost: %s, username: %s, password: %s" % (
+        host, port, vhost, username, password
+      )
     )
+    credentials = pika.PlainCredentials(username, password)
+    parameters = pika.ConnectionParameters(
+      host,
+      port,
+      vhost,
+      credentials
+    )
+    result = pika.BlockingConnection(parameters)
+    self._debug("_getConnectionToRabbitMqQueue", "Finish - result: %s" % result)
+    return result
+
+
+  def _loadRabbitMqConfigurations(self):
+    self._debug("_loadRabbitMqConfigurations", "Start")
+    file_path = path.join(
+      path.dirname(__file__),
+      "backend_tasks",
+      "config.json"
+    )
+    with open(file_path, "r") as read_file:
+      result = load(read_file)
+    self._debug("_loadRabbitMqConfigurations", "Finish - result: %s" % result)
+    return result
