@@ -1,0 +1,16 @@
+use admin;
+
+db.auth("admin", "admin");
+
+use users;
+
+db.createUser({
+  user: "data_gatherer",
+  pwd: "data_gatherer",
+  roles: [
+    {"role": "readWrite", "db": "backend_tasks"},
+    {"role": "readWrite", "db": "financial_company_profiles"}
+  ]
+});
+
+quit();

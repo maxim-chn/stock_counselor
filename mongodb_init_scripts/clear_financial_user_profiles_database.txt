@@ -1,0 +1,9 @@
+use admin;
+
+db.auth("admin", "admin");
+
+use financial_user_profiles;
+
+db.dropDatabase();
+
+quit();

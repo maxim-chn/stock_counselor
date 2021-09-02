@@ -1,0 +1,17 @@
+use admin;
+
+db.auth("admin", "admin");
+
+use users;
+
+db.createUser({
+  user: "recommender",
+  pwd: "recommender",
+  roles: [
+    {"role": "readWrite", "db": "backend_tasks"},
+    {"role": "readWrite", "db": "financial_company_profiles"},
+    {"role": "readWrite", "db": "financial_user_profiles"}
+  ]
+});
+
+quit();

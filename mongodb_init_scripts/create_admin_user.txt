@@ -1,0 +1,19 @@
+use admin;
+
+db.auth("root", "root");
+
+db.dropUser("admin");
+
+db.createUser({
+  user: "admin",
+  pwd: "admin",
+  roles: [
+    { role: "dbOwner", db: "backend_tasks" },
+    { role: "dbOwner", db: "financial_company_profiles" },
+    { role: "dbOwner", db: "financial_user_profiles" },
+    { role: "dbOwner", db: "users" },
+    { role: "dbOwner", db: "recommendations" }
+  ]
+});
+
+quit();
