@@ -24,6 +24,11 @@ if ($Current_Containers -Match "mongo_local") {
   Log-Error("Please delete an existing mongo_local container");
   exit(1);
 }
+if ($Current_Containers -Match "rabbitmq_local") {
+  Log-Error("Please delete an existing rabbitmq_local container");
+  exit(1);
+}
+
 
 try {
   docker run -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root `
@@ -32,7 +37,7 @@ try {
   Log-Error("Failed to initialize the mongo_local container");
   exit(1);
 }
-Start-Sleep -Seconds 2
+Start-Sleep -Seconds 5
 Log-Step("Initialized mongo_local container");
 
 try {
@@ -51,3 +56,31 @@ try {
 }
 
 Log-Step("Configured the mongo_local container");
+
+try {
+  docker run -d --hostname localhost -p 5672:5672 -p 15672:15672 `
+  --name rabbitmq_local -e RABBITMQ_DEFAULT_USER=root -e RABBITMQ_DEFAULT_PASS=root `
+  rabbitmq:3-management
+} catch {
+  Log-Error("Failed to initialize the rabbitmq_local container");
+  exit(1);
+}
+Start-Sleep -Seconds 10
+Log-Step("Initialized rabbitmq_local container");
+
+try {
+  docker cp rabbitmq_init_scripts rabbitmq_local:/ 2>$null;
+} catch {
+  Log-Error("Failed to copy rabbitmq_init_scripts to the container");
+  exit(1);
+}
+Log-Step("Copied the rabbitmq_init_scripts to the container");
+
+try {
+  docker exec -it rabbitmq_local bash -c "cd ./rabbitmq_init_scripts && ./rabbitmq.sh" 2>$null;
+} catch {
+  Log-Error("Failed to execute rabbitmq.sh at the container");
+  exit(1);
+}
+
+Log-Step("Configured the rabbitmq_local container");
