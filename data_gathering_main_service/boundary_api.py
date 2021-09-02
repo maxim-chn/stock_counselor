@@ -8,19 +8,12 @@ from bottle import Bottle, request, response
 from data_gathering_main_service.controller_api import Controller
 from datetime import datetime
 from functools import wraps
-from logging import getLogger, DEBUG, FileHandler, Formatter
-
-def setupLogger():
-  logger = getLogger("data_gathering_main_service")
-  logger.setLevel(DEBUG)
-  file_handler = FileHandler("data_gathering_main_service.log")
-  file_handler.setLevel(DEBUG)
-  file_handler.setFormatter(Formatter("%(msg)s"))
-  logger.addHandler(file_handler)
+from logging import getLogger
 
 def log_to_logger(fn):
   """
-  Returns the "decoratored" fn.
+  Returns Function.
+  It is decorated to log HTTP responses.
   Keyword arguments:
     fn -- Function -- the next function that the process is about to execute.
   """
@@ -46,8 +39,6 @@ def log_to_logger(fn):
   return _log_to_logger
 
 def startDataGatheringMainService():
-  setupLogger()
-
   app = Bottle()
   app.install(log_to_logger)
 

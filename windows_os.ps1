@@ -4,13 +4,35 @@ function Log-Error {
   param ($Message)
 
   Write-Output "ERROR -- $($Message)";
+  Write-Output "";
 }
 
 function Log-Step {
   param ($Message)
 
   Write-Output "[x] $($Message)";
+  Write-Output "";
 }
+
+try {
+  if (Test-Path -Path .venv) {
+    rm -r .venv;
+    Log-Step("Removed an existing virtual environment for Python");
+  }
+  python -m venv .venv 2>$null;
+  Set-ExecutionPolicy Unrestricted -Scope Process 2>$null;
+  .\.venv\Scripts\Activate.ps1;
+  pip install --upgrade pip;
+  pip install bottle;
+  pip install pika;
+  pip install requests;
+  deactivate;
+  Set-ExecutionPolicy Restricted -Scope Process 2>$null;
+} catch {
+  Log-Error("Failed to initialize virtual environment for Python");
+  exit(1);
+}
+Log-Step("Initialized virtual environment for Python");
 
 try {
   $Current_Containers = docker container ls 2>$null;
