@@ -1,7 +1,7 @@
+from common.backend_tasks.data_gathering.task import Progress, Task
 from common.loggable_api import Loggable
 from common.database_api import DatabaseApi
 from common.message_broker_api import MessageBrokerApi
-from data_gathering_main_service.backend_tasks.task import Progress, Task
 
 class BackendTasks(Loggable):
   """

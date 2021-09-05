@@ -2,8 +2,8 @@ from logging import getLogger, DEBUG, FileHandler, Formatter
 from os.path import join, dirname, exists
 from sys import argv
 
+from common.data_gathering_backend_tasks_api import BackendTasks as DataGatheringServiceBackendTasks
 from data_gathering_main_service.boundary_api import startDataGatheringMainService
-from data_gathering_main_service.backend_tasks_api import BackendTasks as DataGatheringMainServiceBackendTasks
 from data_gathering_worker_service.worker_api import Worker as DataGatheringWorker
 from recommendation_main_service.boundary import startRecommendationMainService
 from recommendation_worker_service.worker_api import Worker as RecommendationWorker
@@ -60,7 +60,7 @@ if __name__ == '__main__':
   if argv[1] == "data_gathering_main_service":
     setupLogger(argv[1])
     try:
-      backend_tasks = DataGatheringMainServiceBackendTasks(argv[1])
+      backend_tasks = DataGatheringServiceBackendTasks(argv[1])
       
       logDebug(argv[1], "Started message broker test")
       backend_tasks.publishTestMessage()

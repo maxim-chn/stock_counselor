@@ -1,6 +1,6 @@
 from common.loggable_api import Loggable
-from data_gathering_main_service.backend_tasks_api import BackendTasks
-from data_gathering_main_service.backend_tasks.task import Progress
+from common.data_gathering_backend_tasks_api import BackendTasks
+from common.backend_tasks.data_gathering.task import Progress
 class Controller(Loggable):
   """
   This is our Controller Logic which reveals an API for the Boundary.
