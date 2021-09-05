@@ -1,7 +1,7 @@
-from common.backend_tasks.data_gathering.task import Progress, Task
 from common.loggable_api import Loggable
 from common.database_api import DatabaseApi
 from common.message_broker_api import MessageBrokerApi
+from data_gathering_main_service.backend_tasks.task import Progress, Task
 
 class BackendTasks(Loggable):
   """
@@ -88,8 +88,7 @@ class BackendTasks(Loggable):
       raise RuntimeError(err_msg)
 
     try:
-      pass
-      # TODO: store in database
+      self._database.createTaskDocument(task.toDocument())
     except RuntimeError as err:
       err_msg = "%s -- createTaskBy -- Failed to persist Task to database.\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)
@@ -104,12 +103,13 @@ class BackendTasks(Loggable):
     Keyword arguments:
       company_acronym -- str -- unique identifier of a company at a stock exchange.
     """
-    self._debug("getTaskBy", "Start\nacronym:\t%s" % company_acronym)
+    self._debug("getTaskBy", "Start\ncompany_acronym:\t%s" % company_acronym)
     result = None
     
     try:
-      pass
-      # TODO: retrieve from database
+      result = self._database.readTaskDocumentBy({ "company_acronym": company_acronym })
+      if result:
+        result = Task.fromDocument(result)
     except RuntimeError:
       err_msg = "%s -- getTaskBy -- Failed\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)

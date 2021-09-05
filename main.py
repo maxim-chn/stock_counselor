@@ -2,7 +2,7 @@ from logging import getLogger, DEBUG, FileHandler, Formatter
 from os.path import join, dirname, exists
 from sys import argv
 
-from common.data_gathering_backend_tasks_api import BackendTasks as DataGatheringServiceBackendTasks
+from data_gathering_main_service.backend_tasks_api import BackendTasks as DataGatheringServiceBackendTasks
 from data_gathering_main_service.boundary_api import startDataGatheringMainService
 from data_gathering_worker_service.worker_api import Worker as DataGatheringWorker
 from recommendation_main_service.boundary import startRecommendationMainService
