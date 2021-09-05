@@ -50,6 +50,22 @@ class Task:
     return result
 
   @classmethod
+  def fromDocument(cls, val):
+    """
+    Returns Task.
+    Raises RuntimeError.
+    Keyword arguments:
+      val -- dict -- Document which represents Task.
+    """
+    try:
+      company_acronym = val["company_acronym"]
+      progress = Progress[val["progress"]]
+      return cls.taskWith(company_acronym, progress)
+    except Exception as err:
+      err_msg = "%s -- fromDocument failed\n%s" % ("Task", format_exc(1000, err))
+      raise RuntimeError(err_msg)
+
+  @classmethod
   def fromJson(cls, val):
     """
     Returns Task.
@@ -61,21 +77,27 @@ class Task:
       result = loads(val, cls=JsonDecoderForTask)
       return result
     except RuntimeError as err:
-      raise RuntimeError("%s -- fromJson failed\n%s" % format_exc(1000, err))
+      raise RuntimeError("%s -- fromJson failed\n%s" % ("Task", format_exc(1000, err)))
 
+  def toDocument(self):
+    """
+    Returns dict.
+    """
+    result = {
+      "company_acronym": self.company_acronym,
+      "progress": self.progress.value
+    }
+    return result
+  
   def toJson(self):
     """
     Returns str.
     Throws RuntimeError.
     """
     try:
-      result = {
-        "company_acronym": self.company_acronym,
-        "progress": self._progress.value
-      }
-      return dumps(result)
+      return dumps(self.toDocument())
     except RuntimeError as err:
-      raise RuntimeError("%s -- toJson failed\n%s" % format_exc(1000, err))
+      raise RuntimeError("%s -- toJson failed\n%s" % ("Task", format_exc(1000, err)))
 
   # Getters and setters
   

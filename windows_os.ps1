@@ -25,6 +25,7 @@ try {
   pip install --upgrade pip;
   pip install bottle;
   pip install pika;
+  pip install pymongo;
   pip install requests;
   deactivate;
   Set-ExecutionPolicy Restricted -Scope Process 2>$null;

@@ -1,4 +1,5 @@
 from common.loggable_api import Loggable
+from common.database_api import DatabaseApi
 from common.message_broker_api import MessageBrokerApi
 from data_gathering_main_service.backend_tasks.task import Progress, Task
 
@@ -15,8 +16,23 @@ class BackendTasks(Loggable):
     """
     super().__init__(service_name, "BackendTasks")
     self._message_broker = MessageBrokerApi(service_name)
-    self._database = None # TODO: initialize database communicator
+    self._database = DatabaseApi(service_name)
 
+  def createTestDocument(self):
+    """
+    Returns void.
+    Raises RuntimeError.
+    """
+    self._debug("createTestDocument", "Start")
+
+    try:
+      self._database.createTestDocument({"field_a": "value_a"})
+    except RuntimeError as err:
+      err_msg = "%s -- createTestDocument -- Failed\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+
+    self._debug("createTestDocument", "Finish")
+  
   def consumeTestMessage(self, callback_function):
     """
     Returns void.
@@ -34,6 +50,21 @@ class BackendTasks(Loggable):
     
     self._debug("consumeTestMessage", "Finish")
   
+  def deleteTestDocument(self):
+    """
+    Returns void.
+    Raises RuntimeError.
+    """
+    self._debug("deleteTestDocument", "Start")
+
+    try:
+      self._database.deleteTestDocumentBy({"field_a": "value_a"})
+    except RuntimeError as err:
+      err_msg = "%s -- deleteTestDocument -- Failed\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+
+    self._debug("deleteTestDocument", "Finish")
+
   def createTaskBy(self, company_acronym):
     """
     Returns Task.

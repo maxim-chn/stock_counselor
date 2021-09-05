@@ -60,11 +60,18 @@ if __name__ == '__main__':
   if argv[1] == "data_gathering_main_service":
     setupLogger(argv[1])
     try:
-      logDebug(argv[1], "Started message broker test")
       backend_tasks = DataGatheringMainServiceBackendTasks(argv[1])
+      
+      logDebug(argv[1], "Started message broker test")
       backend_tasks.publishTestMessage()
       backend_tasks.consumeTestMessage(uponValidatedMessageBrokerForDataGatheringMainService)
       logDebug(argv[1], "Ended message broker test\n")
+
+      logDebug(argv[1], "Started database test")
+      backend_tasks.createTestDocument()
+      backend_tasks.deleteTestDocument()
+      logDebug(argv[1], "Ended database test\n")
+      
       startDataGatheringMainService(argv[1])
     except RuntimeError as err:
       err_msg = "Failed to start the service\n%s" % str(err)

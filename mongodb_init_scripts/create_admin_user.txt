@@ -11,8 +11,9 @@ db.createUser({
     { role: "dbOwner", db: "backend_tasks" },
     { role: "dbOwner", db: "financial_company_profiles" },
     { role: "dbOwner", db: "financial_user_profiles" },
-    { role: "dbOwner", db: "users" },
-    { role: "dbOwner", db: "recommendations" }
+    { role: "dbOwner", db: "recommendations" },
+    { role: "dbOwner", db: "test" },
+    { role: "dbOwner", db: "users" }
   ]
 });
 

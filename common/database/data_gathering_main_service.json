@@ -1,0 +1,20 @@
+{
+  "connection": {
+    "host": "localhost",
+    "port": 8083
+  },
+  "user": {
+    "username": "data_gatherer",
+    "password": "data_gatherer"
+  },
+  "documents": {
+    "task": {
+      "database_name": "backend_tasks",
+      "collection_name": "data_gatherer"
+    },
+    "test": {
+      "database_name": "test",
+      "collection_name": "data_gatherer"
+    }
+  }
+}
