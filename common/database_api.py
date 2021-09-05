@@ -1,6 +1,6 @@
 from json import load
 from os.path import dirname, exists, join
-from pymongo import MongoClient # https://github.com/mongodb/mongo-python-driver
+from pymongo import MongoClient
 from bson import ObjectId
 from traceback import format_exc
 
@@ -20,27 +20,6 @@ class DatabaseApi:
     self._max_wait_for_connection = 2000
     self._config = self._getMongoDbConfiguration(service_name)
 
-  def createTaskDocument(self, document):
-    """
-    Returns void.
-    Raises RuntimeError
-    Keyword arguments:
-      document -- dict.
-    """
-    try:
-      self._create(
-        self._config["connection"]["host"],
-        self._config["connection"]["port"],
-        self._config["user"]["username"],
-        self._config["user"]["password"],
-        self._config["documents"]["task"]["database_name"],
-        self._config["documents"]["task"]["collection_name"],
-        document
-      )
-    except RuntimeError as err:
-      err_msg = "%s -- createTaskDocument -- Failed\n%s" % (self._class_name, str(err))
-      raise RuntimeError(err_msg)
-  
   def createTestDocument(self, document):
     """
     Returns void.
@@ -82,31 +61,6 @@ class DatabaseApi:
     except RuntimeError as err:
       err_msg = "%s -- deleteTestDocument -- Failed\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)
-
-  def readTaskDocumentBy(self, filter):
-    """
-    Returns dict or None.
-    Raises RuntimeError.
-    Keyword arguments:
-      filter -- dict -- identifies documents to be read.
-    """
-    result = None
-    
-    try:
-      result = self._findOneBy(
-        self._config["connection"]["host"],
-        self._config["connection"]["port"],
-        self._config["user"]["username"],
-        self._config["user"]["password"],
-        self._config["documents"]["task"]["database_name"],
-        self._config["documents"]["task"]["collection_name"],
-        filter
-      )
-    except RuntimeError as err:
-      err_msg = "%s -- readTaskDocumentBy -- Failed\n%s" % (self._class_name, str(err))
-      raise RuntimeError(err_msg)
-    
-    return result
 
   def _authenticateAs(self, client, username, password):
     """
@@ -193,43 +147,7 @@ class DatabaseApi:
       raise RuntimeError(err_msg)
     finally:
       if client and isinstance(client, MongoClient):
-        client.close()
-
-  def _findOneBy(self, host, port, username, password, database_name, collection_name, filter):
-    """
-    Returns dict or None.
-    Raises RuntimeError.
-    Keyword arguments:
-      host -- str.
-      port -- int.
-      username -- str.
-      password -- str.
-      database_name -- str -- database where the query is to be executed.
-      collection_name -- str -- collection name inside the database.
-      filter -- dict -- identifies documents to be deleted.
-    """
-    client = None
-    result = None
-    try:
-      client = self._getClient(host, port)
-      self._authenticateAs(client, username, password)
-      database = client[database_name]
-      collection = database[collection_name]
-      result = collection.find_one(filter)
-      client.close()
-      return result
-    except RuntimeError as err:
-      err_msg = "%s -- _findOneBy -- Failed\n%s" % (self._class_name, str(err))
-      raise RuntimeError(err_msg)
-    except Exception as err:
-      err_msg = "%s -- _findOneBy -- Failed during the find_one query\n%s" % (
-        self._class_name,
-        format_exc(self._max_error_chars, err)
-      )
-      raise RuntimeError(err_msg)
-    finally:
-      if client and isinstance(client, MongoClient):
-        client.close()
+        client.close
 
   def _getClient(self, host, port):
     """

@@ -59,7 +59,7 @@ class Task:
     """
     try:
       company_acronym = val["company_acronym"]
-      progress = Progress(val["progress"])
+      progress = Progress[val["progress"]]
       return cls.taskWith(company_acronym, progress)
     except Exception as err:
       err_msg = "%s -- fromDocument failed\n%s" % ("Task", format_exc(1000, err))
@@ -98,9 +98,6 @@ class Task:
       return dumps(self.toDocument())
     except RuntimeError as err:
       raise RuntimeError("%s -- toJson failed\n%s" % ("Task", format_exc(1000, err)))
-
-  def __str__(self):
-    return str(self.toDocument())
 
   # Getters and setters
   

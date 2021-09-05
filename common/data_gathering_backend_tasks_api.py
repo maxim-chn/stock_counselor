@@ -88,7 +88,8 @@ class BackendTasks(Loggable):
       raise RuntimeError(err_msg)
 
     try:
-      self._database.createTaskDocument(task.toDocument())
+      pass
+      # TODO: store in database
     except RuntimeError as err:
       err_msg = "%s -- createTaskBy -- Failed to persist Task to database.\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)
@@ -103,14 +104,13 @@ class BackendTasks(Loggable):
     Keyword arguments:
       company_acronym -- str -- unique identifier of a company at a stock exchange.
     """
-    self._debug("getTaskBy", "Start\ncompany_acronym:\t%s" % company_acronym)
+    self._debug("getTaskBy", "Start\nacronym:\t%s" % company_acronym)
     result = None
     
     try:
-      result = self._database.readTaskDocumentBy({ "company_acronym": company_acronym })
-      if result:
-        result = Task.fromDocument(result)
-    except RuntimeError as err:
+      pass
+      # TODO: retrieve from database
+    except RuntimeError:
       err_msg = "%s -- getTaskBy -- Failed\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)
     
