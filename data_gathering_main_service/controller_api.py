@@ -1,60 +1,70 @@
-from data_gathering_main_service.backend_tasks_api import BackendTasks
-from common.backend_task_progress import BackendTaskProgress
 from common.loggable_api import Loggable
-from enum import Enum
-
-class CollectionProgress(Enum):
-  """
-  Represents the State of the Financial Data Collection Task
-  """
-  STARTED = "Financial Data Collection has been Started"
-  IN_PROGRESS = "Financial Data Collection is in Progress"
-  FINISHED = "Financial Data has been Collected"
-
+from data_gathering_main_service.backend_tasks_api import BackendTasks
+from data_gathering_main_service.backend_tasks.task import Progress
 class Controller(Loggable):
   """
   This is our Controller Logic which reveals an API for the Boundary.
   The available methods connect between an input from the Boundary and the backend tasks.
   """
 
-  def __init__(self, log_id):
+  def __init__(self, service_name):
     """
+    Raises RuntimeError.
     Keyword arguments:
-      log_id -- str.
+      service_name -- str.
     """
-    super().__init__(log_id, "Controller")
-    self._backend_tasks = BackendTasks(log_id)
+    super().__init__(service_name, "Controller")
+    self._backend_tasks = BackendTasks(service_name)
 
-  def collectFinancialData(self, company_acronym):
+  def collectFinancialDataFor(self, company_acronym):
     """
-    Returns a str. It represents the backend task progress for a collection of financial data about a certain
-    company.
+    Returns str.
+    It represents the backend task progress for a collection of a company's financial data.
     Keyword arguments:
-      acronym -- str -- unique identifier of a company at a stock exchange (i.e. NASDAQ).
+      company_acronym -- str -- unique identifier of a company at a stock exchange (i.e. NASDAQ).
     """
-    self._debug("collectFinancialData", "Start - company_acronym: %s" % company_acronym)
-    progress = self._collectionProgress(company_acronym)
-    if not progress:
-      self._backend_tasks.createTaskByCompanyAcronym(company_acronym)
-      result = CollectionProgress.STARTED.value
-    elif progress == BackendTaskProgress.FINISHED.value:
-      result = CollectionProgress.FINISHED.value
+    self._debug("collectFinancialDataFor", "Start\ncompany_acronym:\t%s" % company_acronym)
+    result = Progress.NOT_EXPECTED.value
+    progress = None
+    
+    try:
+      progress = self._collectionProgressFor(company_acronym)
+    except RuntimeError as err:
+      err_msg = "Failed at retrieving financial data collection progress\n%s" % str(err)
+      self._error("collectFinancialDataFor", err_msg)
+      return result
+    
+    if progress == Progress.NOT_STARTED:
+      try:
+        task = self._backend_tasks.createTaskBy(company_acronym)
+        result = task.progress.value
+      except RuntimeError as err:
+        err_msg = "Failed at creating a new backend task for financial data collection\n%s" % str(err)
+        self._error("collectFinancialDataFor", err_msg)
+        return result
     else:
-      result = CollectionProgress.IN_PROGRESS.value
-    self._debug("collectFinancialData", "Finish - result: %s\n" % result)
+      result = progress.value
+    
+    self._debug("collectFinancialDataFor", "Finish\nresult:\t%s\n" % result)
     return result
 
-  def _collectionProgress(self, company_acronym):
+  def _collectionProgressFor(self, company_acronym):
     """
-    Returns a str. It is a value of the BackendTaskProgress Enum.
+    Returns Progress.
+    Raises RuntimeError.
     Keyword arguments:
-      acronym -- str -- unique identifier of a company at a stock exchange (i.e. NASDAQ).
+      company_acronym -- str -- unique identifier of a company at a stock exchange (i.e. NASDAQ).
     """
-    self._debug("_collectionProgress", "Start - company_acronym: %s" % company_acronym)
-    background_task = self._backend_tasks.getTaskByCompanyAcronym(company_acronym)
-    if not "progress" in background_task.keys():
-      result = None
-    else:
-      result = background_task["progress"]
-    self._debug("_collectionProgress", "Finish - result: %s" % result)
+    self._debug("_collectionProgressFor", "Start\ncompany_acronym:\t%s" % company_acronym)
+    
+    try:
+      task = self._backend_tasks.getTaskBy(company_acronym)
+      if not task:
+        result = Progress.NOT_STARTED
+      else:
+        result = task.progress
+    except RuntimeError as err:
+      raise RuntimeError("%s -- _collectionProgressFor -- Failed\n%s" % (self._class_name, str(err)))
+    
+    self._debug("_collectionProgress", "Finish\nresult:\t%s" % result)
     return result

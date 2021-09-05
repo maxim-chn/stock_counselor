@@ -8,12 +8,19 @@ from data_gathering_worker_service.worker_api import Worker as DataGatheringWork
 from recommendation_main_service.boundary import startRecommendationMainService
 from recommendation_worker_service.worker_api import Worker as RecommendationWorker
 
-def logError(service_name, err):
+def logDebug(service_name, message):
   """
   Returns void
   """
   logger = getLogger(service_name)
-  logger.error("%s -- ERROR\n%s" % (service_name, str(err)))
+  logger.error("%s -- DEBUG -- %s" % (service_name, message))
+
+def logError(service_name, message):
+  """
+  Returns void
+  """
+  logger = getLogger(service_name)
+  logger.error("%s -- ERROR -- %s" % (service_name, message))
 
 def uponValidatedMessageBrokerForDataGatheringMainService(ch, method, properties, body):
   """
@@ -27,7 +34,8 @@ def uponValidatedMessageBrokerForDataGatheringMainService(ch, method, properties
     else:
       raise RuntimeError("Expected test message was not consumed from message broker")
   except RuntimeError as err:
-    logError(service_name, err)
+    err_msg = "Failed during message broker message consumption\n%s" % str(err)
+    logError(service_name, err_msg)
     exit(1)
   finally:
     ch.stop_consuming()
@@ -52,12 +60,15 @@ if __name__ == '__main__':
   if argv[1] == "data_gathering_main_service":
     setupLogger(argv[1])
     try:
+      logDebug(argv[1], "Started message broker test")
       backend_tasks = DataGatheringMainServiceBackendTasks(argv[1])
       backend_tasks.publishTestMessage()
       backend_tasks.consumeTestMessage(uponValidatedMessageBrokerForDataGatheringMainService)
-      startDataGatheringMainService()
+      logDebug(argv[1], "Ended message broker test\n")
+      startDataGatheringMainService(argv[1])
     except RuntimeError as err:
-      logError(argv[1], err)
+      err_msg = "Failed to start the service\n%s" % str(err)
+      logError(argv[1], err_msg)
       exit(1)
   elif argv[1] == "data_gathering_worker_service":
     DataGatheringWorker().startDataGatheringWorkerService()

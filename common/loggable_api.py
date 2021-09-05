@@ -1,3 +1,4 @@
+from datetime import datetime
 from logging import getLogger
 
 class Loggable:
@@ -13,13 +14,13 @@ class Loggable:
     self._log_id = id
 
   def _debug(self, function_name, message):
-    to_log = "%s - %s() - DEBUG - %s" % (self._class_name, function_name, message)
+    to_log = "%s -- %s - %s() - DEBUG - %s" % (str(datetime.now()), self._class_name, function_name, message)
     getLogger(self._log_id).debug(to_log)
 
   def _error(self, function_name, message):
-    to_log = "%s - %s() - ERROR - %s" % (self._class_name, function_name, message)
+    to_log = "%s -- %s - %s() - ERROR - %s" % (str(datetime.now()), self._class_name, function_name, message)
     getLogger(self._log_id).error(to_log)
 
   def _info(self, function_name, message):
-    to_log = "%s - %s() - INFO - %s" % (self._class_name, function_name, message)
+    to_log = "%s -- %s - %s() - INFO - %s" % (str(datetime.now()), self._class_name, function_name, message)
     getLogger(self._log_id).info(to_log)

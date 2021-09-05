@@ -10,37 +10,38 @@ from datetime import datetime
 from functools import wraps
 from logging import getLogger
 
-def log_to_logger(fn):
-  """
-  Returns Function.
-  It is decorated to log HTTP responses.
-  Keyword arguments:
-    fn -- Function -- the next function that the process is about to execute.
-  """
-  @wraps(fn)
-  def _log_to_logger(*args, **kwargs):
+def startDataGatheringMainService(service_name):
+  def log_to_logger(fn):
     """
-    Decorates the fn parameter. Some data is stored and logged prior and after the fn execution.
+    Returns Function.
+    It is decorated to log HTTP responses.
     Keyword arguments:
-      *args, **kwargs -- basically, arguments intended for the fn.
+      fn -- Function -- the next function that the process is about to execute.
     """
-    request_time = datetime.now()
-    actual_response = fn(*args, **kwargs)
-    logger = getLogger("data_gathering_main_service")
-    logger.info("%s -- %s -- %s -- %s -- %s\n" % (
-      request.remote_addr,
-      request_time,
-      request.method,
-      request.url,
-      response.status
-    ))
-    return actual_response
+    @wraps(fn)
+    def _log_to_logger(*args, **kwargs):
+      """
+      Decorates the fn parameter. Some data is stored and logged prior and after the fn execution.
+      Keyword arguments:
+        *args, **kwargs -- basically, arguments intended for the fn.
+      """
+      request_time = datetime.now()
+      actual_response = fn(*args, **kwargs)
+      logger = getLogger(service_name)
+      logger.info("%s -- %s -- %s -- %s -- %s\n" % (
+        request.remote_addr,
+        request_time,
+        request.method,
+        request.url,
+        response.status
+      ))
+      return actual_response
 
-  return _log_to_logger
-
-def startDataGatheringMainService():
+    return _log_to_logger
+  
   app = Bottle()
   app.install(log_to_logger)
+  controller = Controller(service_name)
 
   @app.route("/monitor")
   def monitor():
@@ -48,8 +49,7 @@ def startDataGatheringMainService():
 
   @app.route("/collect_stock_data/<acronym_name>")
   def collect_stock_data(acronym_name):
-    controller = Controller("data_gathering_main_service")
-    result = controller.collectFinancialData(acronym_name)
+    result = controller.collectFinancialDataFor(acronym_name)
     return result
 
-  app.run(host="localhost", port=8080, quiet=True)
+  app.run(host="localhost", port=3000, quiet=True)

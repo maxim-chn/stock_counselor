@@ -1,152 +1,102 @@
-from json import dump, load
-from os import path
-from pika import BlockingConnection, ConnectionParameters, PlainCredentials
-from traceback import format_exc
-
 from common.loggable_api import Loggable
-from common.backend_task_progress import BackendTaskProgress
+from common.message_broker_api import MessageBrokerApi
+from data_gathering_main_service.backend_tasks.task import Progress, Task
 
 class BackendTasks(Loggable):
   """
-  CRUDs the backend_tasks directly through the file system.
-  TODO: implement direct communication with an in-memory database, i.e. Redis, and remove any file system use in v1.0
+  Reveals API for backend tasks CRUD.
+  It consumes database and message broker APIs.
   """
-  def __init__(self, log_id):
+  def __init__(self, service_name):
     """
-    Returns BackendTasks object.
-    Throws RuntimeError exception.
+    Raises RuntimeError.
     Keyword arguments:
-      log_id -- str.
+      service_name -- str.
     """
-    super().__init__(log_id, "BackendTasks")
-    self._config = self._getRabbitMqConfiguration()
+    super().__init__(service_name, "BackendTasks")
+    self._message_broker = MessageBrokerApi(service_name)
+    self._database = None # TODO: initialize database communicator
 
   def consumeTestMessage(self, callback_function):
     """
     Returns void.
-    Throws RuntimeError exception.
+    Raises RuntimeError.
+    Keyword arguments:
+      callback_function -- Function -- Execution steps upon receiving a message from message broker.
     """
     self._debug("consumeTestMessage", "Start")
+    
     try:
-      credentials = PlainCredentials(self._config["username"], self._config["password"])
-      parameters = ConnectionParameters(
-        self._config["host"],
-        self._config["server_port"],
-        self._config["vhost"],
-        credentials
-      )
-      connection = BlockingConnection(parameters)
-      channel = connection.channel()
-      channel.queue_declare(queue=self._config["channel"]["name"])
-      channel.basic_consume(
-        queue=self._config["channel"]["name"],
-        auto_ack=True,
-        on_message_callback=callback_function
-      )
-      channel.start_consuming()
-      connection.close()
+      self._message_broker.subscribe(callback_function)
     except Exception as err:
-      err_msg = "BackendTasks -- consumeTestMessage -- Failed \n %s " % format_exc(err)
+      err_msg = "%s -- consumeTestMessage -- Failed\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)
-    finally:
-      self._debug("consumeTestMessage", "Finish")
+    
+    self._debug("consumeTestMessage", "Finish")
   
-  def createTaskByCompanyAcronym(self, acronym):
+  def createTaskBy(self, company_acronym):
     """
-    Returns void.
+    Returns Task.
+    Raises RuntimeError.
     Keyword arguments:
-      acronym -- str -- unique identifier of a company at a stock exchange.
+      company_acronym -- str -- unique identifier of a company at a stock exchange.
     """
-    self._debug("createTaskByCompanyAcronym", "Start\nacronym:\t%s" % acronym)
-    task = {
-      "acronym": acronym,
-      "progress": BackendTaskProgress.STARTED.value
-    }
-    backend_task_path = self._getBackendTaskPath(acronym)
-    with open(backend_task_path, "w+") as write_file:
-        dump(task, write_file)
-    self._debug("createTaskByCompanyAcronym","Finish")
+    self._debug("createTaskBy", "Start\ncompany_acronym:\t%s" % company_acronym)
+    task = None
+    
+    try:
+      task = Task.taskWith(company_acronym, Progress.STARTED)
+    except RuntimeError as err:
+      err_msg = "%s -- createTaskBy -- Failed to initialize Task object.\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+    
+    try:
+      self._message_broker.publish(task.toJson())
+    except RuntimeError as err:
+      err_msg = "%s -- createTaskBy -- Failed to publish Task to message broker.\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
 
-  def getTaskByCompanyAcronym(self, acronym):
+    try:
+      pass
+      # TODO: store in database
+    except RuntimeError as err:
+      err_msg = "%s -- createTaskBy -- Failed to persist Task to database.\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+    
+    self._debug("createTaskBy","Finish\ntask:%s" % str(task))
+    return task
+
+  def getTaskBy(self, company_acronym):
     """
-    Returns dict.
-    It is a JSON with data about backend task.
+    Returns Task or None.
+    Raises RuntimeError.
     Keyword arguments:
-      acronym -- str -- unique identifier of a company at a stock exchange.
+      company_acronym -- str -- unique identifier of a company at a stock exchange.
     """
-    self._debug("getTaskByCompanyAcronym", "Start\nacronym:\t%s" % acronym)
-    result = dict()
-    backend_task_path = self._getBackendTaskPath(acronym)
-    if path.exists(backend_task_path):
-      with open(backend_task_path, "r") as read_file:
-        result = load(read_file)
-    self._debug("getTaskByCompanyAcronym", "Finish\nresult:\t%s" % result)
+    self._debug("getTaskBy", "Start\nacronym:\t%s" % company_acronym)
+    result = None
+    
+    try:
+      pass
+      # TODO: retrieve from database
+    except RuntimeError:
+      err_msg = "%s -- getTaskBy -- Failed\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+    
+    self._debug("getTaskBy", "Finish\nresult:\t%s" % result)
     return result
 
   def publishTestMessage(self):
     """
     Returns void.
-    Throws RuntimeError exception.
+    Raises RuntimeError.
     """
     self._debug("publishTestMessage", "Start")
+    
     try:
-      credentials = PlainCredentials(self._config["username"], self._config["password"])
-      parameters = ConnectionParameters(
-        self._config["host"],
-        self._config["server_port"],
-        self._config["vhost"],
-        credentials
-      )
-      connection = BlockingConnection(parameters)
-      channel = connection.channel()
-      response = channel.queue_declare(self._config["channel"]["name"])
-      channel.queue_bind(exchange=self._config["channel"]["exchange"], queue=response.method.queue)
-      channel.basic_publish(
-        exchange=self._config["channel"]["exchange"],
-        routing_key=self._config["channel"]["name"],
-        body="Test message"
-      )
-      connection.close()
+      self._message_broker.publish("Test message")
     except Exception as err:
-      err_msg = "BackendTasks -- publishTestMessage -- Failed \n %s " % format_exc(1000, err)
+      err_msg = "%s -- publishTestMessage -- Failed\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)
-    finally:
-      self._debug("publishTestMessage", "Finish")
-  
-  def _getBackendTaskPath(self, company_acronym):
-    """
-    TODO: remove in v1.0.
-    Returns the path to the file with the backend_task in the file-system.
-    Keyword arguments:
-      company_acronym -- str -- an unique identifier of a company at a stock exchange (i.e. NASDAQ).
-    """
-    return path.join(
-      path.dirname(__file__),
-      "..",
-      "common",
-      "backend_tasks_db",
-      "data_gathering",
-      "%s.json" % company_acronym
-    )
-
-  def _getRabbitMqConfiguration(self):
-    """
-    Returns dict.
-    It is a JSON with configurations to connect to RabbitMQ.
-    Throws RuntimeError exception.
-    """
-    self._debug("_getRabbitMqConfiguration", "Start")
-    result = dict()
-    try:
-      config_path = path.join(path.dirname(__file__), "backend_tasks", "rabbitmq_config.json")
-      if path.exists(config_path):
-        with open(config_path, "r") as read_file:
-          result = load(read_file)
-          read_file.close()
-    except Exception as err:
-      err_msg = "BackendTasks -- _getRabbitMqConfiguration -- Failed to read from"
-      err_msg = "%s\nfile_path:\t %s " % (err_msg, format_exc(1000, err))
-      raise RuntimeError(err_msg)
-    finally:
-      self._debug("_getRabbitMqConfiguration", "Finish\nresult:\t%s" % result)
-    return result
+    
+    self._debug("publishTestMessage", "Finish")
