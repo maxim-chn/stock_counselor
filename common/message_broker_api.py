@@ -11,8 +11,10 @@ class MessageBrokerApi:
   def __init__(self, service_name):
     """
     Raises RuntimeError.
+    Keyword argumets:
+      service_name -- str
     """
-    self._class_name = "MessageBroker"
+    self._class_name = "MessageBrokerApi"
     self._max_error_chars = 5000
     self._config = self._getRabbitMqConfiguration(service_name)
 
