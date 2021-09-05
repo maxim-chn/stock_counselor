@@ -1,1 +1,0 @@
-TODO: remove in the v1.0 and use an appropriate application, i.e. Redis or RabbitMQ
