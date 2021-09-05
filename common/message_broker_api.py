@@ -89,8 +89,10 @@ class MessageBrokerApi:
           result = load(read_file)
           read_file.close()
     except Exception as err:
-      err_msg = "%s -- _getRabbitMqConfiguration -- Failed to read from the configuration file" % self._class_name
-      err_msg = "%s\nfile_path:\t %s " % (err_msg, format_exc(self._max_error_chars, err))
+      err_msg = "%s -- _getRabbitMqConfiguration -- Failed to read from the configuration file\nfile_path:\t%s" % (
+        self._class_name,
+        format_exc(self._max_error_chars, err)
+      )
       raise RuntimeError(err_msg)
     
     return result
