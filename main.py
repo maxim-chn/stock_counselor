@@ -38,7 +38,7 @@ def uponValidatedMessageBrokerForDataGatheringMainService(ch, method, properties
       ch.stop_consuming()
     else:
       raise RuntimeError("Expected test message was not consumed from message broker")
-  except RuntimeError as err:
+  except Exception as err:
     err_msg = "Failed during message broker message consumption\n%s" % str(err)
     logError(service_name, err_msg)
     exit(1)
