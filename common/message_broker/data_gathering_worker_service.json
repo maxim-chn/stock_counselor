@@ -1,0 +1,11 @@
+{
+  "host": "localhost",
+  "server_port": 5672,
+  "vhost": "/",
+  "username": "data_gatherer_worker",
+  "password": "data_gatherer_worker",
+  "channel": {
+    "name": "data-gathering",
+    "exchange": "amq.direct"
+  }
+}

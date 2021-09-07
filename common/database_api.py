@@ -20,10 +20,31 @@ class DatabaseApi:
     self._max_wait_for_connection = 2000
     self._config = self._getMongoDbConfiguration(service_name)
 
+  def createFinancialReportDocument(self, document):
+    """
+    Returns void.
+    Raises RuntimeError.
+    Keyword arguments:
+      document -- dict.
+    """
+    try:
+      self._create(
+        self._config["connection"]["host"],
+        self._config["connection"]["port"],
+        self._config["user"]["username"],
+        self._config["user"]["password"],
+        self._config["documents"]["financial_report"]["database_name"],
+        self._config["documents"]["financial_report"]["collection_name"],
+        document
+      )
+    except RuntimeError as err:
+      err_msg = "%s -- createFinancialReportDocument -- Failed\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+  
   def createTaskDocument(self, document):
     """
     Returns void.
-    Raises RuntimeError
+    Raises RuntimeError.
     Keyword arguments:
       document -- dict.
     """
@@ -108,6 +129,28 @@ class DatabaseApi:
 
     return result
 
+  def updateTaskDocument(self, new_values, filter_by):
+    """
+    Returns void.
+    Raises RuntimeError.
+    Keyword arguments:
+      document -- dict.
+    """
+    try:
+      self._update(
+        self._config["connection"]["host"],
+        self._config["connection"]["port"],
+        self._config["user"]["username"],
+        self._config["user"]["password"],
+        self._config["documents"]["task"]["database_name"],
+        self._config["documents"]["task"]["collection_name"],
+        { "$set": new_values },
+        filter_by
+      )
+    except RuntimeError as err:
+      err_msg = "%s -- updateTaskDocument -- Failed\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+  
   def _authenticateAs(self, client, username, password):
     """
     Returns void.
@@ -278,6 +321,36 @@ class DatabaseApi:
     
     return result
   
-  def _updateBy(self, host, port, username, password, database_name, collection_name, new_values, filter):
-    # TODO: implement
-    pass
+  def _update(self, host, port, username, password, database_name, collection_name, new_values, filter):
+    """
+    Returns void.
+    Raises RuntimeError.
+    Keyword arguments:
+      host -- str.
+      port -- int.
+      username -- str.
+      password -- str.
+      database_name -- str -- database where the query is to be executed.
+      collection_name -- str -- collection name inside the database.
+      new_values -- dict.
+      filter -- dict
+    """
+    client = None
+    try:
+      client = self._getClient(host, port)
+      self._authenticateAs(client, username, password)
+      database = client[database_name]
+      collection = database[collection_name]
+      collection.update_one(filter, new_values)
+    except RuntimeError as err:
+      err_msg = "%s -- _update -- Failed\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+    except Exception as err:
+      err_msg = "%s -- _update -- Failed during the update query\n%s" % (
+        self._class_name,
+        format_exc(self._max_error_chars, err)
+      )
+      raise RuntimeError(err_msg)
+    finally:
+      if client and isinstance(client, MongoClient):
+        client.close()
