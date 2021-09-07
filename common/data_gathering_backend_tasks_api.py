@@ -19,22 +19,22 @@ class BackendTasks(Loggable):
     self._database = DatabaseApi(service_name)
     self._message_broker = MessageBrokerApi(service_name)
 
-  def consumeTestMessage(self, callback_function):
+  def consumeMessage(self, callback_function):
     """
     Returns void.
     Raises RuntimeError.
     Keyword arguments:
       callback_function -- Function -- Execution steps upon receiving a message from message broker.
     """
-    self._debug("consumeTestMessage", "Start")
+    self._debug("consumeMessage", "Start")
     
     try:
       self._message_broker.subscribe(callback_function)
     except Exception as err:
-      err_msg = "%s -- consumeTestMessage -- Failed\n%s" % (self._class_name, str(err))
+      err_msg = "%s -- consumeMessage -- Failed\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)
     
-    self._debug("consumeTestMessage", "Finish")
+    self._debug("consumeMessage", "Finish")
   
   def createTaskBy(self, company_acronym):
     """
@@ -66,6 +66,19 @@ class BackendTasks(Loggable):
     
     self._debug("createTaskBy","Finish\ntask:%s" % str(task))
     return task
+  
+  def createTestDocument(self):
+    """
+    Returns void.
+    Raises RuntimeError.
+    """
+    self._debug("createTestDocument", "Start")
+
+    try:
+      self._database.createTestDocument({"field_a": "value_a"})
+    except RuntimeError as err:
+      err_msg = "%s -- createTestDocument -- Failed\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
   
   def deleteTestDocument(self):
     """
@@ -128,7 +141,7 @@ class BackendTasks(Loggable):
     self._debug("updateTaskProgressBy", "Start\ntask -\t%s" % str(task))
     
     try:
-      self._database._updateTaskDocument(
+      self._database.updateTaskDocument(
         { "progress": task.progress.value },
         { "company_acronym": task.company_acronym }
       )
