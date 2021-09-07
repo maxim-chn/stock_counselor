@@ -110,7 +110,7 @@ class BackendTasks(Loggable):
       result = self._database.readTaskDocumentBy({ "company_acronym": company_acronym })
       if result:
         result = Task.fromDocument(result)
-    except RuntimeError:
+    except RuntimeError as err:
       err_msg = "%s -- getTaskBy -- Failed\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)
     
