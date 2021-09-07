@@ -2,7 +2,7 @@ use admin;
 
 db.auth("admin", "admin");
 
-use financial_company_profiles;
+use financial_reports;
 
 db.dropDatabase();
 

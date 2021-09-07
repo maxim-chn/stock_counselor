@@ -9,7 +9,7 @@ db.createUser({
   pwd: "recommender",
   roles: [
     {"role": "readWrite", "db": "backend_tasks"},
-    {"role": "readWrite", "db": "financial_company_profiles"},
+    {"role": "readWrite", "db": "financial_reports"},
     {"role": "readWrite", "db": "financial_user_profiles"},
     {"role": "readWrite", "db": "test"}
   ]

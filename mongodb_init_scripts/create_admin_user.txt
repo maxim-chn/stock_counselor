@@ -9,7 +9,7 @@ db.createUser({
   pwd: "admin",
   roles: [
     { role: "dbOwner", db: "backend_tasks" },
-    { role: "dbOwner", db: "financial_company_profiles" },
+    { role: "dbOwner", db: "financial_reports" },
     { role: "dbOwner", db: "financial_user_profiles" },
     { role: "dbOwner", db: "recommendations" },
     { role: "dbOwner", db: "test" },
