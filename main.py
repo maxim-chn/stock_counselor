@@ -72,6 +72,7 @@ if __name__ == '__main__':
       backend_tasks.deleteTestDocument()
       logDebug(argv[1], "Ended database test\n")
       
+      backend_tasks = None
       startDataGatheringMainService(argv[1])
     except RuntimeError as err:
       err_msg = "Failed to start the service\n%s" % str(err)
