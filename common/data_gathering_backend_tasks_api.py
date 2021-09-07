@@ -1,6 +1,6 @@
-from common.loggable_api import Loggable
-from common.data_gathering.backend_tasks.task import Progress, Task
+from common.data_gathering.backend_tasks.task import Task, Progress
 from common.database_api import DatabaseApi
+from common.loggable_api import Loggable
 from common.message_broker_api import MessageBrokerApi
 
 class BackendTasks(Loggable):
@@ -8,6 +8,7 @@ class BackendTasks(Loggable):
   Reveals API for backend tasks CRUD.
   It consumes database and message broker APIs.
   """
+
   def __init__(self, service_name):
     """
     Raises RuntimeError.
@@ -15,24 +16,9 @@ class BackendTasks(Loggable):
       service_name -- str.
     """
     super().__init__(service_name, "BackendTasks")
-    self._message_broker = MessageBrokerApi(service_name)
     self._database = DatabaseApi(service_name)
+    self._message_broker = MessageBrokerApi(service_name)
 
-  def createTestDocument(self):
-    """
-    Returns void.
-    Raises RuntimeError.
-    """
-    self._debug("createTestDocument", "Start")
-
-    try:
-      self._database.createTestDocument({"field_a": "value_a"})
-    except RuntimeError as err:
-      err_msg = "%s -- createTestDocument -- Failed\n%s" % (self._class_name, str(err))
-      raise RuntimeError(err_msg)
-
-    self._debug("createTestDocument", "Finish")
-  
   def consumeTestMessage(self, callback_function):
     """
     Returns void.
@@ -50,21 +36,6 @@ class BackendTasks(Loggable):
     
     self._debug("consumeTestMessage", "Finish")
   
-  def deleteTestDocument(self):
-    """
-    Returns void.
-    Raises RuntimeError.
-    """
-    self._debug("deleteTestDocument", "Start")
-
-    try:
-      self._database.deleteTestDocumentBy({"field_a": "value_a"})
-    except RuntimeError as err:
-      err_msg = "%s -- deleteTestDocument -- Failed\n%s" % (self._class_name, str(err))
-      raise RuntimeError(err_msg)
-
-    self._debug("deleteTestDocument", "Finish")
-
   def createTaskBy(self, company_acronym):
     """
     Returns Task.
@@ -95,7 +66,22 @@ class BackendTasks(Loggable):
     
     self._debug("createTaskBy","Finish\ntask:%s" % str(task))
     return task
+  
+  def deleteTestDocument(self):
+    """
+    Returns void.
+    Raises RuntimeError.
+    """
+    self._debug("deleteTestDocument", "Start")
 
+    try:
+      self._database.deleteTestDocumentBy({"field_a": "value_a"})
+    except RuntimeError as err:
+      err_msg = "%s -- deleteTestDocument -- Failed\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+
+    self._debug("deleteTestDocument", "Finish")
+  
   def getTaskBy(self, company_acronym):
     """
     Returns Task or None.
@@ -131,3 +117,23 @@ class BackendTasks(Loggable):
       raise RuntimeError(err_msg)
     
     self._debug("publishTestMessage", "Finish")
+  
+  def updateTaskProgressBy(self, task):
+    """
+    Returns void.
+    Raises RuntimeError.
+    Keyword arguments:
+      task -- Task -- backend task.
+    """
+    self._debug("updateTaskProgressBy", "Start\ntask -\t%s" % str(task))
+    
+    try:
+      self._database._updateTaskDocument(
+        { "progress": task.progress.value },
+        { "company_acronym": task.company_acronym }
+      )
+    except RuntimeError as err:
+      err_msg = "%s -- updateTaskProgressBy -- Failed.\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+    
+    self._debug("updateTaskProgressBy", "Finish")

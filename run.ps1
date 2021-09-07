@@ -9,7 +9,7 @@ function Log-Error {
 try {
   Set-ExecutionPolicy Unrestricted -Scope Process 2>$null;
   .\.venv\Scripts\Activate.ps1;
-  py main.py "data_gathering_main_service";
+  py main.py $args[0];
   deactivate;
   Set-ExecutionPolicy Restricted -Scope Process 2>$null;
 } catch {
