@@ -1,6 +1,5 @@
 from enum import Enum
-from json import dumps, JSONDecoder, JSONEncoder, loads
-from re import sub
+from json import dumps, JSONDecoder, loads
 from traceback import format_exc
 from unittest import main, TestCase
 
@@ -12,6 +11,13 @@ class Progress(Enum):
   IN_PROGRESS = "Collection is in progress"
   NOT_EXPECTED = "Collection was not completed as expected"
   NOT_STARTED = "Collection is yet to be started"
+  QUERYING_FOR_10K_REPORT_CONTENTS = "Looking for the 10-K Report Contents at the SEC website"
+  QUERYING_FOR_10K_IDS = "Looking for Company 10-K Report Ids at the SEC website"
+  QUERYING_FOR_AVAILABLE_10K_REPORTS = "Looking for the Available Company 10-K Reports at the SEC website"
+  QUERYING_FOR_10K_REPORT = "Looking for the Company 10-K Report at the SEC website"
+  QUERYING_FOR_COMPANY_ID = "Looking for the Company Id at the SEC website"
+  QUERYING_FOR_FINANCIAL_STMNT_CONTENTS = "Looking for the Financial Statement Contents at the SEC website"
+  QUERYING_FOR_FINANCIAL_STMNT_TYPES = "Looking for Company 10-K Financial Statements Types at the SEC website"
   STARTED = "Collection started"
 
 class JsonDecoderForTask(JSONDecoder):
