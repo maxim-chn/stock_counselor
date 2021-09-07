@@ -24,7 +24,7 @@ create_user () {
 }
 
 create_user "create_admin_user" "admin"
-clear_database "clear_financial_company_profiles_database" "financial_company_profiles"
+clear_database "clear_financial_reports_database" "financial_reports"
 clear_database "clear_financial_user_profiles_database" "financial_user_profiles"
 clear_database "clear_recommendations_database" "recommendations"
 clear_database "clear_backend_tasks_database" "backend_tasks"
