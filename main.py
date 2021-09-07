@@ -24,7 +24,12 @@ def logError(service_name, message):
 
 def uponValidatedMessageBrokerForDataGatheringMainService(ch, method, properties, body):
   """
-  Returns void
+  Returns void.
+  Keyword arguments:
+    ch -- Channel -- RabbitMq channel.
+    method -- ??? -- ???
+    properties -- ??? -- ???
+    body -- ??? -- contains the message.
   """
   expected_message = "Test message"
   service_name = "data_gathering_main_service"
