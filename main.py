@@ -1,6 +1,7 @@
 from logging import getLogger, DEBUG, FileHandler, Formatter
 from os.path import join, dirname, exists
 from sys import argv
+from traceback import format_exc
 
 from data_gathering_main_service.backend_tasks_api import BackendTasks as DataGatheringServiceBackendTasks
 from data_gathering_main_service.boundary_api import startDataGatheringMainService
@@ -33,13 +34,14 @@ def uponValidatedMessageBrokerForDataGatheringMainService(ch, method, properties
   """
   expected_message = "Test message"
   service_name = "data_gathering_main_service"
+  max_error_chars = 5000
   try:
     if expected_message in str(body):
       ch.stop_consuming()
     else:
       raise RuntimeError("Expected test message was not consumed from message broker")
   except Exception as err:
-    err_msg = "Failed during message broker message consumption\n%s" % str(err)
+    err_msg = "Failed during message broker message consumption\n%s" % format_exc(max_error_chars, err)
     logError(service_name, err_msg)
     exit(1)
   finally:
