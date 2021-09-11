@@ -1,17 +1,32 @@
 {
   "obtain_company_id": {
     "url": "https://efts.sec.gov/LATEST/search-index",
-    "headers": {"Content-Type": "application/json", "Accept": "application/json"},
+    "headers": {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "User-Agent": "PostmanRuntime/7.28.4"
+    },
     "payload": {"keysTyped":"REPLACE_WITH_COMPANY_ACRONYM","narrow":true}
   },
   "obtain_10k_filings": {
     "url": "https://www.sec.gov/cgi-bin/browse-edgar",
-    "headers": {"Accept": "text/html"},
-    "params":{"action": "getcompany", "CIK": "REPLACE_WITH_COMPANY_ID", "type": "10-k", "count": "5"}
+    "headers": {
+      "Accept": "text/html",
+      "User-Agent": "PostmanRuntime/7.28.4"
+    },
+    "params":{
+      "action": "getcompany",
+      "CIK": "REPLACE_WITH_COMPANY_ID",
+      "type": "10-K",
+      "count": "5"
+    }
   },
   "obtain_income_statement_ids": {
     "url": "https://www.sec.gov/cgi-bin/viewer",
-    "headers": {"Accept": "text/html"},
+    "headers": {
+      "Accept": "text/html",
+      "User-Agent": "PostmanRuntime/7.28.4"
+    },
     "params": {
       "action": "view",
       "cik": "REPLACE_WITH_COMPANY_ID",
@@ -21,6 +36,9 @@
   },
   "obtain_income_statement_data": {
     "url": "https://www.sec.gov/Archives/edgar/data",
-    "headers": {"Accept": "text/html"}
+    "headers": {
+      "Accept": "text/html",
+      "User-Agent": "PostmanRuntime/7.28.4"
+    }
   }
 }
