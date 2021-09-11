@@ -38,8 +38,8 @@ class Task:
 
   def __init__(self):
     self._class_name = "Task"
-    self.company_acronym = "no company"
-    self.progress = Progress.NOT_EXPECTED
+    self._company_acronym = "no company"
+    self._progress = Progress.NOT_EXPECTED
   
   @classmethod
   def taskWith(cls, company_acronym, progress):
