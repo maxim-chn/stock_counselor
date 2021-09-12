@@ -5,12 +5,12 @@ Some of the user requests are inspected for the expected input that is transferr
 """
 
 from bottle import Bottle, request, response
-from data_gathering_main_service.controller_api import Controller
+from recommendation_main_service.controller_api import Controller
+from logging import getLogger, DEBUG, FileHandler, Formatter
 from datetime import datetime
 from functools import wraps
-from logging import getLogger
 
-def startDataGatheringMainService(service_name):
+def startRecommendationMainService(service_name):
   """
   Returns void.
   Starts the Bottle server.
@@ -22,7 +22,7 @@ def startDataGatheringMainService(service_name):
     """
     Returns Function.
     It is decorated to log HTTP responses.
-    Keyword arguments:
+    Arguments:
       fn -- Function -- the next function that the process is about to execute.
     """
     @wraps(fn)
@@ -45,22 +45,22 @@ def startDataGatheringMainService(service_name):
       return actual_response
 
     return _log_to_logger
-  
+
   app = Bottle()
   app.install(log_to_logger)
-
+  
   @app.route("/monitor")
   def monitor():
     return "Hello World!"
 
-  @app.route("/collect_stock_data/<acronym_name>")
-  def collect_stock_data(acronym_name):
+  @app.route('/investment/recommendations/<user_id>/new')
+  def calculate_recommendation(user_id):
     result = "Server error"
     try:
       controller = Controller(service_name)
-      result = controller.collectFinancialDataFor(acronym_name)
+      result = controller.calculateRecommendationFor(user_id)
     except RuntimeError as err:
       getLogger(service_name).error("%s -- Server error\n%s" % (service_name, str(err)))
     return result
 
-  app.run(host="localhost", port=3000, quiet=True)
+  app.run(host="localhost", port=8081, quiet=True)

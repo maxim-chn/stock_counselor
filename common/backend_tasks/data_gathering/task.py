@@ -3,6 +3,8 @@ from json import dumps, JSONDecoder, loads
 from traceback import format_exc
 from unittest import main, TestCase
 
+max_error_chars = 1000
+
 class Progress(Enum):
   """
   Possible states for the backend task for DataGatheringService
@@ -21,14 +23,24 @@ class Progress(Enum):
   STARTED = "Collection started"
 
 class JsonDecoderForTask(JSONDecoder):
+  """
+  Custom JSON decoder from str to Task.
+  """
   def __init__(self, *args, **kwargs):
     JSONDecoder.__init__(self, object_hook=self.object_hook, *args, **kwargs)
   
   def object_hook(self, dct):
+    """
+    Returns Task.
+    Raises RuntimeError.
+    Keyword arguments:
+      - dct["company_acronym"] -- str.
+      - dct["progress"] -- str.
+    """
     if "progress" in dct and "company_acronym" in dct:
-      result = Task()
-      result.progress = Progress(dct["progress"])
-      result.company_acronym = dct["company_acronym"]
+      company_acronym = dct["company_acronym"]
+      progress = Progress(dct["progress"])
+      result = Task.taskWith(company_acronym, progress)
       return result
 
 class Task:
@@ -38,6 +50,7 @@ class Task:
 
   def __init__(self):
     self._class_name = "Task"
+    self._max_error_chars = max_error_chars
     self._company_acronym = "no company"
     self._progress = Progress.NOT_EXPECTED
   
@@ -45,15 +58,19 @@ class Task:
   def taskWith(cls, company_acronym, progress):
     """
     Returns Task.
-    Throws RuntimeError.
-    Keyword arguments:
+    Raises RuntimeError.
+    Arguments:
       company_acronym -- str -- unique identifier of a company at a stock exchange.
       progress -- Progress -- financial data collection progress.
     """
-    result = cls()
-    result.company_acronym = company_acronym
-    result.progress = progress
-    return result
+    try:
+      result = cls()
+      result.company_acronym = company_acronym
+      result.progress = progress
+      return result
+    except RuntimeError as err:
+      err_msg = "%s -- taskWith -- Failed.\n%s" % ("Task", str(err))
+      raise RuntimeError(err_msg)
 
   @classmethod
   def fromDocument(cls, val):
@@ -67,23 +84,28 @@ class Task:
       company_acronym = val["company_acronym"]
       progress = Progress(val["progress"])
       return cls.taskWith(company_acronym, progress)
+    except RuntimeError as err:
+      err_msg = "%s -- fromDocument -- Failed\n%s" % ("Task", str(err))
+      raise RuntimeError(err_msg)
     except Exception as err:
-      err_msg = "%s -- fromDocument failed\n%s" % ("Task", format_exc(1000, err))
+      err_msg = "%s -- fromDocument -- Failed\n%s" % ("Task", format_exc(max_error_chars, err))
       raise RuntimeError(err_msg)
 
   @classmethod
   def fromJson(cls, val):
     """
     Returns Task.
-    Throws RuntimeError.
-    Keyword arguments:
+    Raises RuntimeError.
+    Arguments:
       val -- str -- JSON which represents Task.
     """
     try:
       result = loads(val, cls=JsonDecoderForTask)
       return result
     except RuntimeError as err:
-      raise RuntimeError("%s -- fromJson failed\n%s" % ("Task", format_exc(1000, err)))
+      raise RuntimeError("%s -- fromJson -- Failed\n%s" % ("Task", str(err)))
+    except Exception as err:
+      raise RuntimeError("%s -- fromJson -- Failed\n%s" % ("Task", format_exc(max_error_chars, err)))
 
   def toDocument(self):
     """
@@ -98,12 +120,16 @@ class Task:
   def toJson(self):
     """
     Returns str.
-    Throws RuntimeError.
+    Raises RuntimeError.
     """
     try:
       return dumps(self.toDocument())
     except RuntimeError as err:
-      raise RuntimeError("%s -- toJson failed\n%s" % ("Task", format_exc(1000, err)))
+      err_msg = "%s -- fromJson -- Failed\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+    except Exception as err:
+      err_msg = "%s -- fromJson -- Failed\n%s" % (self._class_name, format_exc(self._max_error_chars, err))
+      raise RuntimeError(err_msg)
 
   def __str__(self):
     return str(self.toDocument())
@@ -154,11 +180,11 @@ class Task:
 
 class TestTask(TestCase):
   def test_toJson(self):
-      task = Task.taskWith("msft", Progress.NOT_STARTED)
-      expected_json = "{\"company_acronym\": \"%s\", \"progress\": \"%s\"}" % (
-        task.company_acronym, task.progress.value
-      )
-      self.assertEqual(str(expected_json), str(task.toJson()))
+    task = Task.taskWith("msft", Progress.NOT_STARTED)
+    expected_json = "{\"company_acronym\": \"%s\", \"progress\": \"%s\"}" % (
+      task.company_acronym, task.progress.value
+    )
+    self.assertEqual(str(expected_json), str(task.toJson()))
 
   def test_fromJson(self):
     task_expected = Task.taskWith("msft", Progress.NOT_STARTED)

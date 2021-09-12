@@ -1,6 +1,6 @@
 from logging import getLogger
 from common.data_gathering_backend_tasks_api import BackendTasks
-from common.data_gathering.backend_tasks.task import Progress, Task
+from common.backend_tasks.data_gathering.task import Progress, Task
 from common.database_api import DatabaseApi
 from common.loggable_api import Loggable
 from datetime import datetime

@@ -4,8 +4,10 @@ from sys import argv
 from traceback import format_exc
 
 from common.data_gathering_backend_tasks_api import BackendTasks as DataGatheringBackendTasks
+from common.recommendation_backend_tasks_api import BackendTasks as RecommendationBackendTasks
 from data_gathering_main_service.boundary_api import startDataGatheringMainService
 from data_gathering_worker_service.worker_api import startDataGatheringWorkerService
+from recommendation_main_service.boundary_api import startRecommendationMainService
 
 def getBackendTasks(service_name):
   """
@@ -14,11 +16,15 @@ def getBackendTasks(service_name):
           recommendation_main_service.backend_tasks_api.BackendTasks or
           recommendation_worker_service.backend_tasks_api.BackendTasks
   Raises RuntimeError.
-  Keyword arguments:
+  Arguments:
     service_name -- str.
   """
   if service_name == "data_gathering_main_service" or service_name == "data_gathering_worker_service":
     return DataGatheringBackendTasks(service_name)
+  if service_name == "recommendation_main_service" or service_name == "recommendation_worker_service":
+    return RecommendationBackendTasks(service_name)
+  err_msg = "%s -- getBackendTasks -- Failed to map service_name to the relevant backend tasks api" % service_name
+  raise RuntimeError(err_msg)
 
 def logDebug(service_name, message):
   """
@@ -54,13 +60,15 @@ def startService(service_name):
   """
   Returns void.
   Raises RuntimeError.
-  Keyword arguments:
+  Arguments:
     service_name -- str.
   """
   if service_name == "data_gathering_main_service":
     startDataGatheringMainService(service_name)
   elif service_name == "data_gathering_worker_service":
     startDataGatheringWorkerService(service_name)
+  elif service_name == "recommendation_main_service":
+    startRecommendationMainService(service_name)
 
 if __name__ == '__main__':
   service_name = argv[1]
@@ -70,7 +78,6 @@ if __name__ == '__main__':
     "recommendation_main_service",
     "recommendation_worker_service"
     ]
-  
   
   if service_name not in available_services:
     print("Please specify one of the following services\n%s" % available_services)
@@ -82,7 +89,7 @@ if __name__ == '__main__':
   def uponValidatedMessageBroker(ch, method, properties, body):
     """
     Returns void.
-    Keyword arguments:
+    Arguments:
       ch -- Channel -- RabbitMq channel.
       method -- ??? -- ???
       properties -- ??? -- ???
@@ -100,8 +107,9 @@ if __name__ == '__main__':
     finally:
       ch.stop_consuming()
   
-  setupLogger(service_name)
   try:
+    setupLogger(service_name)
+    
     backend_tasks = getBackendTasks(service_name)
     
     logDebug(service_name, "Started message broker test")

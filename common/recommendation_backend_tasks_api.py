@@ -1,5 +1,5 @@
 from common.backend_tasks.backend_tasks_api import BackendTasksApi
-from common.backend_tasks.data_gathering.task import Task, Progress
+from common.backend_tasks.recommendation.task import Task, Progress
 
 class BackendTasks(BackendTasksApi):
   """
@@ -14,23 +14,23 @@ class BackendTasks(BackendTasksApi):
       - service_name -- str.
     """
     super().__init__(service_name, "BackendTasks")
-  
-  def createTaskBy(self, company_acronym):
+
+  def createTaskBy(self, user_id):
     """
     Returns Task.
     Raises RuntimeError.
     Arguments:
-      company_acronym -- str -- unique identifier of a company at a stock exchange.
+      - user_id -- str -- unique user id at the database.
     """
-    self._debug("createTaskBy", "Start\ncompany_acronym:\t%s" % company_acronym)
+    self._debug("createTaskBy", "Start\nuser_id:\t%s" % user_id)
     task = None
-    
+
     try:
-      task = Task.taskWith(company_acronym, Progress.STARTED)
+      task = Task.taskWith(Progress.STARTED, user_id)
     except RuntimeError as err:
       err_msg = "%s -- createTaskBy -- Failed to initialize Task object.\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)
-    
+
     try:
       self._message_broker.publish(task.toJson())
     except RuntimeError as err:
@@ -42,22 +42,24 @@ class BackendTasks(BackendTasksApi):
     except RuntimeError as err:
       err_msg = "%s -- createTaskBy -- Failed to persist Task to database.\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)
-    
-    self._debug("createTaskBy","Finish\nresult:%s" % str(task))
+
+    self._debug("createTaskBy", "Finish\nresult:\t%s" % str(task))
     return task
-    
-  def getTaskBy(self, company_acronym):
+
+  def getTaskBy(self, user_id):
     """
     Returns Task or None.
     Raises RuntimeError.
     Arguments:
-      company_acronym -- str -- unique identifier of a company at a stock exchange.
+      user_id -- str -- unique user id at the database.
     """
     try:
-      self._debug("getTaskBy", "Start\ncompany_acronym:\t%s" % company_acronym)
-      result = self._database.readTaskDocumentBy({ "company_acronym": company_acronym })
+      self._debug("getTaskBy", "Start\nuser_id:\t%s" % user_id)
+      
+      result = self._database.readTaskDocumentBy({ "user_id": user_id })
       if result:
         result = Task.fromDocument(result)
+      
       self._debug("getTaskBy", "Finish\nresult:\t%s" % result)
       return result
     except RuntimeError as err:
@@ -73,10 +75,12 @@ class BackendTasks(BackendTasksApi):
     """
     try:
       self._debug("updateTaskProgressBy", "Start\ntask:\t%s" % str(task))
+      
       self._database.updateTaskDocument(
         { "progress": task.progress.value },
-        { "company_acronym": task.company_acronym }
+        { "user_id": task.user_id }
       )
+      
       self._debug("updateTaskProgressBy", "Finish")
     except RuntimeError as err:
       err_msg = "%s -- updateTaskProgressBy -- Failed.\n%s" % (self._class_name, str(err))

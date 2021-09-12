@@ -1,0 +1,11 @@
+{
+  "host": "localhost",
+  "server_port": 5672,
+  "vhost": "/",
+  "username": "recommendation_main",
+  "password": "recommendation_main",
+  "channel": {
+    "name": "recommendation",
+    "exchange": "amq.direct"
+  }
+}
