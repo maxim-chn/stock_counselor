@@ -1,0 +1,16 @@
+use admin;
+
+db.auth("admin", "admin");
+
+use non_applicative_users;
+
+db.createUser({
+  user: "data_gathering_main_service",
+  pwd: "data_gathering_main_service",
+  roles: [
+    {"role": "readWrite", "db": "backend_tasks"},
+    {"role": "readWrite", "db": "test"}
+  ]
+});
+
+quit();

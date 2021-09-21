@@ -24,7 +24,7 @@ class Controller(Loggable):
     Raises RuntimeError.
     It represents the backend task progress for the investment recommendation calculation for a certain user.
     Arguments:
-      user_id -- str -- unique user id at the database.
+      - user_id -- str -- unique user id at the database.
     """
     self._debug("calculateRecommendationFor", "Start\nuser_id:\t%s" % user_id)
     
@@ -49,12 +49,42 @@ class Controller(Loggable):
     self._debug("calculateRecommendationFor", "Finish\nresult:\t%s" % result)
     return result
 
+  def stopCalculatingRecommendationFor(self, user_id):
+    """
+    Returns str.
+    Raises RuntimeError.
+    Removes the backend task for recommendation calculation from the database.
+    Arguments:
+      - user_id -- str -- unique user id at the database.
+    """
+    self._debug("stopCalculatingRecommendationFor", "Start\nuser_id:\t%s" % user_id)
+    result = "No task was found"
+    
+    try:
+      progress = self._calculationProgressFor(user_id)
+    except RuntimeError as err:
+      err_msg = "%s -- stopCalculatingRecommendationFor" % self._class_name
+      err_msg += " -- Failed at retrieving investment recommendation calculation progress.\n%s" % str(err)
+      raise RuntimeError(err_msg)
+
+    if not progress == Progress.NOT_STARTED:
+      try:
+        self._backend_tasks.deleteTaskBy(user_id)
+        result = "The task was removed"
+      except RuntimeError as err:
+        err_msg = "%s -- stopCalculatingRecommendationFor" % self._class_name
+        err_msg += " -- Failed at deleting a backend task" % str(err)
+        raise RuntimeError(err_msg)
+    
+    self._debug("stopCalculatingRecommendationFor", "Finish\nresult:\t%s" % result)
+    return result
+
   def _calculationProgressFor(self, user_id):
     """
     Returns Progress.
     Raises RuntimeError.
     Arguments:
-      user_id -- str -- an unique identifier of a user inside our program.
+      - user_id -- str -- an unique identifier of a user inside our program.
     """
     try:
       self._debug("_calculationProgress", "Start\nuser_id:\t%s" % user_id)

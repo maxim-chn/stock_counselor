@@ -2,7 +2,7 @@ use admin;
 
 db.auth("admin", "admin");
 
-use users;
+use non_applicative_users;
 
 db.runCommand( { dropAllUsersFromDatabase: 1 } );
 

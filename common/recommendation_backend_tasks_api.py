@@ -46,6 +46,21 @@ class BackendTasks(BackendTasksApi):
     self._debug("createTaskBy", "Finish\nresult:\t%s" % str(task))
     return task
 
+  def deleteTaskBy(self, user_id):
+    """
+    Returns void.
+    Raises RuntimeError.
+    Arguments:
+      user_id -- str -- unique user id at the database.
+    """
+    try:
+      self._debug("deleteTaskBy", "Start\nuser_id:\t%s" % user_id)
+      result = self._database.deleteTaskDocumentBy({ "user_id": user_id })
+      self._debug("deleteTaskBy", "Finish")
+    except RuntimeError as err:
+      err_msg = "%s -- deleteTaskBy -- Failed\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+  
   def getTaskBy(self, user_id):
     """
     Returns Task or None.

@@ -1,217 +1,359 @@
-from common.loggable_api import Loggable
-from enum import Enum
-from json import load
-from logging import getLogger, DEBUG, FileHandler, Formatter
-from os import path
-from re import search
-from recommendation_worker_service.backend_tasks_api import BackendTasks
-from recommendation_worker_service.entity_api import Entity
-from time import sleep
+from datetime import datetime
+from logging import getLogger
+from traceback import format_exc
 
-class CalculationProgress(Enum):
-  COMPARING_USER_AND_COMPANY_PROFILES = "Checking if User Profile matches that of the Company"
-  CREATING_COMPANY_PROFILE = "Creating Company Financial Profile from the Financial Data"
-  READING_COMPANY_FINANCIAL_DATA = "Reading the Company Financial Data"
-  READING_USER_PROFILE = "Reading the User Investment Recommendations"
+from common.applicative_user import ApplicativeUser
+from common.backend_tasks.recommendation.task import Progress, Task
+from common.database_api import DatabaseApi
+from common.financial_report import FinancialReport
+from common.financial_user_profile import FinancialIndicators, FinancialUserProfile
+from common.investment_recommendation import InvestmentRecommendation
+from common.loggable_api import Loggable
+from common.recommendation_backend_tasks_api import BackendTasks
+
+max_error_chars = 5000
+
+def startRecommendationWorkerService(service_name):
+  """
+  Returns void.
+  Raises RuntimeError.
+  Subscribes to investment recommendation tasks with logic to execute them.
+  Arguments:
+    service_name -- str.
+  """
+  def consumeMessagesFromMainService(ch, method, properties, body):
+    """
+    Returns void.
+    Raises RuntimeError.
+    Logic for the execution of the investment recommendation calculation.
+    Arguments:
+      - ch -- Channel -- RabbitMq channel.
+      - method -- ???
+      - properties -- ???
+      - body -- ??? -- contains the message which represents the Task.
+    """
+    worker = Worker(service_name)
+    task = None
+
+    try:
+      message = body.decode("utf-8")
+      task = Task.fromJson(message)
+    except Exception as err:
+      err_msg = "%s -- consumeMessagesFromMainService -- Failed to parsed message to Task.\n%s" % (
+        service_name,
+        format_exc(max_error_chars, err)
+      )
+      getLogger(service_name).error(err_msg)
+      ch.stop_consuming()
+      return
+
+    try:
+      worker.calculateInvestmentRecommendation(task)
+    except RuntimeError as err:
+      err_msg = "%s -- consumeMessagesFromMainService -- Failed to execute the Task.\n%s" % (service_name, str(err))
+      getLogger(service_name).error(err_msg)
+
+  try:
+    backend_tasks = BackendTasks(service_name)
+  except RuntimeError as err:
+    err_msg = "%s -- startRecommendationWorkerService -- Failed to initiate BackendTasks.\n%s" % (
+      service_name,
+      str(err)
+    )
+    raise RuntimeError(err_msg)
+  
+  try:
+    backend_tasks.consumeMessage(consumeMessagesFromMainService)
+  except RuntimeError as err:
+    err_msg = "%s -- startRecommendationWorkerService -- Failed to subscribe to backend tasks.\n%s" % (
+      service_name,
+      str(err)
+    )
+    raise RuntimeError(err_msg)
 
 class Worker(Loggable):
   """
   Reveals an external API for executing the backend tasks related to the investment recommendation calculation.
   """
 
-  def __init__(self):
-    super().__init__("recommendation_worker_service", "Worker")
-    self._log_id = "recommendation_worker_service"
-    self._backend_tasks = BackendTasks(self._log_id)
-    self._entity = Entity(self._log_id)
-    self._financial_keys_regex = self._loadFinancialKeysRegex()
+  def __init__(self, service_name):
+    """
+    Raises RuntimeError.
+    Arguments:
+      - service_name -- str.
+    """
+    super().__init__(service_name, "Worker")
+    self._backend_tasks = BackendTasks(service_name)
+    self._database = DatabaseApi(service_name)
+    self._max_error_chars = max_error_chars
     self._minimum_match_score = 0.7
 
-  def startRecommendationWorkerService(self):
-    self._setupLogger()
-    while True:
-      user_id = self._getUserIdForInvestmentRecommendationCalculation()
+  def calculateInvestmentRecommendation(self, task):
+    """
+    Returns void.
+    Raises RuntimeError.
+    Persists InvestmentRecommendation for a user.
+    Arguments:
+      task -- Task.
+    """
+    self._debug("calculateInvestmentRecommendation", "Start\ntask:\t%s" % str(task))
 
-      if user_id is None:
-        sleep(5)
-        continue
+    try:
+      task.progress = Progress.RETRIEVING_FINANCIAL_USER_PROFILE
+      self._backend_tasks.updateTaskProgressBy(task)
 
-      recommendation = self._calculateRecommendationByUserId(user_id)
-      self._entity.storeRecommendation(recommendation)
+      document = self._database.readApplicativeUserDocumentBy({ "user_id": task.user_id })
+      applicative_user = ApplicativeUser.fromDocument(document)
+    except RuntimeError as err:
+      err_msg = "%s -- calculateInvestmentRecommendation -- Failed to applicative user.\n%s" % (
+        self._class_name,
+        str(err)
+      )
+      raise RuntimeError(err_msg)
+    
+    try:
+      task.progress = Progress.RETRIEVING_FINANCIAL_USER_PROFILE
+      self._backend_tasks.updateTaskProgressBy(task)
 
-  def _areSimilarProfiles(self, user_profile, company_profiles):
-    """
-    Returns a bool.
-    Keyword arguments:
-      company_profiles -- dict -- contains the financial data of a company per calendar year.
-      user_profile -- dict -- the financial indicators that represent investment preferences.
-    """
-    self._debug("_areSimilarProfiles", "Start")
-    for date_str, company_profile in company_profiles.items():
-      score = self._calculateContentSimilariy(user_profile, company_profile)
-      if score < self._minimum_match_score:
-        self._debug("_areSimilarProfiles", "Finish - profiles are not similar")
-        return False
-    self._debug("_areSimilarProfiles", "Finish - profiles are similar")
-    return True
+      document = self._database.readFinancialUserProfileDocumentBy({ "user_id": applicative_user.user_id })
+      financial_user_profile = FinancialUserProfile.fromDocument(document)
+    except RuntimeError as err:
+      err_msg = "%s -- calculateInvestmentRecommendation -- Failed to obtain financial user profile.\n%s" % (
+        self._class_name,
+        str(err)
+      )
+      raise RuntimeError(err_msg)
 
-  def _calculateCashToLongTermDebt(self, company_profiles):
-    """
-    Inserts Cash-to-Long-Term-Debt Financial Indicator into the company profiles.
-    Keyword arguments:
-      company_profiles -- dict -- contains the financial data of a company per calendar year.
-    """
-    self._debug("_calculateCashToLongTermDebt", "Start")
-    for date_str in company_profiles.keys():
-      cash = float(company_profiles[date_str]["cash"])
-      long_term_debt = float(company_profiles[date_str]["long_term_debt"])
-      if long_term_debt > 0:
-        company_profiles[date_str]["cash_to_long_term_debt"] = cash / long_term_debt
-      else:
-        company_profiles[date_str]["cash_to_long_term_debt"] = cash
-    self._debug("_calculateCashToLongTermDebt", "Finish")
+    company_acronyms = None
+    try:
+      task.progress = Progress.RETRIEVING_COMPANY_ACRONYMS_WITH_FINANCIAL_REPORTS
+      self._backend_tasks.updateTaskProgressBy(task)
 
-  def _calculateContentSimilariy(self, user_profile, company_profile):
-    """
-    Returns a float.
-    It is the similarity score in the range of [0, 1].
-    0 means the profiles are completely different.
-    1 means the profiles are identical.
-    Keyword arguments:
-      company_profiles -- dict -- contains the financial data of a company per calendar year.
-      user_profile -- dict -- the financial indicators that represent investment preferences.
-    """
-    self._debug("_calculateContentSimilariy", "Start")
-    result = 0
-    indicators_count = len(user_profile.keys())
-    for indicator_key, indicator_data in user_profile.items():
-      user_indicator_val = self._indicatorValueFromUserProfile(indicator_data)
-      company_indicator_val = company_profile[indicator_key]
-      difference = user_indicator_val - company_indicator_val
-      normalized_difference = abs(difference / max([user_indicator_val, company_indicator_val]))
-      result += indicator_data["weight"] * normalized_difference / indicators_count
-    self._debug("_calculateContentSimilariy", "Finish - result: %.2f" % result)
-    return result
+      company_acronyms = self._database.getAcronymsForCompaniesWithFinancialReports()
+      
+      if not company_acronyms:
+        raise RuntimeError("No company with financial reports was found")
+    except RuntimeError as err:
+      err_msg = "%s -- calculateInvestmentRecommendation.\n%s" % self._class_name
+      err_msg += " -- Failed to obtain company acronyms with financial reports.\n%s" % str(err)
+      raise RuntimeError(err_msg)
 
-  def _calculateEquityToGoodwill(self, company_profiles):
-    """
-    Inserts Equity-to-Goodwill Financial Indicator into the company profiles.
-    Keyword arguments:
-      company_profiles -- dict -- contains the financial data of a company per calendar year.
-    """
-    self._debug("_calculateEquityToGoodwill", "Start")
-    for date_str in company_profiles.keys():
-      total_assets = float(company_profiles[date_str]["total_assets"])
-      total_liabilities = float(company_profiles[date_str]["total_liabilities"])
-      equity = total_assets - total_liabilities
-      goodwill = float(company_profiles[date_str]["goodwill"])
-      if goodwill > 0:
-        company_profiles[date_str]["equity_to_goodwill"] = equity / goodwill
-      else:
-        company_profiles[date_str]["equity_to_goodwill"] = equity
-    self._debug("_calculateEquityToGoodwill", "Finish")
+    recommendations_to_calculate = []
+    try:
+      task.progress = Progress.SUMMARIZING_INVESTMENT_RECOMMENDATIONS_TO_CALCULATE
+      self._backend_tasks.updateTaskProgressBy(task)
+      
+      for company_acronym in company_acronyms:
+        investment_recommendation = InvestmentRecommendation()
+        investment_recommendation.company_acronym = company_acronym
+        investment_recommendation.user_id = applicative_user.user_id
+        investment_recommendation.date = datetime.now()
+        recommendations_to_calculate.append(investment_recommendation)
+    except RuntimeError as err:
+      err_msg = "%s -- calculateInvestmentRecommendation." % self._class_name
+      err_msg += " -- Failed to summarize InvestmentRecommendations to calculate.\n%s" % str(err)
+      raise RuntimeError(err_msg)
 
-  def _companyProfilesFromFinancialData(self, company_financial_data):
-    """
-    Returns a dict.
-    It contains the company financial profiles per each calendar year.
-    Keyword arguments:
-      company_financial_data -- dict -- the persisted financial data of a company from an external source.
-    """
-    self._debug("_companyProfilesFromFinancialData", "Start")
-    result = dict()
-    for date_str, financial_data_from_source in company_financial_data["data"].items():
-      result[date_str] = dict()
-      for financial_key_for_profile, regex_for_financial_key_in_source in self._financial_keys_regex.items():
-        for financial_key_in_source, financial_value in financial_data_from_source.items():
-          search_obj = search(regex_for_financial_key_in_source, financial_key_in_source.lower())
-          if search_obj:
-            result[date_str][financial_key_for_profile] = financial_value
-            break
-    self._calculateCashToLongTermDebt(result)
-    self._calculateEquityToGoodwill(result)
-    result = self._removeNonIndicators(result)
-    self._debug("_companyProfilesFromFinancialData", "Finish - result: %s" % result)
-    return result
+    company_acronyms_to_financial_reports = dict()
+    try:
+      task.progress = Progress.COLLECTING_COMPANIES_FINANCIAL_REPORTS
+      self._backend_tasks.updateTaskProgressBy(task)
 
-  def _calculateRecommendationByUserId(self, user_id):
-    """
-    Returns a dict.
-    It holds the recommended stock symbols that represent the companies for the user to invest into.
-    Keyword arguments:
-      user_id -- str -- an unique identifier of a user inside our program.
-    """
-    self._debug("_calculateRecommendationByUserId", "Start - user_id: %s" % user_id)
-    result = {
-      "user_id": user_id,
-      "companies": []
-    }
-    self._backend_tasks.updateTaskByUserId(user_id, CalculationProgress.READING_USER_PROFILE.value)
-    user_profile = self._entity.getUserProfileByUserId(user_id)
-    self._backend_tasks.updateTaskByUserId(user_id, CalculationProgress.READING_COMPANY_FINANCIAL_DATA.value)
-    companies_financial_data = self._entity.getCompaniesFinancialData()
-    for company_financial_data in companies_financial_data:
-      self._backend_tasks.updateTaskByUserId(user_id, CalculationProgress.CREATING_COMPANY_PROFILE.value)
-      company_profiles = self._companyProfilesFromFinancialData(company_financial_data)
-      self._backend_tasks.updateTaskByUserId(user_id, CalculationProgress.COMPARING_USER_AND_COMPANY_PROFILES.value)
-      if self._areSimilarProfiles(user_profile, company_profiles):
-        result["companies"].append(company_financial_data["acronym"])
-    self._debug("_calculateRecommendationByUserId", "Finish - result: %s\n" % result)
-    return result
+      for company_acronym in company_acronyms:
+        financial_reports = []
+        documents = self._database.readFinancialReportDocumentsBy({ "company_acronym": company_acronym })
+        for document in documents:
+          financial_report = FinancialReport.fromDocument(document)
+          financial_reports.append(financial_report)
+        
+        if not financial_reports:
+          self._debug(
+            "calculateInvestmentRecommendation",
+            "\tExpected financial_reports for the company %s" % company_acronym
+          )
 
-  def _getUserIdForInvestmentRecommendationCalculation(self):
-    """
-    Returns a str.
-    It is the unique id of the user in our program.
-    """
-    self._debug("_getUserIdForInvestmentRecommendationCalculation", "Start")
-    result = self._backend_tasks.getUserIdFromNewTask()
-    self._debug("_getUserIdForInvestmentRecommendationCalculation", "Finish - result: %s\n" % result)
-    return result
+        company_acronyms_to_financial_reports[company_acronym] = financial_reports
+    except RuntimeError as err:
+      err_msg = "%s -- calculateInvestmentRecommendation." % self._class_name
+      err_msg += " -- Failed to map company acronyms to FinancialReports.\n%s" % str(err)
+      raise RuntimeError(err_msg)
+    
+    try:
+      task.progress = Progress.CALCULATING_SIMILARITY_SCORES
+      self._backend_tasks.updateTaskProgressBy(task)
+    except RuntimeError as err:
+      err_msg = "%s -- calculateInvestmentRecommendation" % self._class_name
+      err_msg += " -- Failed to update the Task progress to calculating similarity scores.\n%s" % str(err)
+    
+    for investment_recommendation in recommendations_to_calculate:
+      try:
+        financial_reports = company_acronyms_to_financial_reports[investment_recommendation.company_acronym]
+        total_similarity_score = self._totalSimilarityScore(financial_reports, financial_user_profile)
+        investment_recommendation.similarity_score = total_similarity_score
+        self._persistInvestmentRecommendation(investment_recommendation)
+      except RuntimeError as err:
+        err_msg = "%s -- calculateInvestmentRecommendation" % self._class_name
+        err_msg += " -- Failed to calculate total similarity score between user %s" % applicative_user.user_id
+        err_msg += " and company %s.\n%s" % (investment_recommendation.company_acronym, str(err))
+        raise RuntimeError(err_msg)
+    
+    try:
+      task.progress = Progress.FINISHED
+      self._backend_tasks.updateTaskProgressBy(task)
+    except RuntimeError as err:
+      err_msg = "%s -- calculateInvestmentRecommendation" % self._class_name
+      err_msg += " -- Failed to update the Task progress to finished.\n%s" % str(err)
 
-  def _indicatorValueFromUserProfile(self, indicator):
+    self._debug("calculateInvestmentRecommendation", "Finish")
+
+  def _idealIndicatorValueForUser(self, rule):
     """
     Returns a float.
     A single user indicator (recommendation preference) can be an acceptable range.
     However, company's financial data is always a precise value.
     Hence, we find an acceptable median for the user indicator which is a single value, as well.
     """
-    return (indicator["lower_boundary"] + indicator["upper_boundary"]) / 2
+    return (rule["lower_boundary"] + rule["upper_boundary"]) / 2
 
-  def _loadFinancialKeysRegex(self):
+  def _indicatorCashToLongTermDebt(self, financial_report):
     """
-    Returns a dict.
-    It contains the Regular Expressions for filtering the company's profile from the financial values
-    that are not used for the financial indicator calculations.
+    Returns float.
+    It is a ratio between available cash to long term debt.
+    Raises RuntimeError.
+    Arguments:
+      financial_report -- FinancialReport.
     """
-    file_path = path.join(
-      path.dirname(__file__),
-      "worker",
-      "financial_values_regex.json"
-    )
-    with open(file_path, "r") as read_file:
-      result = load(read_file)
-    return result
+    try:
+      self._debug("_indicatorCashToLongTermDebt", "Start")
+      
+      cash = financial_report.availableCash()
+      if not cash:
+        raise RuntimeError("Expected available cash measurement, got None.")
+      
+      long_term_debt = financial_report.longTermDebt()
+      if not long_term_debt:
+        raise RuntimeError("Expected long term debt measurement, got None.")
 
-  def _removeNonIndicators(self, company_profiles):
+      if long_term_debt > 0:
+        result = cash / long_term_debt
+      else:
+        result = cash
+      
+      self._debug("_indicatorCashToLongTermDebt", "Finish\nresult:\t%s" % str(result))
+      return result
+    except RuntimeError as err:
+      err_msg = "%s -- _indicatorCashToLongTermDebt -- Failed.\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+
+  def _indicatorEquityToGoodwill(self, financial_report):
     """
-    Returns a dict.
-    It contains the Financial Indicators for a company per calendar years.
+    Returns float.
+    It is a ratio between equity to goodwill.
+    Arguments:
+      financial_report -- FinancialReport.
+    """
+    try:
+      self._debug("_indicatorEquityToGoodwill", "Start")
+      
+      equity = financial_report.equity()
+      if not equity:
+        total_assets = financial_report.totalAssets()
+        if not total_assets:
+          raise RuntimeError("Expected total assets measurement, but got None.")
+
+        total_liabilities = financial_report.totalLiabilities()
+        if not total_liabilities:
+          raise RuntimeError("Expected total liabilities measurement, but got None.")
+
+        equity = total_assets - total_liabilities
+
+      goodwill = financial_report.goodwill()
+      if not goodwill:
+        raise RuntimeError("Expected goodwill measurement, but got None.")
+      
+      if goodwill > 0:
+        result = equity / goodwill
+      else:
+        result = equity
+      
+      self._debug("_indicatorEquityToGoodwill", "Finish\nresult:\t%s" % str(result))
+      return result
+    except RuntimeError as err:
+      err_msg = "%s -- _indicatorEquityToGoodwill -- Failed.\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+  
+  def _similarityScore(self, financial_report, financial_user_profile):
+    """
+    Returns a float.
+    Raises RuntimeError.
+    It is the similarity score in the range of [0, 1].
+    0 means the profiles are completely different.
+    1 means the profiles are identical.
     Keyword arguments:
-      company_profiles -- dict -- contains the financial data of a company per calendar year.
+      - financial_reports -- list<FinancialReport>.
+      - financial_user_profile -- FinancialUserProfile.
     """
-    result = dict()
-    for date_str in company_profiles.keys():
-      result[date_str] = dict()
-      for key, value in company_profiles[date_str].items():
-        if "_to_" in key:
-          result[date_str][key] = value
-    return result
+    msg = "Start\nfinacial_report:\t%s" % str(financial_report)
+    msg += ",\nfinancial_user_profile:\t%s" % str(financial_user_profile)
+    self._debug("_similarityScore", msg)
 
-  def _setupLogger(self):
-    logger = getLogger(self._log_id)
-    logger.setLevel(DEBUG)
-    file_handler = FileHandler("%s.log" % self._log_id)
-    file_handler.setLevel(DEBUG)
-    file_handler.setFormatter(Formatter("%(msg)s"))
-    logger.addHandler(file_handler)
+    result = 0
+    for indicator in financial_user_profile.rules.keys():
+      rule = financial_user_profile.rules[indicator]
+      ideal_indicator_value_for_user = self._idealIndicatorValueForUser(rule)
+      actual_indicator_value_from_report = None
+      
+      if indicator == FinancialIndicators.CASH_TO_LONG_TERM_DEBT.value:
+        actual_indicator_value_from_report = self._indicatorCashToLongTermDebt(financial_report)
+      elif indicator == FinancialIndicators.EQUITY_TO_GOODWILL.value:
+        actual_indicator_value_from_report = self._indicatorEquityToGoodwill(financial_report)
+      else:
+        err_msg = "%s -- _similarityScore -- Failed to calclulate actual indicator \"%s\" value" % (self._class_name, indicator)
+        raise RuntimeError(err_msg)
+      
+      difference = ideal_indicator_value_for_user - actual_indicator_value_from_report
+      normalized_difference = abs(difference / max([
+        ideal_indicator_value_for_user,
+        actual_indicator_value_from_report
+      ]))
+      result += rule["weight"] * normalized_difference / financial_user_profile.rulesCount()
+    
+    self._debug("_similarityScore", "Finish\nresult:\t%.2f" % result)
+    return result
+  
+  def _persistInvestmentRecommendation(self, investment_recommendation):
+    """
+    Returns void.
+    Raises RuntimeError.
+      - investment_recommendation -- InvestmentRecommendation.
+    """
+    try:
+      self._debug("_persistInvestmentRecommendation", "Start\ninvestment_recommendation:\t%s" % str(investment_recommendation))
+      self._database.createInvestmentRecommendationDocument(investment_recommendation.toDocument())
+      self._debug("_persistInvestmentRecommendation", "Finish")
+    except RuntimeError as err:
+      err_msg = "%s -- _persistInvestmentRecommendation -- Failed.\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+
+  def _totalSimilarityScore(self, financial_reports, financial_user_profile):
+    """
+    Returns a float.
+    Raises RuntimeError.
+    It is the similarity score in the range of [0, 1].
+    0 means the profiles are completely different.
+    1 means the profiles are identical.
+    Keyword arguments:
+      - financial_reports -- list<FinancialReport>.
+      - financial_user_profile -- FinancialUserProfile.
+    """
+    msg = "Start\nfinacial_reports:\tavailable for %d years" % len(financial_reports)
+    msg += ",\nfinancial_user_profile:\t%s" % financial_user_profile
+    self._debug("_totalSimilarityScore", msg)
+    
+    result = 0
+    for financial_report in financial_reports:
+      score = self._similarityScore(financial_report, financial_user_profile)
+      result += score / len(financial_reports)
+    
+    self._debug("_totalSimilarityScore", "Finish\nresult:\t%.2f" % result)
+    return result

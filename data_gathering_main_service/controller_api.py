@@ -1,6 +1,7 @@
 from common.data_gathering_backend_tasks_api import BackendTasks
 from common.loggable_api import Loggable
 from common.backend_tasks.data_gathering.task import Progress
+
 class Controller(Loggable):
   """
   This is our Controller Logic which reveals an API for the Boundary.
@@ -16,6 +17,36 @@ class Controller(Loggable):
     super().__init__(service_name, "Controller")
     self._backend_tasks = BackendTasks(service_name)
 
+  def stopCollectingFinancialDataFor(self, company_acronym):
+    """
+    Returns str.
+    It removes the backend task for the financial data collection for a company.
+    Arguments:
+      - company_acronyms -- str -- unique identified of a company at a stock exchange.
+    """
+    self._debug("stopCollectingFinancialDataFor", "Start\ncompany_acronym:\t%s" % company_acronym)
+    result = "No task was found"
+    
+    try:
+      progress = self._collectionProgressFor(company_acronym)
+    except RuntimeError as err:
+      err_msg = "%s -- stopCollectingFinancialDataFor" % self._class_name
+      err_msg += " -- Failed at retrieving financial data collection progress\n%s" % str(err)
+      raise RuntimeError(err_msg)
+
+    if not progress == Progress.NOT_STARTED:
+      try:
+        self._backend_tasks.deleteTaskBy(company_acronym)
+        result = "The task was removed"
+      except RuntimeError as err:
+        err_msg = "%s -- stopCollectingFinancialDataFor -- Failed to remove the backend task.\n%s" % (
+          self._class_name, str(err)
+        )
+        raise RuntimeError(err_msg)
+    
+    self._debug("stopCollectingFinancialDataFor", "Finish\nresult:%s" % result)
+    return result
+  
   def collectFinancialDataFor(self, company_acronym):
     """
     Returns str.

@@ -53,6 +53,16 @@ def startDataGatheringMainService(service_name):
   def monitor():
     return "Hello World!"
 
+  @app.route("/cancel_stock_data_collection/<acronym_name>")
+  def cancel_stock_data_collection(acronym_name):
+    result = "Server error"
+    try:
+      controller = Controller(service_name)
+      result = controller.stopCollectingFinancialDataFor(acronym_name)
+    except RuntimeError as err:
+      getLogger(service_name).error("%s -- Server error.\n%s" % (service_name, str(err)))
+    return result
+
   @app.route("/collect_stock_data/<acronym_name>")
   def collect_stock_data(acronym_name):
     result = "Server error"

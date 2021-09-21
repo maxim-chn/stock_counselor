@@ -20,7 +20,7 @@ class BackendTasks(BackendTasksApi):
     Returns Task.
     Raises RuntimeError.
     Arguments:
-      company_acronym -- str -- unique identifier of a company at a stock exchange.
+      - company_acronym -- str -- unique identifier of a company at a stock exchange.
     """
     self._debug("createTaskBy", "Start\ncompany_acronym:\t%s" % company_acronym)
     task = None
@@ -46,12 +46,29 @@ class BackendTasks(BackendTasksApi):
     self._debug("createTaskBy","Finish\nresult:%s" % str(task))
     return task
     
+  def deleteTaskBy(self, company_acronym):
+    """
+    Returns void.
+    Raises RuntimeError.
+    Arguments:
+      - company_acronym -- str -- unique identifier of a company at a stock exchange.
+    """
+    self._debug("deleteTaskBy", "Start\ncompany_acronym:\t%s" % company_acronym)
+    
+    try:
+      self._database.deleteTaskDocumentBy({ "company_acronym": company_acronym })
+    except RuntimeError as err:
+      err_msg = "%s -- deleteTaskBy -- Failed to remove Task from database.\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+    
+    self._debug("deleteTaskBy","Finish")
+  
   def getTaskBy(self, company_acronym):
     """
     Returns Task or None.
     Raises RuntimeError.
     Arguments:
-      company_acronym -- str -- unique identifier of a company at a stock exchange.
+      - company_acronym -- str -- unique identifier of a company at a stock exchange.
     """
     try:
       self._debug("getTaskBy", "Start\ncompany_acronym:\t%s" % company_acronym)

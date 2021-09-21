@@ -1,0 +1,20 @@
+use admin;
+
+db.auth("admin", "admin");
+
+use non_applicative_users;
+
+db.createUser({
+  user: "recommendation_worker_service",
+  pwd: "recommendation_worker_service",
+  roles: [
+    {"role": "read", "db": "applicative_users"},
+    {"role": "readWrite", "db": "backend_tasks"},
+    {"role": "read", "db": "financial_reports"},
+    {"role": "read", "db": "financial_user_profiles"},
+    {"role": "readWrite", "db": "investment_recommendations"},
+    {"role": "readWrite", "db": "test"}
+  ]
+});
+
+quit();

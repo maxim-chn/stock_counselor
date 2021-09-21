@@ -2,7 +2,7 @@ use admin;
 
 db.auth("admin", "admin");
 
-use recommendations;
+use investment_recommendations;
 
 db.dropDatabase();
 

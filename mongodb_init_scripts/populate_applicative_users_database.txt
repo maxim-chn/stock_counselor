@@ -1,0 +1,15 @@
+use non_applicative_users;
+
+db.auth("applicative_users_service", "applicative_users_service");
+
+use applicative_users;
+
+db.applicative_users.insert([
+  {
+    "first_name": "john",
+    "last_name": "doe",
+    "user_id": "john.doe@domain.com"
+  }
+]);
+
+quit();

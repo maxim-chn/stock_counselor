@@ -47,10 +47,10 @@ class Task:
   """
   A backend task for the financial data collection.
   """
+  class_name = "Task"
+  max_error_chars = 1000
 
   def __init__(self):
-    self._class_name = "Task"
-    self._max_error_chars = max_error_chars
     self._company_acronym = "no company"
     self._progress = Progress.NOT_EXPECTED
   
@@ -69,7 +69,7 @@ class Task:
       result.progress = progress
       return result
     except RuntimeError as err:
-      err_msg = "%s -- taskWith -- Failed.\n%s" % ("Task", str(err))
+      err_msg = "%s -- taskWith -- Failed.\n%s" % (Task.class_name, str(err))
       raise RuntimeError(err_msg)
 
   @classmethod
@@ -85,10 +85,10 @@ class Task:
       progress = Progress(val["progress"])
       return cls.taskWith(company_acronym, progress)
     except RuntimeError as err:
-      err_msg = "%s -- fromDocument -- Failed\n%s" % ("Task", str(err))
+      err_msg = "%s -- fromDocument -- Failed\n%s" % (Task.class_name, str(err))
       raise RuntimeError(err_msg)
     except Exception as err:
-      err_msg = "%s -- fromDocument -- Failed\n%s" % ("Task", format_exc(max_error_chars, err))
+      err_msg = "%s -- fromDocument -- Failed\n%s" % (Task.class_name, format_exc(Task.max_error_chars, err))
       raise RuntimeError(err_msg)
 
   @classmethod
@@ -103,9 +103,9 @@ class Task:
       result = loads(val, cls=JsonDecoderForTask)
       return result
     except RuntimeError as err:
-      raise RuntimeError("%s -- fromJson -- Failed\n%s" % ("Task", str(err)))
+      raise RuntimeError("%s -- fromJson -- Failed\n%s" % (Task.class_name, str(err)))
     except Exception as err:
-      raise RuntimeError("%s -- fromJson -- Failed\n%s" % ("Task", format_exc(max_error_chars, err)))
+      raise RuntimeError("%s -- fromJson -- Failed\n%s" % (Task.class_name, format_exc(Task.max_error_chars, err)))
 
   def toDocument(self):
     """
@@ -125,10 +125,10 @@ class Task:
     try:
       return dumps(self.toDocument())
     except RuntimeError as err:
-      err_msg = "%s -- fromJson -- Failed\n%s" % (self._class_name, str(err))
+      err_msg = "%s -- toJson -- Failed\n%s" % (Task.class_name, str(err))
       raise RuntimeError(err_msg)
     except Exception as err:
-      err_msg = "%s -- fromJson -- Failed\n%s" % (self._class_name, format_exc(self._max_error_chars, err))
+      err_msg = "%s -- toJson -- Failed\n%s" % (Task.class_name, format_exc(Task.max_error_chars, err))
       raise RuntimeError(err_msg)
 
   def __str__(self):
@@ -161,7 +161,7 @@ class Task:
     if val and isinstance(val, str):
       self._company_acronym = val
     else:
-      raise RuntimeError("%s -- company_acronym setter expects an argument of type str." % self._class_name)
+      raise RuntimeError("%s -- company_acronym -- setter expects an argument of type str." % Task.class_name)
 
   @progress.setter
   def progress(self, val):
@@ -174,7 +174,7 @@ class Task:
     if val and isinstance(val, Progress):
       self._progress = val
     else:
-      raise RuntimeError("%s -- progress setter expects an argument of type Progress." % self._class_name)
+      raise RuntimeError("%s -- progress -- setter expects an argument of type Progress." % Task.class_name)
 
 # Unit tests
 

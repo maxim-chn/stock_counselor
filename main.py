@@ -8,6 +8,14 @@ from common.recommendation_backend_tasks_api import BackendTasks as Recommendati
 from data_gathering_main_service.boundary_api import startDataGatheringMainService
 from data_gathering_worker_service.worker_api import startDataGatheringWorkerService
 from recommendation_main_service.boundary_api import startRecommendationMainService
+from recommendation_worker_service.worker_api import startRecommendationWorkerService
+
+available_services = [
+  "data_gathering_main_service",
+  "data_gathering_worker_service",
+  "recommendation_main_service",
+  "recommendation_worker_service"
+  ]
 
 def getBackendTasks(service_name):
   """
@@ -19,11 +27,11 @@ def getBackendTasks(service_name):
   Arguments:
     service_name -- str.
   """
-  if service_name == "data_gathering_main_service" or service_name == "data_gathering_worker_service":
+  if service_name == available_services[0] or service_name == available_services[1]:
     return DataGatheringBackendTasks(service_name)
-  if service_name == "recommendation_main_service" or service_name == "recommendation_worker_service":
+  if service_name == available_services[2] or service_name == available_services[3]:
     return RecommendationBackendTasks(service_name)
-  err_msg = "%s -- getBackendTasks -- Failed to map service_name to the relevant backend tasks api" % service_name
+  err_msg = "%s -- getBackendTasks -- Failed to map service_name to the relevant backend tasks object." % service_name
   raise RuntimeError(err_msg)
 
 def logDebug(service_name, message):
@@ -63,21 +71,19 @@ def startService(service_name):
   Arguments:
     service_name -- str.
   """
-  if service_name == "data_gathering_main_service":
+  if service_name == available_services[0]:
     startDataGatheringMainService(service_name)
-  elif service_name == "data_gathering_worker_service":
+  elif service_name == available_services[1]:
     startDataGatheringWorkerService(service_name)
-  elif service_name == "recommendation_main_service":
+  elif service_name == available_services[2]:
     startRecommendationMainService(service_name)
+  elif service_name == available_services[3]:
+    startRecommendationWorkerService(service_name)
+  else:
+    raise RuntimeError("%s -- startService -- Failed to map service_name to the relevant service object." % service_name)
 
 if __name__ == '__main__':
   service_name = argv[1]
-  available_services = [
-    "data_gathering_main_service",
-    "data_gathering_worker_service",
-    "recommendation_main_service",
-    "recommendation_worker_service"
-    ]
   
   if service_name not in available_services:
     print("Please specify one of the following services\n%s" % available_services)

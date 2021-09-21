@@ -1,0 +1,36 @@
+{
+  "connection": {
+    "host": "localhost",
+    "port": 8083
+  },
+  "user": {
+    "username": "recommendation_worker_service",
+    "password": "recommendation_worker_service"
+  },
+  "documents": {
+    "applicative_user": {
+      "database_name": "applicative_users",
+      "collection_name": "applicative_users"
+    },
+    "investment_recommendation": {
+      "database_name": "investment_recommendations",
+      "collection_name": "recommendation"
+    },
+    "financial_report": {
+      "database_name": "financial_reports",
+      "collection_name": "data_gathering"
+    },
+    "financial_user_profile": {
+      "database_name": "financial_user_profiles",
+      "collection_name": "applicative_users"
+    },
+    "task": {
+      "database_name": "backend_tasks",
+      "collection_name": "recommendation"
+    },
+    "test": {
+      "database_name": "test",
+      "collection_name": "recommendation"
+    }
+  }
+}

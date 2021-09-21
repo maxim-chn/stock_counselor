@@ -1,0 +1,11 @@
+use admin;
+
+db.auth("admin", "admin");
+
+use applicative_users;
+
+db.runCommand( { dropAllUsersFromDatabase: 1 } );
+
+db.dropDatabase();
+
+quit();

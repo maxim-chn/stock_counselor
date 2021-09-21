@@ -4,21 +4,21 @@
     "port": 8083
   },
   "user": {
-    "username": "recommender",
-    "password": "recommender"
+    "username": "recommendation_main_service",
+    "password": "recommendation_main_service"
   },
   "documents": {
-    "financial_report": {
-      "database_name": "financial_reports",
-      "collection_name": "data_gatherer"
+    "applicative_user": {
+      "database_name": "applicative_users",
+      "collection_name": "applicative_users"
     },
     "task": {
       "database_name": "backend_tasks",
-      "collection_name": "recommender"
+      "collection_name": "recommendation"
     },
     "test": {
       "database_name": "test",
-      "collection_name": "recommender"
+      "collection_name": "recommendation"
     }
   }
 }

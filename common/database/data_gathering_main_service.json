@@ -4,17 +4,17 @@
     "port": 8083
   },
   "user": {
-    "username": "data_gatherer",
-    "password": "data_gatherer"
+    "username": "data_gathering_main_service",
+    "password": "data_gathering_main_service"
   },
   "documents": {
     "task": {
       "database_name": "backend_tasks",
-      "collection_name": "data_gatherer"
+      "collection_name": "data_gathering"
     },
     "test": {
       "database_name": "test",
-      "collection_name": "data_gatherer"
+      "collection_name": "data_gathering"
     }
   }
 }

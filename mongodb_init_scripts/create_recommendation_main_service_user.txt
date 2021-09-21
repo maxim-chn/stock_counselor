@@ -2,14 +2,14 @@ use admin;
 
 db.auth("admin", "admin");
 
-use users;
+use non_applicative_users;
 
 db.createUser({
-  user: "data_gatherer",
-  pwd: "data_gatherer",
+  user: "recommendation_main_service",
+  pwd: "recommendation_main_service",
   roles: [
+    {"role": "read", "db": "applicative_users"},
     {"role": "readWrite", "db": "backend_tasks"},
-    {"role": "readWrite", "db": "financial_reports"},
     {"role": "readWrite", "db": "test"}
   ]
 });
