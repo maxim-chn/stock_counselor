@@ -1,22 +1,26 @@
 {
   "cash": [
-    "^[ ,\n,\t]*Cash and cash equivalents at beginning of year[ ,\n,\t]*$",
-    "^[ ,\n,\t]*Cash and Due from Banks at End of Period[ ,\n,\t]*$",
-    "^[ ,\n,\t]*Issuance of preferred shares[ ,\n,\t]*Cash and Due from Banks at End of Period[ ,\n,\t]*$"
+    "^.*Cash.*cash equivalents.*at end of year[ ,\n,\t]*$",
+    "^.*Cash.*Due from Banks at End of Period[ ,\n,\t]*$"
   ],
   "equity": [
-    "^[ ,\n,\t]*Total Equity*$"
+    "^[ ,\n,\t]*Total Equity[ ,\n,\t]*$",
+    "^.*Total.*Equity[ ,\n,\t]*$"
   ],
   "goodwill": [
-    "^[ ,\n,\t]*Goodwill[ ,\n,\t]*$"
+    "^[ ,\n,\t]*Goodwill[ ,\n,\t]*$",
+    "^.*Goodwill.*\\(note.*\\)$"
   ],
   "long_term_debt": [
-    "^[ ,\n,\t]*Long-term debt[ ,\n,\t]*$"
+    "^[ ,\n,\t]*Long-term debt[ ,\n,\t]*$",
+    "^.*Total borrowings[ ,\n,\t]*$"
   ],
   "total_assets": [
-    "^[ ,\n,\t]*Total Assets[ ,\n,\t]*$"
+    "^[ ,\n,\t]*Total Assets[ ,\n,\t]*$",
+    "^.*Total assets[ ,\n,\t]*$"
   ],
   "total_liabilities": [
-    "^[ ,\n,\t]*Total Liabilities[ ,\n,\t]*$"
+    "^[ ,\n,\t]*Total Liabilities[ ,\n,\t]*$",
+    "^.*Total liabilities[ ,\n,\t]*$"
   ]
 }
