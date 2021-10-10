@@ -1,0 +1,49 @@
+<section class="app-container">
+  <section class="header-container">
+    <div class="logo-container">
+      <img src="logo.imgSrc" alt="logo.altText">
+    </div>
+    <div class="preface-container">
+      <p *ngFor="let paragraph of prefaceParagraphs">
+        {{paragraph}}
+      </p>
+    </div>
+  </section>
+  <section class="body-container">
+    <div class="title-container">
+      <h1>{{title}}</h1>
+    </div>
+    <div class="project-goals-container">
+      <div *ngFor="let goal of projectGoals">
+        <div class="goal-icon-container">
+          <img src="goal.imgSrc" alt="goal.altText">
+        </div>
+        <div class="goal-text-container">
+          {{goal.text}}
+        </div>
+      </div>
+    </div>
+    <div class="navigation-container">
+      <a [routerLink]="['/home']">
+        <button>
+          Proceed to application
+        </button>
+      </a>
+    </div>
+  </section>
+  <section class="footer-container">
+    <div class="acknowledgement-container">
+      <h2>{{acknowledgement.title}}</h2>
+      <p *ngFor="let paragraph of acknowledgement.paragraphs">
+        {{paragraph}}
+      </p>
+    </div>
+    <div class="copyrights-container">
+      <div *ngFor="let copyright of copyrights" class="copyright-container">
+        <a href="copyright.link">
+          {{copyright.description}}
+        </a>
+      </div>
+    </div>
+  </section>
+</section>

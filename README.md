@@ -7,6 +7,9 @@ This is a counselor for the Stock Investment based on the Fundamental Approach
 - WSL 2 with Ubuntu 20.04
 - Docker
 - Python 3.x
+- Angular CLI: 12.0.5
+- Node: 16.1.0
+- Package Manager: npm 7.13.0
 
 # Initialization steps
 
