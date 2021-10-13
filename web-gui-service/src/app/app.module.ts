@@ -6,13 +6,35 @@ import { AppComponent } from './app.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { HomepageComponent } from './homepage/homepage.component';
+import { WebsiteMenuComponent } from './homepage/website-menu/website-menu.component';
+import { DashboardComponent } from './homepage/dashboard/dashboard.component';
+import { AcknowledgementsBoardComponent } from './homepage/acknowledgements-board/acknowledgements-board.component';
+import { ActionAreaComponent } from './homepage/action-area/action-area.component';
+import { CalculateInvestmentRecommendationComponent } from './homepage/action-area/calculate-investment-recommendation/calculate-investment-recommendation.component';
+import { CollectStockDataComponent } from './homepage/action-area/collect-stock-data/collect-stock-data.component';
+import { GreetingComponent } from './homepage/action-area/greeting/greeting.component';
+import { LoginComponent } from './homepage/action-area/login/login.component';
+import { SignupComponent } from './homepage/action-area/signup/signup.component';
+import { GreetingForGuestDirective } from './homepage/action-area/greeting/greeting-for-guest.directive';
+import { GreetingForUserDirective } from './homepage/action-area/greeting/greeting-for-user.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     LandingPageComponent,
     PageNotFoundComponent,
-    HomepageComponent
+    HomepageComponent,
+    WebsiteMenuComponent,
+    DashboardComponent,
+    AcknowledgementsBoardComponent,
+    ActionAreaComponent,
+    CalculateInvestmentRecommendationComponent,
+    CollectStockDataComponent,
+    GreetingComponent,
+    LoginComponent,
+    SignupComponent,
+    GreetingForGuestDirective,
+    GreetingForUserDirective
   ],
   imports: [
     BrowserModule,

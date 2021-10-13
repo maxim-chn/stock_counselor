@@ -1,0 +1,20 @@
+<div class="logo-container">
+  <img src="logo.imgSrc" alt="logo.altText">
+</div>
+<div class="navigation-container">
+  <div *ngIf="guestMode" class="button-link-container">
+    <button (onclick)="login()">
+      Login
+    </button>
+  </div>
+  <div class="button-link-container">
+    <button (onclick)="signup()">
+      Signup
+    </button>
+  </div>
+  <div *ngIf="!guestMode" class="button-link-container">
+    <button (onclick)="logout()">
+      Logout
+    </button>
+  </div>
+</div>

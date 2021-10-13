@@ -7,7 +7,7 @@ export class Logo {
     throw Error(errMsg);
   }
   
-  static withAllAttributes(altText: string, imgSrc: string) {
+  static withAllAttributes(altText: string, imgSrc: string): Logo {
     let result = new Logo();
     try {
       result.setAltText(altText);
@@ -28,22 +28,25 @@ export class Logo {
   }
 
   public setAltText(val: string): void {
-    if (this.isAltTextLegal(val))
+    if (this.isAltTextLegal(val)) {
       this.altText = val;
-    else
-      Logo.throwError("setAltText", "received illegal argument.");
+    }
+    else {
+      Logo.throwError("setAltText", "Expected a non empty string.");
+    }
   }
 
   public setImgSrc(val: string): void {
-    if (this.isImgSrcLegal(val))
+    if (this.isImgSrcLegal(val)) {
       this.imgSrc = val;
-    else
-      Logo.throwError("setImgSrc", "received illegal argument.");
+    }
+    else {
+      Logo.throwError("setImgSrc", "Expected an encoded PNG.");
+    }
   }
 
   private isAltTextLegal(val: string): boolean {
     return isNonEmptyString(val);
-
   }
 
   private isImgSrcLegal(val: string): boolean {

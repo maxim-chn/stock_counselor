@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Copyright } from '../copyright';
-import { LoggerService } from '../logger.service';
-import { Logo } from '../logo';
-import { LogoService } from '../logo.service';
-
 import { Acknowledgement } from './acknowledgement';
 import { AcknowledgementService } from './acknowledgement.service';
 import { CopyrightService } from './copyright.service';
 import { PrefaceParagraphsService } from './preface-paragraphs.service';
 import { ProjectGoalsService } from './project-goals.service';
 import { ProjectGoal } from './project-goal';
+
+import { Copyright } from 'src/app/copyright';
+import { LoggerService } from 'src/app/logger.service';
+import { Logo } from 'src/app/logo';
+import { LogoService } from 'src/app/logo.service';
 
 @Component({
   selector: 'app-landing-page',

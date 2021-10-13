@@ -1,0 +1,27 @@
+<div class="request-container">
+  <div class="request-input-details">
+    <div class="request-input-detail">
+      <label for="#firstName">
+        First name:
+      </label>
+      <input #firstName type="text">
+    </div>
+    <div class="request-input-detail">
+      <label for="#lastName">
+        Last name:
+      </label>
+      <input #lastName type="text">
+    </div>
+    <div class="request-input-detail">
+      <label for="#email">
+        Email:
+      </label>
+      <input #email type="email">
+    </div>
+  </div>
+  <div class="request-submission-container">
+    <button (onlick)="submit(#firstName.value, #lastName.value, #email.value)">
+      Submit
+    </button>
+  </div>
+</div>
