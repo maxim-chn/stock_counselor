@@ -9,40 +9,32 @@ import { ApplicativeUserState } from './user-state';
 })
 export class UserService {
 
+  public className: string;
   public user: ApplicativeUser;
   public state: Observable<ApplicativeUserState>;
   
   private _stateSource: BehaviorSubject<ApplicativeUserState>;
 
   constructor() {
+    this.className = UserService.name;
     this.user = this.getAnonymousUser();
     this._stateSource = new BehaviorSubject<ApplicativeUserState>(ApplicativeUserState.ANONYMOUS);
     this.state = this._stateSource.asObservable();
   }
 
-  public clearUser(): void {
+  public hasLoggedIn(val: ApplicativeUser): void {
+    this.user = val;
+    this._stateSource.next(ApplicativeUserState.LOGGED_IN);
+  }
+  
+  public hasSignedUp(val: ApplicativeUser): void {
+    this.user = val;
+    this._stateSource.next(ApplicativeUserState.LOGGED_IN);
+  }
+  
+  public logout(): void {
     this.user = this.getAnonymousUser();
     this._stateSource.next(ApplicativeUserState.LOGGED_OUT);
-  }
-
-  public getUser(firstName: string, lastName: string, email: string): Observable<ApplicativeUser> {
-    let result = new Observable<ApplicativeUser>(subscriber => {
-      let user = new ApplicativeUser();
-      /**
-       * @TODO Http call to the applicative users service.
-       */
-      this.user = user;
-      this._stateSource.next(ApplicativeUserState.LOGGED_IN);
-      subscriber.next(user);
-    });
-    return result;
-  }
-
-  public isUserLoggedIn(): boolean {
-    if (this.user) {
-      return this.user.avatar.altText == "Anonymous user avatar";
-    }
-    return false;
   }
 
   private getAnonymousUser(): ApplicativeUser {
@@ -53,6 +45,7 @@ export class UserService {
       0,
       "Anonymous user avatar",
       "Anonymous user img src",
+      "who@am.i",
       "Joe?",
       "Is that you?"
     );

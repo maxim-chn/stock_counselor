@@ -34,8 +34,3 @@ an option to bypass security policy. For example
 ```
 powershell -ExecutionPolicy Bypass -File .\run.ps1 "data_gathering_main_service"
 ```
-
-# Notes to dev
-1. Fill in the email property for the ApplicativeUser.
-2. Setup a BE API Service.
-3. Setup a Login Request.

@@ -60,7 +60,7 @@ export class GreetingComponent implements OnInit, OnDestroy {
   }
 
   private userServiceError(err: Error): void {
-    let errMsg = `userService has failed.\n${err}`;
+    let errMsg = `UserService has failed.\n${err}`;
     this.loggerService.error(GreetingComponent.name, "userServiceError", errMsg); 
   }
   
@@ -76,7 +76,7 @@ export class GreetingComponent implements OnInit, OnDestroy {
       this.greetingForGuest.show();
     }
     else {
-      let errMsg = "userService has returned an unexpected ApplicativeUserState.";
+      let errMsg = `Unexpected ApplicativeUserState has been returned.\nVal:\t${val}`;
       this.userServiceError(new Error(errMsg));
     }
   }

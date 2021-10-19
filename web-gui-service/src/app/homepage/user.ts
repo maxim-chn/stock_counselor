@@ -1,4 +1,4 @@
-import { isBase64EncodedPng, isInteger, isNonEmptyString } from "src/app/validations";
+import { isBase64EncodedPng, isEmail, isInteger, isNonEmptyString } from "src/app/validations";
 
 class Avatar {
 
@@ -65,6 +65,7 @@ export class ApplicativeUser {
     amountOfCompaniesToInvest: Number,
     avatarAltText: string,
     avatarImgSrc: string,
+    email: string,
     firstName: string,
     lastName: string
     ): ApplicativeUser {
@@ -73,6 +74,7 @@ export class ApplicativeUser {
         let avatar = Avatar.withAllAttributes(avatarAltText, avatarImgSrc);
         result.setAmountOfCompaniesToInvest(amountOfCompaniesToInvest);
         result.setAvatar(avatar);
+        result.setEmail(email);
         result.setFirstName(firstName);
         result.setLastName(lastName);
       } catch (err) {
@@ -84,12 +86,14 @@ export class ApplicativeUser {
 
   public amountOfCompaniesToInvest: Number;
   public avatar: Avatar;
+  public email: string;
   public firstName: string;
   public lastName: string;
 
   constructor() {
     this.avatar = new Avatar();
     this.amountOfCompaniesToInvest = 0;
+    this.email = "To be replaced";
     this.firstName = "To be replaced";
     this.lastName = "To be replaced";
   }
@@ -103,12 +107,26 @@ export class ApplicativeUser {
     }
   }
 
-  public setAvatar(val: Avatar): void {
-    if (this.isAvatarLegal(val)) {
-      this.avatar = val;
+  public setAvatar(...args: any[]): void {
+    let avatar: Avatar;
+    if (args.length == 2) {
+      avatar = Avatar.withAllAttributes(args[0], args[1]);
+      this._setAvatar(avatar);
+    }
+    else if (args.length == 1) {
+      this._setAvatar(args[0]);
     }
     else {
-      ApplicativeUser.throwError("setAvatar", "Expected an object Avatar.");
+      ApplicativeUser.throwError("setAvatar", "Expected 1 argument or 2 arguments.");
+    }
+  }
+
+  public setEmail(val: string): void {
+    if (this.isEmailLegal(val)) {
+      this.email = val;
+    }
+    else {
+      ApplicativeUser.throwError("setEmail", "Expected an email address.");
     }
   }
 
@@ -130,28 +148,44 @@ export class ApplicativeUser {
     }
   }
 
-  public isAmountOfCompaniesToInvestLegal(val: Number): boolean {
+  private _setAvatar(val: Avatar): void {
+    if (this.isAvatarLegal(val)) {
+      this.avatar = val;
+    }
+    else {
+      ApplicativeUser.throwError("_setAvatar", "Expected an object Avatar.");
+    }
+  }
+
+  private isAmountOfCompaniesToInvestLegal(val: Number): boolean {
     if (isInteger(val)) {
       return true;
     }
     return false;
   }
 
-  public isAvatarLegal(val: Avatar): boolean {
+  private isAvatarLegal(val: Avatar): boolean {
     if (val) {
       return true;
     }
     return false;
   }
 
-  public isFirstNameLegal(val: string): boolean {
+  private isEmailLegal(val: string): boolean {
+    if (isEmail(val)) {
+      return true;
+    }
+    return false;
+  }
+
+  private isFirstNameLegal(val: string): boolean {
     if (isNonEmptyString(val)) {
       return true;
     }
     return false;
   }
 
-  public isLastNameLegal(val: string): boolean {
+  private isLastNameLegal(val: string): boolean {
     if (isNonEmptyString(val)) {
       return true;
     }

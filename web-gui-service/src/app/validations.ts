@@ -6,6 +6,14 @@ function isBase64EncodedPng(val: string): boolean {
   return false;
 }
 
+function isEmail(val: string): boolean {
+  if (isNonEmptyString(val)) {
+    let regexp = new RegExp("^([a-z]+|[0-9]+)\\.[a-z,\\.,0-9]*\\@([a-z]+|[0-9]+)[a-z,\\.,0-9]*$");
+    return regexp.test(val);
+  }
+  return false;
+}
+
 function isInteger(val: Number): boolean {
   if (val) {
     return val > 0;
@@ -28,9 +36,19 @@ function isNonEmptyString(val: string): boolean {
   return false;
 }
 
+function isStockAcronymLegal(val: string): boolean {
+  if (isNonEmptyString(val)) {
+    let regexp = new RegExp("^([a-z]|[A-Z])+$");
+    return regexp.test(val);
+  }
+  return false;
+}
+
 export {
   isBase64EncodedPng,
+  isEmail,
   isInteger,
   isLink,
-  isNonEmptyString
+  isNonEmptyString,
+  isStockAcronymLegal
 }

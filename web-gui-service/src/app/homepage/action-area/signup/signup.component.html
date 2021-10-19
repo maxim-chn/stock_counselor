@@ -1,1 +1,35 @@
-<p>signup works!</p>
+<div [appSignupRequestContainer] class="request-container">
+  <div class="request-input-details">
+    <div class="request-input-detail">
+      First name:
+    </div>
+    <input #firstName type="text">
+  </div>
+  <div class="request-input-details">
+    <div class="request-input-detail">
+      Last name:
+    </div>
+    <input #lastName type="text">
+  </div>
+  <div class="request-input-details">
+    <div class="request-input-detail">
+      Email:
+    </div>
+    <input #email type="email">
+  </div>
+  <div class="request-submission-container">
+    <button (onclick)="submit(#firstName.value, #lastName.value, #email.value)">
+      Submit
+    </button>
+  </div>
+</div>
+<div [appSignupRequestErrorContainer] class="request-error-container">
+  <div class="error-message">
+    {{errorMessage}}
+  </div>
+  <div class="request-submission-container">
+    <button (onclick)="dismissErrorMessage()">
+      Dismiss
+    </button>
+  </div>
+</div>

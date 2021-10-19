@@ -1,1 +1,30 @@
-<p>calculate-investment-recommendation works!</p>
+<div [appCalculateInvestmentRecommendationRequestContainer] class="request-container">
+  <div class="request-input-details">
+    Filter through all the collected financial reports at once!
+  </div>
+  <div class="request-submission-container">
+    <button (onclick)="submit()">
+      Submit
+    </button>
+  </div>
+</div>
+<div [appCalculateInvestmentRecommendationRequestErrorContainer] class="request-error-container">
+  <div class="error-message">
+    {{errorMessage}}
+  </div>
+  <div class="request-submission-container">
+    <button (onclick)="dismissErrorMessage()">
+      Dismiss
+    </button>
+  </div>
+</div>
+<div [appCalculateInvestmentRecommendationResponseContainer] class="response-container">
+  <div class="response-message">
+    {{responseMessage}}
+  </div>
+  <div class="request-submission-container">
+    <button (onclick)="dismissResponseMessage()">
+      Dismiss
+    </button>
+  </div>
+</div>

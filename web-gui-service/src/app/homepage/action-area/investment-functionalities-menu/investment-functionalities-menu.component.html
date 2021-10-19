@@ -1,0 +1,12 @@
+<div *ngIf="nonGuest" class="navigation-container">
+  <div class="button-link-container">
+    <button (onclick)="collectStockData()">
+      Collect financial data
+    </button>
+  </div>
+  <div class="button-link-container">
+    <button (onclick)="calculateInvestmentRecommendation()">
+      Calculate investment recommendation
+    </button>
+  </div>
+</div>

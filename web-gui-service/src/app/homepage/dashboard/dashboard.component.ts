@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { LoggerService } from 'src/app/logger.service';
 
-import { User } from 'src/app/homepage/user';
+import { ApplicativeUser } from 'src/app/homepage/user';
+import { ApplicativeUserState } from '../user-state';
 import { UserService } from 'src/app/homepage/user.service';
 
 @Component({
@@ -10,28 +12,36 @@ import { UserService } from 'src/app/homepage/user.service';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.sass']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnDestroy, OnInit {
 
-  public user: User;
+  public className: string;
+  public user: ApplicativeUser;
+
+  private userState: Subscription;
   
   constructor(private loggerService: LoggerService, private userService: UserService) {
-    this.user = new User();
+    this.className = DashboardComponent.name;
+    this.user = new ApplicativeUser();
+    this.userState = new Subscription();
+  }
+
+  ngOnDestroy(): void {
+    this.userState.unsubscribe();
   }
 
   ngOnInit(): void {
-    this.userService.getUser().subscribe({
-      next: val => this.nextUser(val),
+    this.userService.state.subscribe({
+      next: val => this.userStateChanged(val),
       error: err => this.userServiceError(err)
     });
   }
-
-  private nextUser(val: User): void {
-    this.user = val;
-  }
-
+  
   private userServiceError(err: Error): void {
-    let errMsg = `Failed.\n${err}`;
-    this.loggerService.error(DashboardComponent.name, "userServiceError", errMsg);
+    let errMsg = `${this.userService.className} has failed.\n${err}`;
+    this.loggerService.error(this.className, "userServiceError", errMsg);
   }
-
+  
+  private userStateChanged(val: ApplicativeUserState): void {
+    this.user = this.userService.user;
+  }
 }

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -10,13 +11,25 @@ import { WebsiteMenuComponent } from './homepage/website-menu/website-menu.compo
 import { DashboardComponent } from './homepage/dashboard/dashboard.component';
 import { AcknowledgementsBoardComponent } from './homepage/acknowledgements-board/acknowledgements-board.component';
 import { ActionAreaComponent } from './homepage/action-area/action-area.component';
-import { CalculateInvestmentRecommendationComponent } from './homepage/action-area/calculate-investment-recommendation/calculate-investment-recommendation.component';
+import { CalculateInvestmentRecommendationComponent }
+  from './homepage/action-area/calculate-investment-recommendation/calculate-investment-recommendation.component';
 import { CollectStockDataComponent } from './homepage/action-area/collect-stock-data/collect-stock-data.component';
 import { GreetingComponent } from './homepage/action-area/greeting/greeting.component';
 import { LoginComponent } from './homepage/action-area/login/login.component';
 import { SignupComponent } from './homepage/action-area/signup/signup.component';
 import { GreetingForGuestDirective } from './homepage/action-area/greeting/greeting-for-guest.directive';
 import { GreetingForUserDirective } from './homepage/action-area/greeting/greeting-for-user.directive';
+import { LoginRequestContainerDirective } from './homepage/action-area/login/login-request-container.directive';
+import { LoginRequestErrorContainerDirective } from './homepage/action-area/login/login-request-error-container.directive';
+import { SignupRequestContainerDirective } from './homepage/action-area/signup/signup-request-container.directive';
+import { SignupRequestErrorContainerDirective } from './homepage/action-area/signup/signup-request-error-container.directive';
+import { InvestmentFunctionalitiesMenuComponent } from './homepage/action-area/investment-functionalities-menu/investment-functionalities-menu.component';
+import { CollectStockDataRequestContainerDirective } from './homepage/action-area/collect-stock-data/collect-stock-data-request-container.directive';
+import { CollectStockDataRequestErrorContainerDirective } from './homepage/action-area/collect-stock-data/collect-stock-data-request-error-container.directive';
+import { CollectStockDataResponseContainerDirective } from './homepage/action-area/collect-stock-data/collect-stock-data-response-container.directive';
+import { CalculateInvestmentRecommendationRequestContainerDirective } from './homepage/action-area/calculate-investment-recommendation/calculate-investment-recommendation-request-container.directive';
+import { CalculateInvestmentRecommendationRequestErrorContainerDirective } from './homepage/action-area/calculate-investment-recommendation/calculate-investment-recommendation-request-error-container.directive';
+import { CalculateInvestmentRecommendationResponseContainerDirective } from './homepage/action-area/calculate-investment-recommendation/calculate-investment-recommendation-response-container.directive';
 
 @NgModule({
   declarations: [
@@ -34,11 +47,23 @@ import { GreetingForUserDirective } from './homepage/action-area/greeting/greeti
     LoginComponent,
     SignupComponent,
     GreetingForGuestDirective,
-    GreetingForUserDirective
+    GreetingForUserDirective,
+    LoginRequestContainerDirective,
+    LoginRequestErrorContainerDirective,
+    SignupRequestContainerDirective,
+    SignupRequestErrorContainerDirective,
+    InvestmentFunctionalitiesMenuComponent,
+    CollectStockDataRequestContainerDirective,
+    CollectStockDataRequestErrorContainerDirective,
+    CollectStockDataResponseContainerDirective,
+    CalculateInvestmentRecommendationRequestContainerDirective,
+    CalculateInvestmentRecommendationRequestErrorContainerDirective,
+    CalculateInvestmentRecommendationResponseContainerDirective
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

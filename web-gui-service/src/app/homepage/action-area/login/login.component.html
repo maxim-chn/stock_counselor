@@ -1,4 +1,4 @@
-<div class="request-container">
+<div [appLoginRequestContainer] class="request-container">
   <div class="request-input-details">
     <div class="request-input-detail">
       <label for="#firstName">
@@ -22,6 +22,16 @@
   <div class="request-submission-container">
     <button (onlick)="submit(#firstName.value, #lastName.value, #email.value)">
       Submit
+    </button>
+  </div>
+</div>
+<div [appLoginRequestErrorContainer] class="request-error-container">
+  <div class="error-message">
+    {{errorMessage}}
+  </div>
+  <div class="request-submission-container">
+    <button (onclick)="dismissErrorMessage()">
+      Dismiss
     </button>
   </div>
 </div>
