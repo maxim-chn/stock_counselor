@@ -19,6 +19,7 @@ export class CollectStockDataComponent implements OnInit {
   public className: string;
   public errorMessage: string;
   public responseMessage: string;
+  public stockAcronym: string;
 
   constructor(
     private backendApiService: BackendApiService,
@@ -30,6 +31,7 @@ export class CollectStockDataComponent implements OnInit {
     this.className = CollectStockDataComponent.name;
     this.errorMessage = "No error";
     this.responseMessage = "No response";
+    this.stockAcronym = "No value";
     this.displayRequestContainer();
   }
 
@@ -44,9 +46,9 @@ export class CollectStockDataComponent implements OnInit {
     this.displayRequestContainer();
   }
 
-  public submit(stockAcronym: string): void {
-    if (isStockAcronymLegal(stockAcronym)) {
-      this.backendApiService.collectStockData(stockAcronym).subscribe({
+  public submit(): void {
+    if (isStockAcronymLegal(this.stockAcronym)) {
+      this.backendApiService.collectStockData(this.stockAcronym).subscribe({
         next: val => this.nextBackendResponse(val),
         error: err => this.backendApiServiceError(err)
       });
@@ -55,6 +57,10 @@ export class CollectStockDataComponent implements OnInit {
       let errMsg = "You have used a wrong stock acronym format.\nThe right format, for example, is msft or MSFT.";
       this.displayRequestErrorContainer(errMsg);
     }
+  }
+
+  public stockAcronymUpdated(event: Event): void {
+    this.stockAcronym = (<HTMLInputElement>event.target).value;
   }
 
   private backendApiServiceError(err: Error): void {

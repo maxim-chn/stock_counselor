@@ -1,0 +1,16 @@
+@import '../action-area.component'
+
+.animated
+  @include animated-scale-property
+
+.non-visible-non-rendered
+  @include non-rendered
+  @include non-visible
+
+.non-visible-rendered
+  @include rendered-block
+  @include non-visible
+
+.rendered-visible
+  @include rendered-block
+  @include visible

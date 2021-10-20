@@ -1,19 +1,19 @@
-<div [appCollectStockDataRequestContainer] class="request-container">
+<div appCollectStockDataRequestContainer class="request-container">
   <div class="request-input-details">
     <div class="request-input-detail">
-      <label for="#stockSymbol">
+      <label for="stockSymbol">
         Stock symbol:
       </label>
-      <input #stockSymbol type="text">
+      <input id="stockSymbol" type="text" (change)="stockAcronymUpdated($event)">
     </div>
   </div>
   <div class="request-submission-container">
-    <button (onclick)="submit(#stockSymbol.value)">
+    <button (onclick)="submit()">
       Submit
     </button>
   </div>
 </div>
-<div [appCollectStockDataRequestErrorContainer] class="request-error-container">
+<div appCollectStockDataRequestErrorContainer class="request-error-container">
   <div class="error-message">
     {{errorMessage}}
   </div>
@@ -23,7 +23,7 @@
     </button>
   </div>
 </div>
-<div [appCollectStockDataResponseContainer] class="response-container">
+<div appCollectStockDataResponseContainer class="response-container">
   <div class="response-message">
     {{responseMessage}}
   </div>

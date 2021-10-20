@@ -19,8 +19,6 @@ import { LoginComponent } from './homepage/action-area/login/login.component';
 import { SignupComponent } from './homepage/action-area/signup/signup.component';
 import { GreetingForGuestDirective } from './homepage/action-area/greeting/greeting-for-guest.directive';
 import { GreetingForUserDirective } from './homepage/action-area/greeting/greeting-for-user.directive';
-import { LoginRequestContainerDirective } from './homepage/action-area/login/login-request-container.directive';
-import { LoginRequestErrorContainerDirective } from './homepage/action-area/login/login-request-error-container.directive';
 import { SignupRequestContainerDirective } from './homepage/action-area/signup/signup-request-container.directive';
 import { SignupRequestErrorContainerDirective } from './homepage/action-area/signup/signup-request-error-container.directive';
 import { InvestmentFunctionalitiesMenuComponent } from './homepage/action-area/investment-functionalities-menu/investment-functionalities-menu.component';
@@ -48,8 +46,6 @@ import { CalculateInvestmentRecommendationResponseContainerDirective } from './h
     SignupComponent,
     GreetingForGuestDirective,
     GreetingForUserDirective,
-    LoginRequestContainerDirective,
-    LoginRequestErrorContainerDirective,
     SignupRequestContainerDirective,
     SignupRequestErrorContainerDirective,
     InvestmentFunctionalitiesMenuComponent,
@@ -65,7 +61,19 @@ import { CalculateInvestmentRecommendationResponseContainerDirective } from './h
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [],
+  exports: [],
+  providers: [
+    GreetingForGuestDirective,
+    GreetingForUserDirective,
+    SignupRequestContainerDirective,
+    SignupRequestErrorContainerDirective,
+    CollectStockDataRequestContainerDirective,
+    CollectStockDataRequestErrorContainerDirective,
+    CollectStockDataResponseContainerDirective,
+    CalculateInvestmentRecommendationRequestContainerDirective,
+    CalculateInvestmentRecommendationRequestErrorContainerDirective,
+    CalculateInvestmentRecommendationResponseContainerDirective
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

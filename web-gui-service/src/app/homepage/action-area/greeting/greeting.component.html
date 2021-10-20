@@ -1,10 +1,10 @@
-<div [appGreetingForGuest]>
-  <p *ngFor="paragraph of guestParagraphs">
+<div appGreetingForGuest>
+  <p *ngFor="let paragraph of guestParagraphs">
     {{paragraph}}
   </p>  
 </div>
-<div [appGreetingForUser]>
-  <p *ngFor="paragraph of userParagraphs">
+<div appGreetingForUser>
+  <p *ngFor="let paragraph of userParagraphs">
     {{paragraph}}
   </p>
 </div>

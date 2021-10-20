@@ -3,17 +3,17 @@
 </div>
 <div class="navigation-container">
   <div *ngIf="guestMode" class="button-link-container">
-    <button (onclick)="login()">
+    <button (click)="login()">
       Login
     </button>
   </div>
   <div class="button-link-container">
-    <button (onclick)="signup()">
+    <button (click)="signup()">
       Signup
     </button>
   </div>
   <div *ngIf="!guestMode" class="button-link-container">
-    <button (onclick)="logout()">
+    <button (click)="logout()">
       Logout
     </button>
   </div>

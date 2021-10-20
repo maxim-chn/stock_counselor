@@ -8,9 +8,11 @@ import { Copyright } from 'src/app/copyright';
 })
 export class CopyrightService {
 
+  public className: string;
   private copyrights: Array<Copyright>;
 
   constructor() {
+    this.className = CopyrightService.name;
     this.copyrights = [
       new Copyright()
     ];

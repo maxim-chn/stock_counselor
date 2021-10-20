@@ -1,1 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
+
+@mixin animated-scale-property()
+  transition-duration: 1s
+  transition-property: opacity
+
+@mixin non-rendered()
+  display: none
+
+@mixin non-visible()
+  opacity: 0
+
+@mixin rendered-block()
+  display: block
+
+@mixin rendered-inline()
+  display: inline
+
+@mixin visible()
+  opacity: 1

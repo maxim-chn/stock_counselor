@@ -1,29 +1,35 @@
-<div [appSignupRequestContainer] class="request-container">
+<div appSignupRequestContainer class="request-container">
   <div class="request-input-details">
     <div class="request-input-detail">
-      First name:
+      <label for="firstName">
+        First name:
+      </label>
+      <input id="firstName" type="text" (change)="firstNameUpdated($event)">
     </div>
-    <input #firstName type="text">
   </div>
   <div class="request-input-details">
     <div class="request-input-detail">
-      Last name:
+      <label for="lastName">
+        Last name:
+      </label>
+      <input id="lastName" type="text" (change)="lastNameUpdated($event)">
     </div>
-    <input #lastName type="text">
   </div>
   <div class="request-input-details">
     <div class="request-input-detail">
-      Email:
+      <label for="email">
+        Email:
+      </label>
+      <input id="email" type="email" (change)="emailUpdated($event)">
     </div>
-    <input #email type="email">
   </div>
   <div class="request-submission-container">
-    <button (onclick)="submit(#firstName.value, #lastName.value, #email.value)">
+    <button (onclick)="submit()">
       Submit
     </button>
   </div>
 </div>
-<div [appSignupRequestErrorContainer] class="request-error-container">
+<div appSignupRequestErrorContainer class="request-error-container">
   <div class="error-message">
     {{errorMessage}}
   </div>

@@ -15,7 +15,10 @@ function isEmail(val: string): boolean {
 }
 
 function isInteger(val: Number): boolean {
-  if (val) {
+  if (val === 0) {
+    return true;
+  }
+  else if (val) {
     return val > 0;
   }
   return false;

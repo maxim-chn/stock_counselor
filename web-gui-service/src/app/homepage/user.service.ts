@@ -44,10 +44,10 @@ export class UserService {
     let result = ApplicativeUser.withAllAttributes(
       0,
       "Anonymous user avatar",
-      "Anonymous user img src",
-      "who@am.i",
-      "Joe?",
-      "Is that you?"
+      "data:image/png;base64,BROKEN_VALUE",
+      "some.user@domain.com",
+      "Some",
+      "User"
     );
     return result;
   } 

@@ -12,10 +12,15 @@ import { LoggerService } from 'src/app/logger.service';
 })
 export class AcknowledgementsBoardComponent implements OnInit {
 
-  private copyrights: Array<Copyright>;
+  public className: string;
+  public copyrights: Array<Copyright>;
 
-  constructor(private copyrightService: CopyrightService, private loggerService: LoggerService) {
-    this.copyrights = [];
+  constructor(
+    private copyrightService: CopyrightService,
+    private loggerService: LoggerService
+    ) {
+      this.className = AcknowledgementsBoardComponent.name;
+      this.copyrights = [];
   }
 
   ngOnInit(): void {
@@ -26,8 +31,8 @@ export class AcknowledgementsBoardComponent implements OnInit {
   }
 
   private copyrightServiceError(err: Error): void {
-    let errMsg = `Failed.\n${err}`;
-    this.loggerService.error(AcknowledgementsBoardComponent.name, "copyrightServiceError", errMsg);
+    let errMsg = `${this.copyrightService.className} has failed.\n${err}`;
+    this.loggerService.error(this.className, "copyrightServiceError", errMsg);
   }
 
   private nextCopyright(val: Copyright): void {

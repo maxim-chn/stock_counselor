@@ -11,14 +11,17 @@ import { SignupRequestContainerDirective } from './signup-request-container.dire
 import { SignupRequestErrorContainerDirective } from './signup-request-error-container.directive';
 
 @Component({
-  selector: 'app-signup',
+  selector: 'action-area-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.sass']
 })
 export class SignupComponent implements OnInit {
 
   public className: string;
+  public email: string;
   public errorMessage: string;
+  public firstName: string;
+  public lastName: string;
   
   constructor(
     private backendApiService: BackendApiService,
@@ -28,7 +31,10 @@ export class SignupComponent implements OnInit {
     private UserService: UserService
   ) {
     this.className = SignupComponent.name;
+    this.email = "No value";
     this.errorMessage = "No error";
+    this.firstName = "No value";
+    this.lastName = "No value";
   }
 
   ngOnInit(): void {
@@ -39,13 +45,25 @@ export class SignupComponent implements OnInit {
     this.displayRequestForm();
   }
 
-  public submit(firstName: string, lastName: string, email: string): void {
+  public emailUpdated(event: Event): void {
+    this.email = (<HTMLInputElement>event.target).value;
+  }
+
+  public firstNameUpdated(event: Event): void {
+    this.firstName = (<HTMLInputElement>event.target).value;
+  }
+
+  public lastNameUpdated(event: Event): void {
+    this.lastName = (<HTMLInputElement>event.target).value;
+  }
+
+  public submit(): void {
     let userToSubmit = new ApplicativeUser();
 
     try {
-      userToSubmit.email = email;
-      userToSubmit.firstName = firstName;
-      userToSubmit.lastName = lastName;
+      userToSubmit.setEmail(this.email);
+      userToSubmit.setFirstName(this.firstName);
+      userToSubmit.setLastName(this.lastName);
     }
     catch (err) {
       let errMsg = `Failed to update ApplicativeUser object attributes.\n${err}`;
@@ -63,7 +81,8 @@ export class SignupComponent implements OnInit {
   private backendApiSignupRequestError(err: Error): void {
     let errMsg = `Failed to signup against the backend server.\n${err}`;
     this.loggerService.error(this.className, "backendApiSginupRequestError", errMsg);
-    this.displayError(errMsg);
+    let displayErrMsg = "We have failed to contact the backend server";
+    this.displayError(displayErrMsg);
   }
 
   private displayError(val: string): void {

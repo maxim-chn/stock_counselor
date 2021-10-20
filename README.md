@@ -34,3 +34,6 @@ an option to bypass security policy. For example
 ```
 powershell -ExecutionPolicy Bypass -File .\run.ps1 "data_gathering_main_service"
 ```
+
+# TODO
+2. Examing signup. Fix Directive providers.

@@ -1,36 +1,36 @@
-<div [appLoginRequestContainer] class="request-container">
+<div [ngClass]="requestContainerClasses">
   <div class="request-input-details">
     <div class="request-input-detail">
-      <label for="#firstName">
+      <label for="firstName">
         First name:
       </label>
-      <input #firstName type="text">
+      <input id="firstName" type="text" (change)="firstNameUpdated($event)">
     </div>
     <div class="request-input-detail">
-      <label for="#lastName">
+      <label for="lastName">
         Last name:
       </label>
-      <input #lastName type="text">
+      <input id="lastName" type="text" (change)="lastNameUpdated($event)">
     </div>
     <div class="request-input-detail">
-      <label for="#email">
+      <label for="email">
         Email:
       </label>
-      <input #email type="email">
+      <input id="email" type="email" (change)="emailUpdated($event)">
     </div>
   </div>
   <div class="request-submission-container">
-    <button (onlick)="submit(#firstName.value, #lastName.value, #email.value)">
+    <button (click)="submit()">
       Submit
     </button>
   </div>
 </div>
-<div [appLoginRequestErrorContainer] class="request-error-container">
+<div [ngClass]="requestErrorContainerClasses">
   <div class="error-message">
     {{errorMessage}}
   </div>
   <div class="request-submission-container">
-    <button (onclick)="dismissErrorMessage()">
+    <button (click)="dismissErrorMessage()">
       Dismiss
     </button>
   </div>

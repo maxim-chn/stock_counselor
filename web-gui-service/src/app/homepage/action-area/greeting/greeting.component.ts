@@ -71,7 +71,7 @@ export class GreetingComponent implements OnInit, OnDestroy {
       this.greetingForGuest.hide();
       this.greetingForUser.show();
     }
-    else if (val == ApplicativeUserState.LOGGED_OUT) {
+    else if (val == ApplicativeUserState.LOGGED_OUT || val == ApplicativeUserState.ANONYMOUS) {
       this.greetingForUser.hide();
       this.greetingForGuest.show();
     }
