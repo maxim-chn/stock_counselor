@@ -1,4 +1,4 @@
-<div appSignupRequestContainer class="request-container">
+<div [ngClass]="requestContainerClasses">
   <div class="request-input-details">
     <div class="request-input-detail">
       <label for="firstName">
@@ -24,17 +24,17 @@
     </div>
   </div>
   <div class="request-submission-container">
-    <button (onclick)="submit()">
+    <button (click)="submit()">
       Submit
     </button>
   </div>
 </div>
-<div appSignupRequestErrorContainer class="request-error-container">
+<div [ngClass]="requestErrorContainerClasses">
   <div class="error-message">
     {{errorMessage}}
   </div>
   <div class="request-submission-container">
-    <button (onclick)="dismissErrorMessage()">
+    <button (click)="dismissErrorMessage()">
       Dismiss
     </button>
   </div>

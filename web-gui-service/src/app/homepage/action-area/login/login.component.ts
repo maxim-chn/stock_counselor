@@ -2,25 +2,36 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { LoggerService } from 'src/app/logger.service';
 
-import { removeFromStringArray } from 'src/app/utils';
-
 import { ApplicativeUser } from '../../user';
 import { UserService } from '../../user.service';
+
 import { BackendApiService } from '../backend-api.service';
+import { ComponentWithUserDetailsForRequest } from '../component-with-user-details-for-request';
+import {
+  hideRequestContainer,
+  initialRequestContainerClasses,
+  showRequestContainer,
+  WithRequestContainer
+} from '../with-request-container';
+import {
+  hideRequestErrorContainer,
+  initialRequestErrorContainerClasses,
+  showRequestErrorContainer,
+  WithRequestErrorContainer
+} from '../with-request-error-container';
+
 
 @Component({
   selector: 'action-area-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.sass']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent extends ComponentWithUserDetailsForRequest implements
+OnInit, WithRequestContainer, WithRequestErrorContainer {
 
-  public className: string;
-  public email: string;
-  public errorMessage: string;
-  public firstName: string;
-  public lastName: string;
   public animationTimeout: number;
+  public className: string;
+  public errorMessage: string;
 
   @Input() requestContainerClasses: Array<string>;
   @Input() requestErrorContainerClasses: Array<string>;
@@ -30,52 +41,23 @@ export class LoginComponent implements OnInit {
     private loggerService: LoggerService,
     private userService: UserService
     ) {
+      super();
       this.animationTimeout = 100;
       this.className = LoginComponent.name;
-      this.email = "No value";
       this.errorMessage = "No error";
-      this.firstName = "No value";
-      this.lastName = "No value";
-      this.requestContainerClasses = [
-        "animated",
-        "non-visible-non-rendered"
-      ];
-      this.requestErrorContainerClasses = [
-        "animated",
-        "non-visible-non-rendered"
-      ]
+      this.requestContainerClasses = initialRequestContainerClasses();
+      this.requestErrorContainerClasses = initialRequestErrorContainerClasses();
     }
     
   ngOnInit(): void {
-    this.hideRequestErrorContainer();
-    this.showRequestContainer();
+    hideRequestErrorContainer(this);
+    showRequestContainer(this);
   }
 
   public dismissErrorMessage(): void {
-    this.hideRequestErrorContainer();
-    this.showRequestContainer();
-  }
-
-  public emailUpdated(event: Event): void {
-    this.email = (<HTMLInputElement>event.target).value;
-  }
-
-  public firstNameUpdated(event: Event): void {
-    this.firstName = (<HTMLInputElement>event.target).value;
-  }
-
-  public lastNameUpdated(event: Event): void {
-    this.lastName = (<HTMLInputElement>event.target).value;
-  }
-
-  public hideRequestContainer(): void {
-    removeFromStringArray(this.requestContainerClasses, "rendered-visible");
-    this.requestContainerClasses.push("non-visible-non-rendered");
-  }
-
-  public hideRequestErrorContainer(): void {
-    removeFromStringArray(this.requestErrorContainerClasses, "rendered-visible");
-    this.requestErrorContainerClasses.push("non-visible-non-rendered");
+    this.errorMessage = "No error";
+    hideRequestErrorContainer(this);
+    showRequestContainer(this);
   }
 
   public submit(): void {
@@ -108,32 +90,8 @@ export class LoginComponent implements OnInit {
 
   private displayError(val: string): void {
     this.errorMessage = val;
-    this.hideRequestContainer();
-    this.showRequestErrorContainer();
-  }
-
-  private showRequestContainer(): void {
-    removeFromStringArray(this.requestContainerClasses, "non-visible-non-rendered");
-    this.requestContainerClasses.push("non-visible-rendered");
-    setTimeout(
-      () => {
-        removeFromStringArray(this.requestContainerClasses, "non-visible-rendered");
-        this.requestContainerClasses.push("rendered-visible");
-      },
-      this.animationTimeout
-    );
-  }
-
-  private showRequestErrorContainer(): void {
-    removeFromStringArray(this.requestErrorContainerClasses, "non-visible-non-rendered");
-    this.requestErrorContainerClasses.push("non-visible-rendered");
-    setTimeout(
-      () => {
-        removeFromStringArray(this.requestErrorContainerClasses, "non-visible-rendered");
-        this.requestErrorContainerClasses.push("rendered-visible");
-      },
-      this.animationTimeout
-    );
+    hideRequestContainer(this);
+    showRequestErrorContainer(this);
   }
 
   private nextLoggedInUser(val: ApplicativeUser): void {

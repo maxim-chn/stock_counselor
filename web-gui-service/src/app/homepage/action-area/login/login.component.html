@@ -1,35 +1,35 @@
 <div [ngClass]="requestContainerClasses">
-  <div class="request-input-details">
-    <div class="request-input-detail">
+  <div class="debug request-input-details">
+    <div class="debug request-input-detail">
       <label for="firstName">
         First name:
       </label>
       <input id="firstName" type="text" (change)="firstNameUpdated($event)">
     </div>
-    <div class="request-input-detail">
+    <div class="debug request-input-detail">
       <label for="lastName">
         Last name:
       </label>
       <input id="lastName" type="text" (change)="lastNameUpdated($event)">
     </div>
-    <div class="request-input-detail">
+    <div class="debug request-input-detail">
       <label for="email">
         Email:
       </label>
       <input id="email" type="email" (change)="emailUpdated($event)">
     </div>
   </div>
-  <div class="request-submission-container">
+  <div class="debug request-submission-container">
     <button (click)="submit()">
       Submit
     </button>
   </div>
 </div>
 <div [ngClass]="requestErrorContainerClasses">
-  <div class="error-message">
+  <div class="debug error-message">
     {{errorMessage}}
   </div>
-  <div class="request-submission-container">
+  <div class="debug request-submission-container">
     <button (click)="dismissErrorMessage()">
       Dismiss
     </button>

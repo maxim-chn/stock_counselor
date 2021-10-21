@@ -1,4 +1,19 @@
 @import '../homepage.component'
 
+.animated
+  @include animated-scale-property
+
 .no-overflow
   overflow: hidden
+
+.non-visible-non-rendered
+  @include non-rendered
+  @include non-visible
+
+.non-visible-rendered
+  @include rendered-block
+  @include non-visible
+
+.rendered-visible
+  @include rendered-block
+  @include visible

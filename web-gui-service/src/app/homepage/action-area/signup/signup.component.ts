@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { LoggerService } from 'src/app/logger.service';
 
@@ -6,55 +6,57 @@ import { ApplicativeUser } from '../../user';
 import { UserService } from '../../user.service';
 
 import { BackendApiService } from '../backend-api.service';
-
-import { SignupRequestContainerDirective } from './signup-request-container.directive';
-import { SignupRequestErrorContainerDirective } from './signup-request-error-container.directive';
+import { ComponentWithUserDetailsForRequest } from '../component-with-user-details-for-request';
+import {
+  hideRequestContainer,
+  initialRequestContainerClasses,
+  showRequestContainer,
+  WithRequestContainer
+} from '../with-request-container';
+import {
+  hideRequestErrorContainer,
+  initialRequestErrorContainerClasses,
+  showRequestErrorContainer,
+  WithRequestErrorContainer
+} from '../with-request-error-container';
 
 @Component({
   selector: 'action-area-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.sass']
 })
-export class SignupComponent implements OnInit {
+export class SignupComponent extends ComponentWithUserDetailsForRequest implements
+OnInit, WithRequestContainer, WithRequestErrorContainer {
 
+  public animationTimeout: number;
   public className: string;
-  public email: string;
   public errorMessage: string;
-  public firstName: string;
-  public lastName: string;
+  
+  @Input() requestContainerClasses: Array<string>;
+  @Input() requestErrorContainerClasses: Array<string>;
   
   constructor(
     private backendApiService: BackendApiService,
     private loggerService: LoggerService,
-    private requestContainerDirective: SignupRequestContainerDirective,
-    private requestErrorContainerDirective: SignupRequestErrorContainerDirective,
     private UserService: UserService
   ) {
+    super();
+    this.animationTimeout = 100;
     this.className = SignupComponent.name;
-    this.email = "No value";
     this.errorMessage = "No error";
-    this.firstName = "No value";
-    this.lastName = "No value";
+    this.requestContainerClasses = initialRequestContainerClasses();
+    this.requestErrorContainerClasses = initialRequestErrorContainerClasses();
   }
 
   ngOnInit(): void {
-    this.displayRequestForm();
+    hideRequestErrorContainer(this);
+    showRequestContainer(this);
   }
 
   public dismissErrorMessage(): void {
-    this.displayRequestForm();
-  }
-
-  public emailUpdated(event: Event): void {
-    this.email = (<HTMLInputElement>event.target).value;
-  }
-
-  public firstNameUpdated(event: Event): void {
-    this.firstName = (<HTMLInputElement>event.target).value;
-  }
-
-  public lastNameUpdated(event: Event): void {
-    this.lastName = (<HTMLInputElement>event.target).value;
+    this.errorMessage = "No error";
+    hideRequestErrorContainer(this);
+    showRequestContainer(this);
   }
 
   public submit(): void {
@@ -87,14 +89,9 @@ export class SignupComponent implements OnInit {
 
   private displayError(val: string): void {
     this.errorMessage = val;
-    this.requestContainerDirective.hide();
-    this.requestErrorContainerDirective.show();
-  }
-
-  private displayRequestForm(): void {
-    this.errorMessage = "No error";
-    this.requestContainerDirective.show();
-    this.requestErrorContainerDirective.hide();
+    hideRequestContainer(this);
+    console.log("After hideRequestContainer");
+    showRequestErrorContainer(this);
   }
 
   private nextSignedUpUser(val: ApplicativeUser): void {
