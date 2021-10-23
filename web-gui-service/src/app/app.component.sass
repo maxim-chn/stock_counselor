@@ -4,6 +4,14 @@
   margin: auto
   width: 90%
 
+.centered-horizontally
+  margin-left: auto
+  margin-right: auto
+  width: 80%
+
+.centered-content
+  text-align: center
+
 .debug
   border-width: 1px
   border-color: black
@@ -13,6 +21,26 @@
   display: inline-flex
   align-items: center
 
+.grid-primary-secondary-parts
+  display: grid
+  grid-template-columns: 30% 5% 30% 35%
+  grid-template-rows: auto
+  grid-template-areas: "secondary . primary primary"
+  padding-bottom: 1em
+  padding-left: 1em
+  padding-right: 1em
+  padding-top: 1em
+
+.grid-primary-secondary-parts-three-rows
+  @extend .grid-primary-secondary-parts
+  grid-template-areas: "secondary . primary primary", "secondary . primary primary", "secondary . primary primary"
+
+.primary
+  grid-area: primary
+
+.secondary
+  grid-area: secondary
+
 .margined-vertically
   margin-top: 1em
   margin-bottom: 1em
@@ -20,3 +48,6 @@
 .margined-horizontally
   margin-left: 1em
   margin-right: 1em
+
+.uses-parents-width
+  width: 100%

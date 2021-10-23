@@ -31,9 +31,9 @@ OnInit, WithRequestContainer, WithRequestErrorContainer {
   public animationTimeout: number;
   public className: string;
   public errorMessage: string;
-  
   @Input() requestContainerClasses: Array<string>;
   @Input() requestErrorContainerClasses: Array<string>;
+  public title: string;
   
   constructor(
     private backendApiService: BackendApiService,
@@ -46,6 +46,7 @@ OnInit, WithRequestContainer, WithRequestErrorContainer {
     this.errorMessage = "No error";
     this.requestContainerClasses = initialRequestContainerClasses();
     this.requestErrorContainerClasses = initialRequestErrorContainerClasses();
+    this.title = "Please enter your registration details below";
   }
 
   ngOnInit(): void {

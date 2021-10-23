@@ -1,40 +1,39 @@
 <div [ngClass]="requestContainerClasses">
-  <div class="request-input-details">
-    <div class="request-input-detail">
-      <label for="firstName">
+  <div class="debug centered-horizontally margined-vertically">
+    <h2 class="debug centered-horizontally centered-content">
+      {{title}}
+    </h2>
+    <div class="debug margined-horizontally margined-vertically grid-primary-secondary-parts-three-rows">
+      <label for="firstName" class="secondary">
         First name:
       </label>
-      <input id="firstName" type="text" (change)="firstNameUpdated($event)">
+      <input id="firstName" type="text" (change)="firstNameUpdated($event)" class="primary">
     </div>
-  </div>
-  <div class="request-input-details">
-    <div class="request-input-detail">
-      <label for="lastName">
+    <div class="debug margined-horizontally margined-vertically grid-primary-secondary-parts-three-rows">
+      <label for="lastName" class="secondary">
         Last name:
       </label>
-      <input id="lastName" type="text" (change)="lastNameUpdated($event)">
+      <input id="lastName" type="text" (change)="lastNameUpdated($event)" class="primary">
     </div>
-  </div>
-  <div class="request-input-details">
-    <div class="request-input-detail">
-      <label for="email">
+    <div class="debug margined-horizontally margined-vertically grid-primary-secondary-parts-three-rows">
+      <label for="email" class="secondary">
         Email:
       </label>
-      <input id="email" type="email" (change)="emailUpdated($event)">
+      <input id="email" type="email" (change)="emailUpdated($event)" class="primary">
     </div>
   </div>
-  <div class="request-submission-container">
-    <button (click)="submit()">
+  <div class="debug centered-horizontally centered-content margined-vertically">
+    <button (click)="submit()" class="uses-parents-width">
       Submit
     </button>
   </div>
 </div>
 <div [ngClass]="requestErrorContainerClasses">
-  <div class="error-message">
+  <div class="debug centered-horizontally centered-content margined-vertically">
     {{errorMessage}}
   </div>
-  <div class="request-submission-container">
-    <button (click)="dismissErrorMessage()">
+  <div class="debug centered-horizontally centered-content margined-vertically">
+    <button (click)="dismissErrorMessage()" class="uses-parents-width">
       Dismiss
     </button>
   </div>
