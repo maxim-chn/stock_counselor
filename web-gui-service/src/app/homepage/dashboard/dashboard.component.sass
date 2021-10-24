@@ -1,0 +1,6 @@
+@use "../homepage.component"
+
+.grid-primary-smaller-secondary-bigger
+  @extend .grid-primary-secondary-parts
+  grid-template-columns: 15% 20% 30% 5% 30%
+  grid-template-areas: "secondary secondary secondary . primary"

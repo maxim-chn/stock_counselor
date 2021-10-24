@@ -1,5 +1,8 @@
 @import '../styles'
 
+.animated
+  @include animated-scale-property
+
 .centered
   margin: auto
   width: 90%
@@ -48,6 +51,21 @@
 .margined-horizontally
   margin-left: 1em
   margin-right: 1em
+
+.no-overflow
+  overflow: hidden
+
+.non-visible-non-rendered
+  @include non-rendered
+  @include non-visible
+
+.non-visible-rendered
+  @include rendered-block
+  @include non-visible
+
+.rendered-visible
+  @include rendered-block
+  @include visible
 
 .uses-parents-width
   width: 100%

@@ -1,33 +1,41 @@
-<div class="user-details-container">
-  <div class="avatar-container">
-    <img src="user.avatar.imgSrc" alt="user.avatar.altText">
+<div class="debug centered centered-content margined-vertically margined-horizontally">
+  <h2 class="debug centered centered-content margined-vertically">
+    {{title}}
+  </h2>
+  <div [ngClass]="userSummaryContainerClasses">
+    <div class="debug margined-vertically margined-horizontally">
+      <img src="user.avatar.imgSrc" alt="user.avatar.altText">
+    </div>
+    <div class="debug margined-vertically margined-horizontally">
+      <div class="debug grid-primary-secondary-parts margined-vertically margined-horizontally">
+        <div class="debug secondary">
+          First name
+        </div>
+        <div class="debug primary">
+          {{user.firstName}}
+        </div>
+      </div>
+      <div class="debug grid-primary-secondary-parts margined-vertically margined-horizontally">
+        <div class="debug secondary">
+          Last name
+        </div>
+        <div class="debug primary">
+          {{user.lastName}}
+        </div>
+      </div>
+      <div class="debug grid-primary-smaller-secondary-bigger margined-vertically margined-horizontally">
+        <div class="debug secondary">
+          Companies suitable for investment
+        </div>
+        <div class="debug primary">
+          {{user.amountOfCompaniesToInvest}}
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="details-container">
-    <div class="detail-container">
-      <div class="detail-caption">
-        First name
-      </div>
-      <div class="detail-value">
-        {{user.firstName}}
-      </div>
-    </div>
-    <div class="detail-container">
-      <div class="detail-caption">
-        Last name
-      </div>
-      <div class="detail-value">
-        {{user.lastName}}
-      </div>
-    </div>
-  </div>
-</div>
-<div class="user-financial-data-container">
-  <div class="financial-data-container">
-    <div class="financial-data-caption">
-      Companies suitable for investment
-    </div>
-    <div class="financial-data-value">
-      {{user.amountOfCompaniesToInvest}}
+  <div [ngClass]="userSummaryErrorContainerClasses">
+    <div class="debug centered centered-content margined-vertically">
+      {{errorMessage}}
     </div>
   </div>
 </div>
