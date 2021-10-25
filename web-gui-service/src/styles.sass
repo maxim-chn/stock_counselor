@@ -1,9 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
 
-@mixin animated-scale-property()
-  transition-duration: 1s
-  transition-property: opacity
-
 @mixin non-rendered()
   display: none
 
@@ -16,5 +12,70 @@
 @mixin rendered-inline()
   display: inline
 
+@mixin thumbnail-medium-width()
+  @media (max-width: 1440px)
+    width: 50px
+
+@mixin thumbnail-medium-height()
+  @media (max-width: 1440px)
+    height: 50px
+
 @mixin visible()
   opacity: 1
+
+.animated
+  transition-duration: 1s
+  transition-property: opacity
+
+.centered
+  @media (max-width: 1440px)
+    margin: auto
+    width: 90%
+
+.centered-content
+  text-align: center
+
+.centered-horizontally
+  @media (max-width: 1440px)
+    margin-left: auto
+    margin-right: auto
+    width: 80%
+
+.debug
+  border-width: 0px
+  border-color: black
+  border-style: solid
+
+.margined-vertically
+  @media (max-width: 1440px)
+    margin-top: 10px
+    margin-bottom: 10px
+
+.margined-horizontally
+  @media (max-width: 1440px)
+    margin-left: 10px
+    margin-right: 10px
+
+.no-overflow
+  overflow: hidden
+
+.non-visible-non-rendered
+  @include non-rendered
+  @include non-visible
+
+.non-visible-rendered
+  @include rendered-block
+  @include non-visible
+
+.rendered-visible
+  @include rendered-block
+  @include visible
+
+.thumbnail-medium
+  @include thumbnail-medium-width
+  @include thumbnail-medium-height
+  @extend .margined-vertically
+  @extend .margined-horizontally
+
+.uses-parents-width
+  width: 100%

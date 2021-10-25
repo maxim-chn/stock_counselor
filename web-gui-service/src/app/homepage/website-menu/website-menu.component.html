@@ -1,19 +1,15 @@
-<div class="logo-container">
-  <img src="logo.imgSrc" alt="logo.altText">
-</div>
-<div class="navigation-container">
-  <div *ngIf="guestMode" class="button-link-container">
-    <button (click)="login()">
+<div class="debug inline-custom-dimensions uses-parents-width">
+  <div class="debug thumbnail-medium">
+    <img [src]="logo.imgSrc" [alt]="logo.altText">
+  </div>
+  <div class="debug inline-custom-dimensions matches-thumbnail-medium-height">
+    <button *ngIf="guestMode" class="matches-thumbnail-medium-height button-width button-margins" (click)="login()">
       Login
     </button>
-  </div>
-  <div class="button-link-container">
-    <button (click)="signup()">
+    <button *ngIf="guestMode" class="matches-thumbnail-medium-height button-width button-margins" (click)="signup()">
       Signup
     </button>
-  </div>
-  <div *ngIf="!guestMode" class="button-link-container">
-    <button (click)="logout()">
+    <button *ngIf="!guestMode" class="matches-thumbnail-medium-height button-width button-margins" (click)="logout()">
       Logout
     </button>
   </div>

@@ -1,29 +1,5 @@
 @import '../styles'
 
-.animated
-  @include animated-scale-property
-
-.centered
-  margin: auto
-  width: 90%
-
-.centered-horizontally
-  margin-left: auto
-  margin-right: auto
-  width: 80%
-
-.centered-content
-  text-align: center
-
-.debug
-  border-width: 1px
-  border-color: black
-  border-style: solid
-
-.displayed-inline-custom-dimensions
-  display: inline-flex
-  align-items: center
-
 .grid-primary-secondary-parts
   display: grid
   grid-template-columns: 30% 5% 30% 35%
@@ -43,29 +19,3 @@
 
 .secondary
   grid-area: secondary
-
-.margined-vertically
-  margin-top: 1em
-  margin-bottom: 1em
-
-.margined-horizontally
-  margin-left: 1em
-  margin-right: 1em
-
-.no-overflow
-  overflow: hidden
-
-.non-visible-non-rendered
-  @include non-rendered
-  @include non-visible
-
-.non-visible-rendered
-  @include rendered-block
-  @include non-visible
-
-.rendered-visible
-  @include rendered-block
-  @include visible
-
-.uses-parents-width
-  width: 100%
