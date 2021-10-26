@@ -1,12 +1,8 @@
-<div *ngIf="nonGuest" class="navigation-container">
-  <div class="button-link-container">
-    <button (onclick)="collectStockData()">
-      Collect financial data
-    </button>
-  </div>
-  <div class="button-link-container">
-    <button (onclick)="calculateInvestmentRecommendation()">
-      Calculate investment recommendation
-    </button>
-  </div>
+<div *ngIf="nonGuest" class="debug centered-horizontally-large-element inline-custom-dimensions">
+  <button class="debug button-width button-margins" (onclick)="collectStockData()">
+    Collect financial data
+  </button>
+  <button class="debug button-width button-margins" (onclick)="calculateInvestmentRecommendation()">
+    Calculate investment recommendation
+  </button>
 </div>

@@ -1,15 +1,15 @@
-<div class="debug inline-custom-dimensions uses-parents-width">
-  <div class="debug thumbnail-medium">
+<div class="debug whitespaced-completely content-inline-with-custom-dimensions-justified-center">
+  <div class="debug thumbnail-small">
     <img [src]="logo.imgSrc" [alt]="logo.altText">
   </div>
-  <div class="debug inline-custom-dimensions matches-thumbnail-medium-height">
-    <button *ngIf="guestMode" class="matches-thumbnail-medium-height button-width button-margins" (click)="login()">
+  <div class="debug whitespaced-horizontally content-inline-with-custom-dimensions-justified-center">
+    <button *ngIf="guestMode" class="button-small" (click)="login()">
       Login
     </button>
-    <button *ngIf="guestMode" class="matches-thumbnail-medium-height button-width button-margins" (click)="signup()">
+    <button *ngIf="guestMode" class="button-small" (click)="signup()">
       Signup
     </button>
-    <button *ngIf="!guestMode" class="matches-thumbnail-medium-height button-width button-margins" (click)="logout()">
+    <button *ngIf="!guestMode" class="button-small" (click)="logout()">
       Logout
     </button>
   </div>

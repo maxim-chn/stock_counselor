@@ -1,5 +1,36 @@
 /* You can add global styles to this file, and also import other style files */
 
+@mixin button-small-width()
+  @media (max-width: 1440px)
+    width: 120px
+
+@mixin button-small-height()
+  @media (max-width: 1440px)
+    height: 40px
+
+@mixin button-small-margins-horizontal()
+  @media (max-width: 1440px)
+    margin-left: 10px
+    margin-right: 10px
+
+@mixin button-small-margins-vertical()
+  @media (max-width: 1440px)
+    margin-bottom: 10px
+    margin-top: 10px
+
+@mixin container-large-width()
+  @media (max-width: 1440px)
+    width: 95%
+
+@mixin container-large-horizontal-margin()
+  @media (max-width: 1440px)
+    margin-left: auto
+    margin-right: auto
+
+@mixin container-large-vertical-margin()
+  @media (max-width: 1440px)
+    margin-top: 100px
+
 @mixin non-rendered()
   display: none
 
@@ -12,13 +43,21 @@
 @mixin rendered-inline()
   display: inline
 
-@mixin thumbnail-medium-width()
-  @media (max-width: 1440px)
-    width: 50px
-
 @mixin thumbnail-medium-height()
   @media (max-width: 1440px)
-    height: 50px
+    height: 100px
+
+@mixin thumbnail-medium-width()
+  @media (max-width: 1440px)
+    width: 100px
+
+@mixin thumbnail-small-width()
+  @media (max-width: 1440px)
+    width: 60px
+
+@mixin thumbnail-small-height()
+  @media (max-width: 1440px)
+    height: 60px
 
 @mixin visible()
   opacity: 1
@@ -26,11 +65,6 @@
 .animated
   transition-duration: 1s
   transition-property: opacity
-
-.centered
-  @media (max-width: 1440px)
-    margin: auto
-    width: 90%
 
 .centered-content
   text-align: center
@@ -41,10 +75,19 @@
     margin-right: auto
     width: 80%
 
+.centered-horizontally-large-element
+  @media (max-width)
+    margin-left: auto
+    margin-right: auto
+    width: 90%
+
 .debug
   border-width: 0px
   border-color: black
   border-style: solid
+
+.matches-thumbnail-medium-height
+  @include thumbnail-small-height
 
 .margined-vertically
   @media (max-width: 1440px)
@@ -70,12 +113,3 @@
 .rendered-visible
   @include rendered-block
   @include visible
-
-.thumbnail-medium
-  @include thumbnail-medium-width
-  @include thumbnail-medium-height
-  @extend .margined-vertically
-  @extend .margined-horizontally
-
-.uses-parents-width
-  width: 100%

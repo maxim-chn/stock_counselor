@@ -1,17 +1,6 @@
 @import '../homepage.component'
 
-.inline-custom-dimensions
-  display: inline-flex
-  align-items: center
-
-.matches-thumbnail-medium-height
-  @include thumbnail-medium-height
-
-.button-width
-  @media (max-width: 1440px)
-    width: 120px
-
-.button-margins
-  @media (max-width: 1440px)
-    margin-left: 10px
-    margin-right: 10px
+.button-small
+  @include button-small-width
+  @include button-small-height
+  @include button-small-margins-horizontal

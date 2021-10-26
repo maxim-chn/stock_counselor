@@ -64,11 +64,12 @@ export class BackendApiService {
     let parameters = this.parametersForLoginRequest(user);
     let requestUrl = this.urlForLoginRequest();
     let result = new Observable<ApplicativeUser>(subscriber => {
-      let futureResponse = this.httpClient.get<string>(requestUrl, { headers: headers, params: parameters });
-      futureResponse.subscribe({
-        next: val => this.responseForLoginRequest(val, subscriber),
-        error: err => this.failedResponseForLoginRequest(err, subscriber)
-      });
+      subscriber.next(this.userService.user);
+      // let futureResponse = this.httpClient.get<string>(requestUrl, { headers: headers, params: parameters });
+      // futureResponse.subscribe({
+      //   next: val => this.responseForLoginRequest(val, subscriber),
+      //   error: err => this.failedResponseForLoginRequest(err, subscriber)
+      // });
     });
     return result;
   }

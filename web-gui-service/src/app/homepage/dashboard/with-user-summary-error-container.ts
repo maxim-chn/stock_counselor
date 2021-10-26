@@ -8,8 +8,10 @@ function hideUserSummaryErrorContainer(obj: WithUserSummaryErrorContainer): void
 function intialUserSummaryErrorContainerClasses(): Array<string> {
   return [
     "animated",
-    "centered-horizontally",
-    "non-visible-non-rendered"
+    "container-large-centered-with-content-centered",
+    "debug",
+    "non-visible-non-rendered",
+    "whitespaced-vertically"
   ]
 }
 

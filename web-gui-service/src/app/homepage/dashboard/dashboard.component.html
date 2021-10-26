@@ -1,40 +1,44 @@
-<div class="debug centered centered-content margined-vertically margined-horizontally">
-  <h2 class="debug centered centered-content margined-vertically">
-    {{title}}
-  </h2>
+<div class="debug whitespaced-completely">
+  <div class="debug container-large-centered-with-content-centered whitespaced-vertically">
+    <h2>
+      {{title}}
+    </h2>
+  </div>
   <div [ngClass]="userSummaryContainerClasses">
-    <div class="debug margined-vertically margined-horizontally">
-      <img src="user.avatar.imgSrc" alt="user.avatar.altText">
-    </div>
-    <div class="debug margined-vertically margined-horizontally">
-      <div class="debug grid-primary-secondary-parts margined-vertically margined-horizontally">
-        <div class="debug secondary">
-          First name
-        </div>
-        <div class="debug primary">
-          {{user.firstName}}
-        </div>
+    <div class="debug whitespaced-vertically content-inline-with-custom-dimensions-justified-center">
+      <div class="debug thumbnail-medium">
+        <img [src]="user.avatar.imgSrc" [alt]="user.avatar.altText">
       </div>
-      <div class="debug grid-primary-secondary-parts margined-vertically margined-horizontally">
-        <div class="debug secondary">
-          Last name
+      <div class="debug whitespaced-completely">
+        <div class="debug whitespaced-completely grid-two-columns-one-row-with-whitespace">
+          <div class="debug grid-column-secondary whitespaced-completely">
+            First name
+          </div>
+          <div class="debug grid-column-primary whitespaced-completely">
+            {{user.firstName}}
+          </div>
         </div>
-        <div class="debug primary">
-          {{user.lastName}}
+        <div class="debug whitespaced-completely grid-two-columns-one-row-with-whitespace">
+          <div class="debug grid-column-secondary whitespaced-completely">
+            Last name
+          </div>
+          <div class="debug grid-column-primary whitespaced-completely">
+            {{user.lastName}}
+          </div>
         </div>
-      </div>
-      <div class="debug grid-primary-smaller-secondary-bigger margined-vertically margined-horizontally">
-        <div class="debug secondary">
-          Companies suitable for investment
-        </div>
-        <div class="debug primary">
-          {{user.amountOfCompaniesToInvest}}
+        <div class="debug whitespaced-completely grid-two-columns-one-row-with-whitespace">
+          <div class="debug grid-column-secondary whitespaced-completely">
+            Companies suitable for investment
+          </div>
+          <div class="debug grid-column-primary whitespaced-completely">
+            {{user.amountOfCompaniesToInvest}}
+          </div>
         </div>
       </div>
     </div>
   </div>
   <div [ngClass]="userSummaryErrorContainerClasses">
-    <div class="debug centered centered-content margined-vertically">
+    <div class="debug container-large-centered-with-content-centered whitespaced-vertically">
       {{errorMessage}}
     </div>
   </div>

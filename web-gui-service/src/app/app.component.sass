@@ -1,21 +1,52 @@
 @import '../styles'
 
-.grid-primary-secondary-parts
+.container-large-placed-middle
+  @include container-large-width
+  @include container-large-horizontal-margin
+  @include container-large-vertical-margin
+
+.container-large-centered
+  @include container-large-width
+  @include container-large-horizontal-margin
+
+.content-inline-with-custom-dimensions-justified-center
+  display: inline-flex
+  align-items: center
+
+.grid-two-columns-one-row-with-whitespace
   display: grid
-  grid-template-columns: 30% 5% 30% 35%
+  grid-template-columns: 40% 10% 50%
   grid-template-rows: auto
-  grid-template-areas: "secondary . primary primary"
-  padding-bottom: 1em
-  padding-left: 1em
-  padding-right: 1em
-  padding-top: 1em
+  grid-template-areas: "secondary . primary"
 
-.grid-primary-secondary-parts-three-rows
-  @extend .grid-primary-secondary-parts
-  grid-template-areas: "secondary . primary primary", "secondary . primary primary", "secondary . primary primary"
+.grid-two-columns-three-rows-with-whitespace
+  @extend .grid-two-columns-one-row-with-whitespace
+  grid-template-areas: "secondary . primary", "secondary . primary", "secondary . primary"
 
-.primary
+.grid-column-primary
   grid-area: primary
 
-.secondary
+.grid-column-secondary
   grid-area: secondary
+
+.thumbnail-medium
+  @include thumbnail-medium-width
+  @include thumbnail-medium-height
+  @extend .whitespaced-completely
+
+.thumbnail-small
+  @include thumbnail-small-width
+  @include thumbnail-small-height
+  @extend .whitespaced-completely
+
+.whitespaced-completely
+  @extend .whitespaced-horizontally
+  @extend .whitespaced-vertically
+
+.whitespaced-horizontally
+  margin-left: 5px
+  margin-right: 5px
+
+.whitespaced-vertically
+  margin-top: 5px
+  margin-bottom: 5px

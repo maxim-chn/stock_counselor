@@ -8,8 +8,10 @@ function hideUserSummaryContainer(obj: WithUserSummaryContainer): void {
 function initialUserSummaryContainerClasses(): Array<string> {
   return [
     "animatable",
-    "centered-horizontally",
-    "non-visible-non-rendered"
+    "container-large-centered-with-content-centered",
+    "debug",
+    "non-visible-non-rendered",
+    "whitespaced-vertically"
   ]
 }
 
