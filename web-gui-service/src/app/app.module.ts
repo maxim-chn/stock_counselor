@@ -17,8 +17,6 @@ import { CollectStockDataComponent } from './homepage/action-area/collect-stock-
 import { GreetingComponent } from './homepage/action-area/greeting/greeting.component';
 import { LoginComponent } from './homepage/action-area/login/login.component';
 import { SignupComponent } from './homepage/action-area/signup/signup.component';
-import { GreetingForGuestDirective } from './homepage/action-area/greeting/greeting-for-guest.directive';
-import { GreetingForUserDirective } from './homepage/action-area/greeting/greeting-for-user.directive';
 import { InvestmentFunctionalitiesMenuComponent } from './homepage/action-area/investment-functionalities-menu/investment-functionalities-menu.component';
 import { CollectStockDataRequestContainerDirective } from './homepage/action-area/collect-stock-data/collect-stock-data-request-container.directive';
 import { CollectStockDataRequestErrorContainerDirective } from './homepage/action-area/collect-stock-data/collect-stock-data-request-error-container.directive';
@@ -42,8 +40,6 @@ import { CalculateInvestmentRecommendationResponseContainerDirective } from './h
     GreetingComponent,
     LoginComponent,
     SignupComponent,
-    GreetingForGuestDirective,
-    GreetingForUserDirective,
     InvestmentFunctionalitiesMenuComponent,
     CollectStockDataRequestContainerDirective,
     CollectStockDataRequestErrorContainerDirective,
@@ -59,8 +55,6 @@ import { CalculateInvestmentRecommendationResponseContainerDirective } from './h
   ],
   exports: [],
   providers: [
-    GreetingForGuestDirective,
-    GreetingForUserDirective,
     CollectStockDataRequestContainerDirective,
     CollectStockDataRequestErrorContainerDirective,
     CollectStockDataResponseContainerDirective,

@@ -1,8 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { LoggerService } from 'src/app/logger.service';
 
 import { ApplicativeUser } from '../../user';
+import { ApplicativeUserState } from '../../user-state';
 import { UserService } from '../../user.service';
 
 import { BackendApiService } from '../backend-api.service';
@@ -36,6 +38,8 @@ OnInit, WithRequestContainer, WithRequestErrorContainer {
   @Input() requestErrorContainerClasses: Array<string>;
   public title: string;
 
+  private userState: Subscription;
+
   constructor(
     private backendApiService: BackendApiService,
     private loggerService: LoggerService,
@@ -48,11 +52,23 @@ OnInit, WithRequestContainer, WithRequestErrorContainer {
       this.requestContainerClasses = initialRequestContainerClasses();
       this.requestErrorContainerClasses = initialRequestErrorContainerClasses();
       this.title = "Please enter your authentication details below";
+      this.userState = new Subscription();
     }
     
   ngOnInit(): void {
     hideRequestErrorContainer(this);
     showRequestContainer(this);
+    this.userState = this.userService.state.subscribe({
+        next: val => this.userStateChanged(val),
+        error: err => this.userServiceError(err)
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    hideRequestErrorContainer(this);
+    hideRequestContainer(this);
+    this.userState.unsubscribe();
   }
 
   public dismissErrorMessage(): void {
@@ -64,17 +80,17 @@ OnInit, WithRequestContainer, WithRequestErrorContainer {
   public submit(): void {
     let userToSubmit = new ApplicativeUser();
     
-    // try {
-    //   userToSubmit.setFirstName(this.firstName);
-    //   userToSubmit.setLastName(this.lastName);
-    //   userToSubmit.setEmail(this.email);
-    // }
-    // catch (err) {
-    //   let errMsg = `Failed to update ApplicativeUser object details.\n${err}`;
-    //   this.loggerService.error(this.className, "submit", errMsg);
-    //   this.displayError("You have entered illegal values. Please try again");
-    //   return;
-    // }
+    try {
+      userToSubmit.setFirstName(this.firstName);
+      userToSubmit.setLastName(this.lastName);
+      userToSubmit.setEmail(this.email);
+    }
+    catch (err) {
+      let errMsg = `Failed to update ApplicativeUser object details.\n${err}`;
+      this.loggerService.error(this.className, "submit", errMsg);
+      this.displayError("You have entered illegal values. Please try again");
+      return;
+    }
 
     this.backendApiService.login(userToSubmit).subscribe({
       next: val => this.nextLoggedInUser(val),
@@ -97,6 +113,26 @@ OnInit, WithRequestContainer, WithRequestErrorContainer {
 
   private nextLoggedInUser(val: ApplicativeUser): void {
     this.userService.hasLoggedIn(val);
+  }
+
+  private userServiceError(err: Error): void {
+    let errMsg = `${this.userService.className} has failed.\n${err}`;
+    this.loggerService.error(this.className, "userServiceError", errMsg); 
+  }
+
+  private userStateChanged(val: ApplicativeUserState): void {
+    if (val == ApplicativeUserState.LOGGED_IN) {
+      hideRequestErrorContainer(this);
+      hideRequestContainer(this);
+    }
+    else if (val == ApplicativeUserState.LOGGED_OUT || val == ApplicativeUserState.ANONYMOUS) {
+      hideRequestErrorContainer(this);
+      showRequestContainer(this);
+    }
+    else {
+      let errMsg = `Unexpected ApplicativeUserState has been returned.\nVal:\t${val}`;
+      this.userServiceError(new Error(errMsg));
+    }
   }
 
 }

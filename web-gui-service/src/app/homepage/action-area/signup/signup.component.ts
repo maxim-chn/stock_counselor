@@ -1,8 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { LoggerService } from 'src/app/logger.service';
 
 import { ApplicativeUser } from '../../user';
+import { ApplicativeUserState } from '../../user-state';
 import { UserService } from '../../user.service';
 
 import { BackendApiService } from '../backend-api.service';
@@ -34,11 +36,13 @@ OnInit, WithRequestContainer, WithRequestErrorContainer {
   @Input() requestContainerClasses: Array<string>;
   @Input() requestErrorContainerClasses: Array<string>;
   public title: string;
+
+  private userState: Subscription;
   
   constructor(
     private backendApiService: BackendApiService,
     private loggerService: LoggerService,
-    private UserService: UserService
+    private userService: UserService
   ) {
     super();
     this.animationTimeout = 100;
@@ -47,11 +51,17 @@ OnInit, WithRequestContainer, WithRequestErrorContainer {
     this.requestContainerClasses = initialRequestContainerClasses();
     this.requestErrorContainerClasses = initialRequestErrorContainerClasses();
     this.title = "Please enter your registration details below";
+    this.userState = new Subscription();
   }
 
   ngOnInit(): void {
     hideRequestErrorContainer(this);
     showRequestContainer(this);
+    this.userState = this.userService.state.subscribe({
+        next: val => this.userStateChanged(val),
+        error: err => this.userServiceError(err)
+      }
+    );
   }
 
   public dismissErrorMessage(): void {
@@ -96,7 +106,27 @@ OnInit, WithRequestContainer, WithRequestErrorContainer {
   }
 
   private nextSignedUpUser(val: ApplicativeUser): void {
-    this.UserService.hasSignedUp(val);
+    this.userService.hasSignedUp(val);
+  }
+
+  private userServiceError(err: Error): void {
+    let errMsg = `${this.userService.className} has failed.\n${err}`;
+    this.loggerService.error(this.className, "userServiceError", errMsg); 
+  }
+
+  private userStateChanged(val: ApplicativeUserState): void {
+    if (val == ApplicativeUserState.LOGGED_IN) {
+      hideRequestErrorContainer(this);
+      hideRequestContainer(this);
+    }
+    else if (val == ApplicativeUserState.LOGGED_OUT || val == ApplicativeUserState.ANONYMOUS) {
+      hideRequestErrorContainer(this);
+      showRequestContainer(this);
+    }
+    else {
+      let errMsg = `Unexpected ApplicativeUserState has been returned.\nVal:\t${val}`;
+      this.userServiceError(new Error(errMsg));
+    }
   }
 
 }

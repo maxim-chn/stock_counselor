@@ -1,8 +1,28 @@
 /* You can add global styles to this file, and also import other style files */
 
-@mixin button-small-width()
+@mixin button-large-height()
   @media (max-width: 1440px)
-    width: 120px
+    height: 40px
+
+@mixin button-large-margins-horizontal()
+  margin-left: auto
+  margin-right: auto
+
+@mixin button-large-margins-vertical()
+  @media (max-width: 1440px)
+    margin-top: 10px
+    margin-bottom: 10px
+  
+@mixin button-large-width()
+  width: 90%
+
+@mixin button-medium-height()
+  @media (max-width: 1440px)
+    height: 40px
+
+@mixin button-medium-width()
+  @media (max-width: 1440px)
+    width: 160px
 
 @mixin button-small-height()
   @media (max-width: 1440px)
@@ -17,6 +37,10 @@
   @media (max-width: 1440px)
     margin-bottom: 10px
     margin-top: 10px
+
+@mixin button-small-width()
+  @media (max-width: 1440px)
+    width: 120px
 
 @mixin container-large-width()
   @media (max-width: 1440px)
@@ -61,55 +85,3 @@
 
 @mixin visible()
   opacity: 1
-
-.animated
-  transition-duration: 1s
-  transition-property: opacity
-
-.centered-content
-  text-align: center
-
-.centered-horizontally
-  @media (max-width: 1440px)
-    margin-left: auto
-    margin-right: auto
-    width: 80%
-
-.centered-horizontally-large-element
-  @media (max-width)
-    margin-left: auto
-    margin-right: auto
-    width: 90%
-
-.debug
-  border-width: 0px
-  border-color: black
-  border-style: solid
-
-.matches-thumbnail-medium-height
-  @include thumbnail-small-height
-
-.margined-vertically
-  @media (max-width: 1440px)
-    margin-top: 10px
-    margin-bottom: 10px
-
-.margined-horizontally
-  @media (max-width: 1440px)
-    margin-left: 10px
-    margin-right: 10px
-
-.no-overflow
-  overflow: hidden
-
-.non-visible-non-rendered
-  @include non-rendered
-  @include non-visible
-
-.non-visible-rendered
-  @include rendered-block
-  @include non-visible
-
-.rendered-visible
-  @include rendered-block
-  @include visible

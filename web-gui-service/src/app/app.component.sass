@@ -1,5 +1,12 @@
 @import '../styles'
 
+.animated
+  transition-duration: 1s
+  transition-property: opacity
+
+.container-large
+  @include container-large-width
+
 .container-large-placed-middle
   @include container-large-width
   @include container-large-horizontal-margin
@@ -13,21 +20,37 @@
   display: inline-flex
   align-items: center
 
+.debug
+  border-width: 1px
+  border-color: black
+  border-style: solid
+
 .grid-two-columns-one-row-with-whitespace
   display: grid
   grid-template-columns: 40% 10% 50%
   grid-template-rows: auto
   grid-template-areas: "secondary . primary"
 
-.grid-two-columns-three-rows-with-whitespace
-  @extend .grid-two-columns-one-row-with-whitespace
-  grid-template-areas: "secondary . primary", "secondary . primary", "secondary . primary"
-
 .grid-column-primary
   grid-area: primary
 
 .grid-column-secondary
   grid-area: secondary
+
+.no-overflow
+  overflow: hidden
+
+.non-visible-non-rendered
+  @include non-rendered
+  @include non-visible
+
+.non-visible-rendered
+  @include rendered-block
+  @include non-visible
+
+.rendered-visible
+  @include rendered-block
+  @include visible
 
 .thumbnail-medium
   @include thumbnail-medium-width

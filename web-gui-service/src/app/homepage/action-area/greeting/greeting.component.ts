@@ -1,38 +1,61 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { LoggerService } from 'src/app/logger.service';
+
 import { UserService } from '../../user.service';
 import { ApplicativeUserState } from '../../user-state';
-import { GreetingForGuestDirective } from './greeting-for-guest.directive';
-import { GreetingForUserDirective } from './greeting-for-user.directive';
+
+import {
+  hideParagraphsForGuestContainer,
+  initialClassesForParagraphsForGuestContainer,
+  showParagraphsForGuestContainer,
+  WithParagraphsForGuestContainer
+} from './with-paragraphs-for-guest-container';
+
+import {
+  hideParagraphsForUserContainer,
+  initialClassesForParagraphsForUserContainer,
+  showParagraphsForUserContainer,
+  WithParagraphsForUserContainer
+} from './with-paragraphs-for-user-container';
 
 @Component({
   selector: 'action-area-greeting',
   templateUrl: './greeting.component.html',
   styleUrls: ['./greeting.component.sass']
 })
-export class GreetingComponent implements OnInit, OnDestroy {
+export class GreetingComponent implements
+  OnInit, 
+  OnDestroy,
+  WithParagraphsForGuestContainer,
+  WithParagraphsForUserContainer
+{
 
+  public animationTimeout: number;
+  public className: string;
   public guestParagraphs: Array<string>;
+  @Input() paragraphsForGuestContainerClasses: Array<string>;
+  @Input() paragraphsForUserContainerClasses: Array<string>;
   public userParagraphs: Array<string>;
   
   private userState: Subscription;
 
-  constructor(
-    private greetingForGuest: GreetingForGuestDirective,
-    private greetingForUser: GreetingForUserDirective,
-    private loggerService: LoggerService,
-    private userService: UserService
-    ) {
-      this.guestParagraphs = [];
-      this.userParagraphs = [];
-      this.userState = new Subscription();
-      this.initGuestParagraphs();
-      this.initUserParagraphs();
+  constructor(private loggerService: LoggerService, private userService: UserService) {
+    this.animationTimeout = 100;
+    this.className = GreetingComponent.name;
+    this.guestParagraphs = [];
+    this.userParagraphs = [];
+    this.userState = new Subscription();
+    this.initGuestParagraphs();
+    this.initUserParagraphs();
+    this.paragraphsForGuestContainerClasses = initialClassesForParagraphsForGuestContainer();
+    this.paragraphsForUserContainerClasses = initialClassesForParagraphsForUserContainer();
   }
 
   ngOnInit(): void {
+    hideParagraphsForUserContainer(this);
+    showParagraphsForGuestContainer(this);
     this.userState = this.userService.state.subscribe({
       next: val => this.userStateChanged(val),
       error: err => this.userServiceError(err)
@@ -40,6 +63,8 @@ export class GreetingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    hideParagraphsForUserContainer(this);
+    hideParagraphsForGuestContainer(this);
     this.userState.unsubscribe();
   }
   
@@ -60,20 +85,23 @@ export class GreetingComponent implements OnInit, OnDestroy {
   }
 
   private userServiceError(err: Error): void {
-    let errMsg = `UserService has failed.\n${err}`;
-    this.loggerService.error(GreetingComponent.name, "userServiceError", errMsg); 
+    let errMsg = `${this.userService.className} has failed.\n${err}`;
+    this.loggerService.error(this.className, "userServiceError", errMsg); 
   }
   
   private userStateChanged(val: ApplicativeUserState): void {
     if (val == ApplicativeUserState.LOGGED_IN) {
       let user = this.userService.user;
       this.updateFirstAndLastNamesInUserParagraphs(user.firstName, user.lastName);
-      this.greetingForGuest.hide();
-      this.greetingForUser.show();
+      hideParagraphsForGuestContainer(this);
+      showParagraphsForUserContainer(this);
     }
-    else if (val == ApplicativeUserState.LOGGED_OUT || val == ApplicativeUserState.ANONYMOUS) {
-      this.greetingForUser.hide();
-      this.greetingForGuest.show();
+    else if (val == ApplicativeUserState.LOGGED_OUT) {
+      hideParagraphsForUserContainer(this);
+      showParagraphsForGuestContainer(this);
+    }
+    else if (val == ApplicativeUserState.ANONYMOUS) {
+      // Do nothing
     }
     else {
       let errMsg = `Unexpected ApplicativeUserState has been returned.\nVal:\t${val}`;

@@ -1,8 +1,13 @@
-import { removeFromStringArray } from "../../utils";
+import { addToStringArrayIfNotPresent, removeFromStringArray } from "../../utils";
 
 function hideUserSummaryContainer(obj: WithUserSummaryContainer): void {
-  removeFromStringArray(obj.userSummaryContainerClasses, "rendered-visible");
-  obj.userSummaryContainerClasses.push("non-visible-non-rendered");
+  setTimeout(
+    () => {
+      removeFromStringArray(obj.userSummaryContainerClasses, "rendered-visible");
+      addToStringArrayIfNotPresent(obj.userSummaryContainerClasses, "non-visible-non-rendered");
+    },
+    obj.animationTimeout
+  )
 }
 
 function initialUserSummaryContainerClasses(): Array<string> {
@@ -10,18 +15,17 @@ function initialUserSummaryContainerClasses(): Array<string> {
     "animatable",
     "container-large-centered-with-content-centered",
     "debug",
-    "non-visible-non-rendered",
     "whitespaced-vertically"
   ]
 }
 
 function showUserSummaryContainer(obj: WithUserSummaryContainer): void {
   removeFromStringArray(obj.userSummaryContainerClasses, "non-visible-non-rendered");
-  obj.userSummaryContainerClasses.push("non-visible-rendered");
+  addToStringArrayIfNotPresent(obj.userSummaryContainerClasses, "non-visible-rendered");
   setTimeout(
     () => {
       removeFromStringArray(obj.userSummaryContainerClasses, "non-visible-rendered");
-      obj.userSummaryContainerClasses.push("rendered-visible");
+      addToStringArrayIfNotPresent(obj.userSummaryContainerClasses, "rendered-visible");
     },
     obj.animationTimeout
   );

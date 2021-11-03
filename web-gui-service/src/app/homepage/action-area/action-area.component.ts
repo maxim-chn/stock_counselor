@@ -2,6 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { LoggerService } from 'src/app/logger.service';
+
+import { UserService } from '../user.service';
+import { ApplicativeUserState } from '../user-state';
+
 import { WebsiteMenuState } from '../website-menu/state';
 import { WebsiteMenuStateService } from '../website-menu/state.service';
 
@@ -15,6 +19,7 @@ import { InvestmentFunctionalitiesMenuStateService } from './investment-function
 })
 export class ActionAreaComponent implements OnDestroy, OnInit {
 
+  public className: string;
   public showCalculateInvestmentRecommendation: boolean;
   public showCollectStockData: boolean;
   public showGreeting: boolean;
@@ -23,12 +28,15 @@ export class ActionAreaComponent implements OnDestroy, OnInit {
 
   private investmentFunctionalitiesMenuState: Subscription;
   private websiteMenuState: Subscription;
+  private userState: Subscription;
 
   constructor(
     private loggerService: LoggerService,
     private investmentFunctionalitiesMenuStateService: InvestmentFunctionalitiesMenuStateService,
-    private websiteMenuStateService: WebsiteMenuStateService
+    private websiteMenuStateService: WebsiteMenuStateService,
+    private userService: UserService
     ) {
+      this.className = ActionAreaComponent.name;
       this.showCalculateInvestmentRecommendation = false;
       this.showCollectStockData = false;
       this.showGreeting = true;
@@ -36,11 +44,13 @@ export class ActionAreaComponent implements OnDestroy, OnInit {
       this.showSignup = false;
       this.investmentFunctionalitiesMenuState = new Subscription();
       this.websiteMenuState = new Subscription();
+      this.userState = new Subscription();
   }
 
   ngOnDestroy(): void {
     this.investmentFunctionalitiesMenuState.unsubscribe();
     this.websiteMenuState.unsubscribe();
+    this.userState.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -51,6 +61,10 @@ export class ActionAreaComponent implements OnDestroy, OnInit {
     this.websiteMenuState = this.websiteMenuStateService.state.subscribe({
       next: val => this.nextWebsiteMenuState(val),
       error: err => this.websiteMenuStateServiceError(err)
+    });
+    this.userState = this.userService.state.subscribe({
+      next: val => this.userStateChanged(val),
+      error: err => this.userServiceError(err)
     });
   }
 
@@ -136,6 +150,24 @@ export class ActionAreaComponent implements OnDestroy, OnInit {
   private websiteMenuStateServiceError(err: Error): void {
     let errMsg = `WebsiteMenuStateService has failed.\n${err}`;
     this.loggerService.error(ActionAreaComponent.name, "websiteMenuStateServiceError", errMsg);
+  }
+
+  private userServiceError(err: Error): void {
+    let errMsg = `${this.userService.className} has failed.\n${err}`;
+    this.loggerService.error(this.className, "userServiceError", errMsg); 
+  }
+  
+  private userStateChanged(val: ApplicativeUserState): void {
+    if (val == ApplicativeUserState.LOGGED_IN) {
+      this.showGreetingComponent();
+    }
+    else if (val == ApplicativeUserState.ANONYMOUS) {
+      // Do nothing
+    }
+    else {
+      let errMsg = `Unexpected ApplicativeUserState has been returned.\nVal:\t${val}`;
+      this.userServiceError(new Error(errMsg));
+    }
   }
 
 }

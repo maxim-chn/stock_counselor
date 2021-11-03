@@ -1,39 +1,49 @@
 <div [ngClass]="requestContainerClasses">
-  <div class="debug centered-horizontally margined-vertically">
-    <h2 class="debug centered-horizontally centered-content">
-      {{title}}
-    </h2>
-    <div class="debug margined-horizontally margined-vertically grid-primary-secondary-parts-three-rows">
-      <label for="firstName" class="secondary">
-        First name:
-      </label>
-      <input id="firstName" type="text" (change)="firstNameUpdated($event)" class="primary">
+  <div class="debug whitespaced-completely">
+    <div class="debug whitespaced-completely container-large-centered-with-centered-content">
+      <h2>
+        {{title}}
+      </h2>
     </div>
-    <div class="debug margined-horizontally margined-vertically grid-primary-secondary-parts-three-rows">
-      <label for="lastName" class="secondary">
-        Last name:
-      </label>
-      <input id="lastName" type="text" (change)="lastNameUpdated($event)" class="primary">
-    </div>
-    <div class="debug margined-horizontally margined-vertically grid-primary-secondary-parts-three-rows">
-      <label for="email" class="secondary">
-        Email:
-      </label>
-      <input id="email" type="email" (change)="emailUpdated($event)" class="primary">
+    <div class="debug whitespaced-completely container-large-centered-with-centered-content">
+      <div class="debug whitespaced-completely grid-two-columns-three-rows-with-whitespace">
+        <label for="firstName" class="debug whitespaced-completely grid-column-secondary">
+          First name:
+        </label>
+        <input id="firstName" class="debug whitespaced-completely grid-column-primary" type="text"
+          (change)="firstNameUpdated($event)"
+        >
+      </div>
+      <div class="debug whitespaced-completely grid-two-columns-three-rows-with-whitespace">
+        <label for="lastName" class="debug whitespaced-completely grid-column-secondary">
+          Last name:
+        </label>
+        <input id="lastName" class="debug whitespaced-completely grid-column-primary" type="text"
+          (change)="lastNameUpdated($event)"
+        >
+      </div>
+      <div class="debug whitespaced-completely grid-two-columns-three-rows-with-whitespace">
+        <label for="email" class="debug whitespaced-completely grid-column-secondary">
+          Email:
+        </label>
+        <input id="email" class="debug whitespaced-completely grid-column-primary" type="email"
+          (change)="emailUpdated($event)"
+        >
+      </div>
     </div>
   </div>
-  <div class="debug centered-horizontally centered-content margined-vertically">
-    <button (click)="submit()" class="uses-parents-width">
+  <div class="debug whitespaced-completely container-large-centered-with-centered-content">
+    <button (click)="submit()" class="button-large">
       Submit
     </button>
   </div>
 </div>
 <div [ngClass]="requestErrorContainerClasses">
-  <div class="debug centered-horizontally centered-content margined-vertically">
+  <div class="debug whitespaced-completely container-large-centered-with-centered-content">
     {{errorMessage}}
   </div>
-  <div class="debug centered-horizontally centered-content margined-vertically">
-    <button (click)="dismissErrorMessage()" class="uses-parents-width">
+  <div class="debug whitespaced-completely container-large-centered-with-centered-content">
+    <button (click)="dismissErrorMessage()" class="button-large">
       Dismiss
     </button>
   </div>

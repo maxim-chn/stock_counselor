@@ -75,7 +75,8 @@ export class WebsiteMenuComponent implements OnDestroy, OnInit {
       this.guestMode = true;
     }
     else if (val == ApplicativeUserState.LOGGED_IN) {
-      this.guestMode == false;
+      console.log("Should change");
+      this.guestMode = false;
     }
     else if (val == ApplicativeUserState.LOGGED_OUT) {
       this.guestMode = true;

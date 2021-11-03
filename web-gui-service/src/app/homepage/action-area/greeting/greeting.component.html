@@ -1,9 +1,9 @@
-<div appGreetingForGuest>
+<div [ngClass]="paragraphsForGuestContainerClasses">
   <p *ngFor="let paragraph of guestParagraphs">
     {{paragraph}}
   </p>  
 </div>
-<div appGreetingForUser>
+<div [ngClass]="paragraphsForUserContainerClasses">
   <p *ngFor="let paragraph of userParagraphs">
     {{paragraph}}
   </p>

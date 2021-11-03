@@ -1,1 +1,8 @@
 @import "../action-area.component"
+
+.button-medium
+  @include button-medium-height
+  @include button-small-margins-horizontal
+  @include button-small-margins-vertical
+  @media (max-width: 1440px)
+    width: 200px

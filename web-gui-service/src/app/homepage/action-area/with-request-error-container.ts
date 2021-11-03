@@ -1,27 +1,32 @@
-import { removeFromStringArray } from "src/app/utils";
+import { addToStringArrayIfNotPresent, removeFromStringArray } from "src/app/utils";
 
 function initialRequestErrorContainerClasses(): Array<string> {
   return [
     "animated",
-    "non-visible-non-rendered"
+    "debug"
   ]
 }
 
 function hideRequestErrorContainer(obj: WithRequestErrorContainer): void {
-  removeFromStringArray(obj.requestErrorContainerClasses, "rendered-visible");
-  obj.requestErrorContainerClasses.push("non-visible-non-rendered");
+  setTimeout(
+    () => {
+      removeFromStringArray(obj.requestErrorContainerClasses, "rendered-visible");
+      addToStringArrayIfNotPresent(obj.requestErrorContainerClasses, "non-visible-non-rendered");
+    },
+    obj.animationTimeout
+  );
 }
 
 function showRequestErrorContainer(obj: WithRequestErrorContainer): void {
   removeFromStringArray(obj.requestErrorContainerClasses, "non-visible-non-rendered");
-  obj.requestErrorContainerClasses.push("non-visible-rendered");
-    setTimeout(
-      () => {
-        removeFromStringArray(obj.requestErrorContainerClasses, "non-visible-rendered");
-        obj.requestErrorContainerClasses.push("rendered-visible");
-      },
-      obj.animationTimeout
-    );
+  addToStringArrayIfNotPresent(obj.requestErrorContainerClasses, "non-visible-rendered");
+  setTimeout(
+    () => {
+      removeFromStringArray(obj.requestErrorContainerClasses, "non-visible-rendered");
+      addToStringArrayIfNotPresent(obj.requestErrorContainerClasses, "rendered-visible");
+    },
+    obj.animationTimeout
+  );
 }
 
 interface WithRequestErrorContainer {

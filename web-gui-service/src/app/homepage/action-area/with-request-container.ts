@@ -1,24 +1,29 @@
-import { removeFromStringArray } from "src/app/utils";
+import { addToStringArrayIfNotPresent, removeFromStringArray } from "src/app/utils";
 
 function initialRequestContainerClasses(): Array<string> {
   return [
     "animated",
-    "non-visible-non-rendered"
+    "debug"
   ]
 }
 
 function hideRequestContainer(obj: WithRequestContainer): void {
-  removeFromStringArray(obj.requestContainerClasses, "rendered-visible");
-  obj.requestContainerClasses.push("non-visible-non-rendered");
+  setTimeout(
+    () => {
+      removeFromStringArray(obj.requestContainerClasses, "rendered-visible");
+      addToStringArrayIfNotPresent(obj.requestContainerClasses, "non-visible-non-rendered");
+    },
+    obj.animationTimeout
+  );
 }
 
 function showRequestContainer(obj: WithRequestContainer): void {
   removeFromStringArray(obj.requestContainerClasses, "non-visible-non-rendered");
-  obj.requestContainerClasses.push("non-visible-rendered");
+  addToStringArrayIfNotPresent(obj.requestContainerClasses, "non-visible-rendered");
   setTimeout(
     () => {
       removeFromStringArray(obj.requestContainerClasses, "non-visible-rendered");
-      obj.requestContainerClasses.push("rendered-visible");
+      addToStringArrayIfNotPresent(obj.requestContainerClasses, "rendered-visible");
     },
     obj.animationTimeout
   );

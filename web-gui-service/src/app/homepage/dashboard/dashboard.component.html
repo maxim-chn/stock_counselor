@@ -5,11 +5,11 @@
     </h2>
   </div>
   <div [ngClass]="userSummaryContainerClasses">
-    <div class="debug whitespaced-vertically content-inline-with-custom-dimensions-justified-center">
+    <div class="debug whitespaced-vertically container-large content-inline-with-custom-dimensions-justified-center">
       <div class="debug thumbnail-medium">
         <img [src]="user.avatar.imgSrc" [alt]="user.avatar.altText">
       </div>
-      <div class="debug whitespaced-completely">
+      <div class="debug whitespaced-completely container-large">
         <div class="debug whitespaced-completely grid-two-columns-one-row-with-whitespace">
           <div class="debug grid-column-secondary whitespaced-completely">
             First name
@@ -28,7 +28,7 @@
         </div>
         <div class="debug whitespaced-completely grid-two-columns-one-row-with-whitespace">
           <div class="debug grid-column-secondary whitespaced-completely">
-            Companies suitable for investment
+            Companies to invest
           </div>
           <div class="debug grid-column-primary whitespaced-completely">
             {{user.amountOfCompaniesToInvest}}
