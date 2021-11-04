@@ -16,8 +16,7 @@ import { InvestmentFunctionalitiesMenuStateService } from './state.service';
 export class InvestmentFunctionalitiesMenuComponent implements OnDestroy, OnInit {
 
   public nonGuest: boolean;
-
-  public userState: Subscription
+  public userState: Subscription;
 
   constructor(
     private loggerService: LoggerService,

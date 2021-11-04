@@ -3,7 +3,8 @@ import { addToStringArrayIfNotPresent, removeFromStringArray } from "src/app/uti
 function initialRequestErrorContainerClasses(): Array<string> {
   return [
     "animated",
-    "debug"
+    "debug",
+    "whitespaced-completely"
   ]
 }
 

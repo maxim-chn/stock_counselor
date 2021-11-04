@@ -19,7 +19,7 @@ export class InvestmentFunctionalitiesMenuStateService {
   }
 
   public calculateInvestmentRecommendation(): void {
-    this._stateSource.next(InvestmentFunctionalitiesMenuState.COLLECT_STOCK_DATA);
+    this._stateSource.next(InvestmentFunctionalitiesMenuState.CREATE_INVESTMENT_RECOMMENDATION);
   }
 
   public collectStockData(): void {

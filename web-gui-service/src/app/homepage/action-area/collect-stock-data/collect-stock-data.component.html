@@ -1,34 +1,46 @@
-<div appCollectStockDataRequestContainer class="request-container">
-  <div class="request-input-details">
-    <div class="request-input-detail">
-      <label for="stockSymbol">
-        Stock symbol:
-      </label>
-      <input id="stockSymbol" type="text" (change)="stockAcronymUpdated($event)">
+<div [ngClass]="requestContainerClasses">
+  <div class="debug whitespaced-completelty">
+    <div class="debug whitespaced-completely container-large-centered-with-centered-content">
+      <h2>
+        {{title}}
+      </h2>
+      <p *ngFor="let paragraph of componentDescription">
+        {{paragraph}}
+      </p>
+    </div>
+    <div class="debug whitespaced-completely container-large-centered-with-centered-content">
+      <div class="debug whitespaced-completely grid-two-columns-three-rows-with-whitespace">
+        <label for="stockSymbol" class="debug whitespaced-completely grid-column-secondary">
+          Stock symbol:
+        </label>
+        <input id="stockSymbol" class="debug whitespaced-completely grid-column-primary" type="text"
+          (change)="stockAcronymUpdated($event)"
+        >
+      </div>
     </div>
   </div>
-  <div class="request-submission-container">
-    <button (onclick)="submit()">
+  <div class="debug whitespaced-completely container-large-centered-with-centered-content">
+    <button (click)="submit()" class="button-large">
       Submit
     </button>
   </div>
 </div>
-<div appCollectStockDataRequestErrorContainer class="request-error-container">
-  <div class="error-message">
+<div [ngClass]="requestErrorContainerClasses">
+  <div class="debug whitespaced-completely container-large-centered-with-centered-content">
     {{errorMessage}}
   </div>
-  <div class="request-submission-container">
-    <button (onclick)="dismissErrorMessage()">
+  <div class="debug whitespaced-completely container-large-centered-with-centered-content">
+    <button (click)="dismissErrorMessage()" class="button-large">
       Dismiss
     </button>
   </div>
 </div>
-<div appCollectStockDataResponseContainer class="response-container">
-  <div class="response-message">
+<div [ngClass]="responseContainerClasses">
+  <div class="debug whitespaced-completely container-large-centered-with-centered-content">
     {{responseMessage}}
   </div>
-  <div class="request-submission-container">
-    <button (onclick)="dismissResponseMessage()">
+  <div class="debug whitespaced-completely container-large-centered-with-centered-content">
+    <button (click)="dismissResponseMessage()">
       Dismiss
     </button>
   </div>
