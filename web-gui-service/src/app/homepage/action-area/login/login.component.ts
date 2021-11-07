@@ -80,17 +80,17 @@ OnInit, WithRequestContainer, WithRequestErrorContainer {
   public submit(): void {
     let userToSubmit = new ApplicativeUser();
     
-    // try {
-    //   userToSubmit.setFirstName(this.firstName);
-    //   userToSubmit.setLastName(this.lastName);
-    //   userToSubmit.setEmail(this.email);
-    // }
-    // catch (err) {
-    //   let errMsg = `Failed to update ApplicativeUser object details.\n${err}`;
-    //   this.loggerService.error(this.className, "submit", errMsg);
-    //   this.displayError("You have entered illegal values. Please try again");
-    //   return;
-    // }
+    try {
+      userToSubmit.setFirstName(this.firstName);
+      userToSubmit.setLastName(this.lastName);
+      userToSubmit.setEmail(this.email);
+    }
+    catch (err) {
+      let errMsg = `Failed to update ApplicativeUser object details.\n${err}`;
+      this.loggerService.error(this.className, "submit", errMsg);
+      this.displayError("You have entered illegal values. Please try again");
+      return;
+    }
 
     this.backendApiService.login(userToSubmit).subscribe({
       next: val => this.nextLoggedInUser(val),

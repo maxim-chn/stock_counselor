@@ -17,13 +17,8 @@ import { CollectStockDataComponent } from './homepage/action-area/collect-stock-
 import { GreetingComponent } from './homepage/action-area/greeting/greeting.component';
 import { LoginComponent } from './homepage/action-area/login/login.component';
 import { SignupComponent } from './homepage/action-area/signup/signup.component';
-import { InvestmentFunctionalitiesMenuComponent } from './homepage/action-area/investment-functionalities-menu/investment-functionalities-menu.component';
-import { CollectStockDataRequestContainerDirective } from './homepage/action-area/collect-stock-data/collect-stock-data-request-container.directive';
-import { CollectStockDataRequestErrorContainerDirective } from './homepage/action-area/collect-stock-data/collect-stock-data-request-error-container.directive';
-import { CollectStockDataResponseContainerDirective } from './homepage/action-area/collect-stock-data/collect-stock-data-response-container.directive';
-import { CalculateInvestmentRecommendationRequestContainerDirective } from './homepage/action-area/calculate-investment-recommendation/calculate-investment-recommendation-request-container.directive';
-import { CalculateInvestmentRecommendationRequestErrorContainerDirective } from './homepage/action-area/calculate-investment-recommendation/calculate-investment-recommendation-request-error-container.directive';
-import { CalculateInvestmentRecommendationResponseContainerDirective } from './homepage/action-area/calculate-investment-recommendation/calculate-investment-recommendation-response-container.directive';
+import { InvestmentFunctionalitiesMenuComponent }
+  from './homepage/action-area/investment-functionalities-menu/investment-functionalities-menu.component';
 
 @NgModule({
   declarations: [
@@ -40,13 +35,7 @@ import { CalculateInvestmentRecommendationResponseContainerDirective } from './h
     GreetingComponent,
     LoginComponent,
     SignupComponent,
-    InvestmentFunctionalitiesMenuComponent,
-    CollectStockDataRequestContainerDirective,
-    CollectStockDataRequestErrorContainerDirective,
-    CollectStockDataResponseContainerDirective,
-    CalculateInvestmentRecommendationRequestContainerDirective,
-    CalculateInvestmentRecommendationRequestErrorContainerDirective,
-    CalculateInvestmentRecommendationResponseContainerDirective
+    InvestmentFunctionalitiesMenuComponent
   ],
   imports: [
     BrowserModule,
@@ -54,14 +43,6 @@ import { CalculateInvestmentRecommendationResponseContainerDirective } from './h
     HttpClientModule
   ],
   exports: [],
-  providers: [
-    CollectStockDataRequestContainerDirective,
-    CollectStockDataRequestErrorContainerDirective,
-    CollectStockDataResponseContainerDirective,
-    CalculateInvestmentRecommendationRequestContainerDirective,
-    CalculateInvestmentRecommendationRequestErrorContainerDirective,
-    CalculateInvestmentRecommendationResponseContainerDirective
-  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

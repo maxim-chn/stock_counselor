@@ -1,29 +1,36 @@
-<div appCalculateInvestmentRecommendationRequestContainer class="request-container">
-  <div class="request-input-details">
-    Filter through all the collected financial reports at once!
+<div [ngClass]="requestContainerClasses">
+  <div class="debug whitespaced-completely">
+    <div class="debug whitespaced-completely container-large-centered-with-centered-content">
+      <h2>
+        {{title}}
+      </h2>
+      <p *ngFor="let paragraph of componentDescription">
+        {{paragraph}}
+      </p>
+    </div>
   </div>
-  <div class="request-submission-container">
-    <button (onclick)="submit()">
+  <div class="debu whitespaced-completely container-large-centered-with-centered-content">
+    <button (click)="submit()" class="button-large">
       Submit
     </button>
   </div>
 </div>
-<div appCalculateInvestmentRecommendationRequestErrorContainer class="request-error-container">
-  <div class="error-message">
+<div [ngClass]="requestErrorContainerClasses">
+  <div class="debug whitespaced-completely container-large-centered-with-centered-content">
     {{errorMessage}}
   </div>
-  <div class="request-submission-container">
-    <button (onclick)="dismissErrorMessage()">
+  <div class="debug whitespaced-completely container-large-centered-with-centered-content">
+    <button (click)="dismissErrorMessage()" class="button-large">
       Dismiss
     </button>
   </div>
 </div>
-<div appCalculateInvestmentRecommendationResponseContainer class="response-container">
-  <div class="response-message">
+<div [ngClass]="responseContainerClasses">
+  <div class="debug whitespaced-completely container-large-centered-with-centered-content">
     {{responseMessage}}
   </div>
-  <div class="request-submission-container">
-    <button (onclick)="dismissResponseMessage()">
+  <div class="debug whitespaced-completely container-large-centered-with-centered-content">
+    <button (click)="dismissResponseMessage()">
       Dismiss
     </button>
   </div>

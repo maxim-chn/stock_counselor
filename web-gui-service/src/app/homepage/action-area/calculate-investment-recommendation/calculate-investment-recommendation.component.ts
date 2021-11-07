@@ -1,52 +1,82 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { LoggerService } from 'src/app/logger.service';
 
 import { BackendApiService } from '../backend-api.service';
 
-import { CalculateInvestmentRecommendationRequestContainerDirective }
-  from './calculate-investment-recommendation-request-container.directive';
-import { CalculateInvestmentRecommendationRequestErrorContainerDirective }
-  from './calculate-investment-recommendation-request-error-container.directive';
-import { CalculateInvestmentRecommendationResponseContainerDirective }
-  from './calculate-investment-recommendation-response-container.directive';
+import {
+  hideRequestContainer,
+  initialRequestContainerClasses,
+  showRequestContainer,
+  WithRequestContainer
+} from "../with-request-container";
+
+import {
+  hideRequestErrorContainer,
+  initialRequestErrorContainerClasses,
+  showRequestErrorContainer,
+  WithRequestErrorContainer
+} from "../with-request-error-container";
+
+import {
+  hideResponseContainer,
+  initialResponseContainerClasses,
+  showResponseContainer,
+  WithResponseContainer
+} from "../with-response-container";
 
 @Component({
   selector: 'action-area-calculate-investment-recommendation',
   templateUrl: './calculate-investment-recommendation.component.html',
   styleUrls: ['./calculate-investment-recommendation.component.sass']
 })
-export class CalculateInvestmentRecommendationComponent implements OnInit {
-
+export class CalculateInvestmentRecommendationComponent implements
+  OnInit, WithRequestContainer, WithRequestErrorContainer, WithResponseContainer {
+  
+  
+  public animationTimeout: number;
   public className: string;
+  public componentDescription: Array<string>;
   public errorMessage: string;
+  @Input() requestContainerClasses: Array<string>;
+  @Input() requestErrorContainerClasses: Array<string>;
+  @Input() responseContainerClasses: Array<string>;
   public responseMessage: string;
+  public title: string;
 
-  constructor(
-    private backendApiService: BackendApiService,
-    private loggerService: LoggerService,
-    private requestContainerDirective: CalculateInvestmentRecommendationRequestContainerDirective,
-    private requestErrorContainerDirective: CalculateInvestmentRecommendationRequestErrorContainerDirective,
-    private responseContainerDirective: CalculateInvestmentRecommendationResponseContainerDirective
-  ) {
-    this.errorMessage = "No error";
-    this.responseMessage = "No response";
+  constructor(private backendApiService: BackendApiService, private loggerService: LoggerService) {
+    this.animationTimeout = 100;
     this.className = CalculateInvestmentRecommendationComponent.name;
+    this.componentDescription = Array<string>();
+    this.errorMessage = "No error";
+    this.requestContainerClasses = initialRequestContainerClasses();
+    this.requestErrorContainerClasses = initialRequestErrorContainerClasses();
+    this.responseContainerClasses = initialResponseContainerClasses();
+    this.responseMessage = "No response";
+    this.title = "Get investment recommendation";
+    this.initComponentDescription();
   }
 
   ngOnInit(): void {
-    this.displayRequestContainer();
+    hideRequestErrorContainer(this);
+    hideResponseContainer(this);
+    showRequestContainer(this);
   }
 
   public dismissErrorMessage(): void {
-    this.displayRequestContainer();
+    this.errorMessage = "No error";
+    hideRequestErrorContainer(this);
+    showRequestContainer(this);
   }
 
   public dismissResponseMessage(): void {
-    this.displayRequestContainer();
+    this.responseMessage = "No response";
+    hideResponseContainer(this);
+    showRequestContainer(this);
   }
 
   public submit(): void {
+    hideRequestContainer(this);
     this.backendApiService.calculateInvestmentRecommendation().subscribe({
       next: val => this.nextBackendResponse(val),
       error: err => this.backendApiServiceError(err)
@@ -54,39 +84,24 @@ export class CalculateInvestmentRecommendationComponent implements OnInit {
   }
 
   private backendApiServiceError(err: Error): void {
-    let errMsgToDisplay = "Request to backend server with calculate investment recommendation has failed.";
-    this.displayRequestErrorContainer(errMsgToDisplay);
     let errMsg = `${this.backendApiService.className} has failed.\n${err}`;
     this.loggerService.error(this.className, "backendApiServiceError", errMsg);
+    this.errorMessage = "Request to backend server with calculate investment recommendation has failed.";
+    showRequestErrorContainer(this);
   }
 
-  private displayRequestContainer(): void {
-    this.errorMessage = "No error";
-    this.responseMessage = "No response";
-    this.requestContainerDirective.show();
-    this.requestErrorContainerDirective.hide();
-    this.responseContainerDirective.hide();
-  }
-
-  private displayRequestErrorContainer(errorMessage: string): void {
-    this.errorMessage = errorMessage;
-    this.responseMessage = "No response";
-    this.requestContainerDirective.hide();
-    this.requestErrorContainerDirective.show();
-    this.responseContainerDirective.hide();
-  }
-
-  private displayResponseContainer(responseMessage: string): void {
-    this.errorMessage = "No error";
-    this.responseMessage = responseMessage;
-    this.requestContainerDirective.hide();
-    this.requestErrorContainerDirective.hide();
-    this.responseContainerDirective.show();
+  private initComponentDescription(): void {
+    this.componentDescription = [
+      "Automated stock counselor will go over the available financial reports.",
+      "It will compare the data against your investment preferences.",
+      "The comparison will be evaluated from 0 to 1.",
+      "The higher the score, the more suitable the company to invest into"
+    ];
   }
 
   private nextBackendResponse(val: string): void {
-    let responseMsgToDisplay = `Response from backend server:\n${val}`;
-    this.displayResponseContainer(responseMsgToDisplay);
+    this.responseMessage = val;
+    showResponseContainer(this);
   }
 
 }
