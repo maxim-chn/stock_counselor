@@ -11,9 +11,7 @@ export class PrefaceParagraphsService {
   constructor() {
     this.paragraphs = [
       "Gamblers speculate with money and live when the money allows it.",
-      "Investors live with the risk.",
-      "We make calculated decisions and never shy away from facing the uncertainity.",
-      "We invest, and money is just another tool."
+      "Investors live with the risk."
     ]
   }
 

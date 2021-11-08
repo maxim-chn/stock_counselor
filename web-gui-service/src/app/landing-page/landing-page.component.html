@@ -1,21 +1,20 @@
-<section class="app-container">
-  <section class="header-container">
-    <div class="logo-container">
-      <img src="logo.imgSrc" alt="logo.altText">
-    </div>
-    <div class="preface-container">
+<section class="debug container-large-centered">
+  <section class="debug container-large-centered whitespaced-vertically content-aligned-right">
+    <div class="debug whitespaced-completely">
       <p *ngFor="let paragraph of prefaceParagraphs">
         {{paragraph}}
       </p>
     </div>
   </section>
-  <section class="body-container">
-    <div class="title-container">
+  <section class="debug container-large-placed-middle">
+    <div class="debug container-large-centered whitespaced-vertically content-centered">
       <h1>{{title}}</h1>
     </div>
-    <div class="project-goals-container">
-      <div *ngFor="let goal of projectGoals">
-        <div class="goal-icon-container">
+    <div class="debug container-large-centered whitespaced-vertically content-inline-direction-column">
+      <div *ngFor="let goal of projectGoals"
+        class="debug whitespaced-completely content-inline-with-custom-dimensions-justified-center"
+      >
+        <div class="debug thumbnail-small">
           <img src="goal.imgSrc" alt="goal.altText">
         </div>
         <div class="goal-text-container">
@@ -23,24 +22,20 @@
         </div>
       </div>
     </div>
-    <div class="navigation-container">
-      <div class="button-link-container">
-        <a [routerLink]="['/home']">
-          <button>
-            Proceed to application
-          </button>
-        </a>
-      </div>
+    <div class="debug container-large-centered whitespaced-vertically content-centered">
+      <button [routerLink]="['/home']" class="button-large">
+        Proceed to application
+      </button>
     </div>
   </section>
-  <section class="footer-container">
-    <div class="acknowledgement-container">
-      <h2>{{acknowledgement.title}}</h2>
+  <section class="debug container-large-centered whitespaced-vertically">
+    <div class="debug container-large-centered whitespaced-vertically">
+      <h1>{{acknowledgement.title}}</h1>
       <p *ngFor="let paragraph of acknowledgement.paragraphs">
         {{paragraph}}
       </p>
     </div>
-    <div class="copyrights-container">
+    <div class="debug container-large-centered whitespaced-vertically content-inline">
       <div *ngFor="let copyright of copyrights" class="copyright-container">
         <a href="copyright.link">
           {{copyright.description}}

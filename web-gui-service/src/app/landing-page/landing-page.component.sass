@@ -1,0 +1,21 @@
+@import "../app.component"
+
+.container-large-placed-middle
+  @include container-large-width
+  @media (max-width: 1440px)
+    margin-top: 200px
+    margin-bottom: 200px
+
+.content-aligned-right
+  display: flex
+  justify-content: flex-end
+
+.content-centered
+  text-align: center
+
+.content-inline
+  display: flex
+
+.content-inline-direction-column
+  display: flex
+  flex-direction: column
