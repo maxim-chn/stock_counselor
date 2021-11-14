@@ -1,0 +1,24 @@
+{
+  "connection": {
+    "host": "localhost",
+    "port": 8083
+  },
+  "user": {
+    "username": "applicative_users_service",
+    "password": "applicative_users_service"
+  },
+  "documents": {
+    "applicative_user": {
+      "database_name": "applicative_users",
+      "collection_name": "applicative_users"
+    },
+    "financial_user_profile": {
+      "database_name": "financial_user_profiles",
+      "collection_name": "applicative_users"
+    },
+    "test": {
+      "database_name": "test",
+      "collection_name": "applicative_users_service"
+    }
+  }
+}

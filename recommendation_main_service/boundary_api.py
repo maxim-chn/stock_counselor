@@ -73,4 +73,4 @@ def startRecommendationMainService(service_name):
       getLogger(service_name).error("%s -- Server error\n%s" % (service_name, str(err)))
     return result
 
-  app.run(host="localhost", port=8081, quiet=True)
+  app.run(host="localhost", port=3001, quiet=True)

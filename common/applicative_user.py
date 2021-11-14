@@ -1,3 +1,4 @@
+from json import dumps
 from traceback import format_exc
 
 class ApplicativeUser:
@@ -65,6 +66,17 @@ class ApplicativeUser:
       "user_id": self.user_id
     }
     return result
+
+  def toJson(self):
+    """
+    Returns str.
+    Raises RuntimeError.
+    """
+    try:
+      return dumps(self.toDocument())
+    except Exception as err:
+      err_msg = "%s -- toJson -- Failed.\n%s" % (self._class_name, format_exc(self.max_error_chars, err))
+      raise RuntimeError(err_msg)
 
   def __str__(self):
     """

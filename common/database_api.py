@@ -22,6 +22,31 @@ class DatabaseApi(Loggable):
     super().__init__(service_name, "DatabaseApi")
     self._config = self._getMongoDbConfiguration(service_name)
 
+  def createApplicativeUserDocument(self, document):
+    """
+    Returns void.
+    Raises RuntimeError.
+    Arguments:
+      - document -- dict.
+    """
+    function_name = "createApplicativeUserDocument"
+    self._debug(function_name, "Start\ndocument:\t%s" % str(document))
+    
+    try:
+      self._create(
+        self._config["connection"]["host"],
+        self._config["connection"]["port"],
+        self._config["user"]["username"],
+        self._config["user"]["password"],
+        self._config["documents"]["applicative_user"]["database_name"],
+        self._config["documents"]["applicative_user"]["collection_name"],
+        document
+      )
+      self._debug(function_name, "Finish")
+    except RuntimeError as err:
+      err_msg = "%s -- %s -- Failed.\n%s" % (self._class_name, function_name, str(err))
+      raise RuntimeError(err_msg)
+  
   def createFinancialReportDocument(self, document):
     """
     Returns void.
@@ -43,6 +68,30 @@ class DatabaseApi(Loggable):
       self._debug("createFinancialReportDocument", "Finish")
     except RuntimeError as err:
       err_msg = "%s -- createFinancialReportDocument -- Failed\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+  
+  def createFinancialUserProfileDocument(self, document):
+    """
+    Returns void.
+    Raises RuntimeError.
+    Arguments:
+      - document -- dict.
+    """
+    function_name = "createFinancialUserProfileDocument"
+    try:
+      self._debug(function_name, "Start\ndocument:\t%s" % str(document))
+      self._create(
+        self._config["connection"]["host"],
+        self._config["connection"]["port"],
+        self._config["user"]["username"],
+        self._config["user"]["password"],
+        self._config["documents"]["financial_user_profile"]["database_name"],
+        self._config["documents"]["financial_user_profile"]["collection_name"],
+        document
+      )
+      self._debug(function_name, "Finish")
+    except RuntimeError as err:
+      err_msg = "%s -- %s -- Failed.\n%s" % (self._class_name, function_name, str(err))
       raise RuntimeError(err_msg)
   
   def createInvestmentRecommendationDocument(self, document):
@@ -159,6 +208,22 @@ class DatabaseApi(Loggable):
       err_msg = "%s -- deleteTestDocument -- Failed\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)
 
+  def doesApplicativeUserDocumentExist(self, filter):
+    """
+    Returns bool.
+    Raises RuntimeError.
+    Arguments:
+      filter -- dict.
+    """
+    function_name = "doesApplicativeUserDocumentExist"
+    self._debug(function_name, "Start\nfilter:\t%s" % str(filter))
+    user_by_filter = self.readApplicativeUserDocumentBy(filter)
+    result = False
+    if user_by_filter:
+      result = True
+    self._debug(function_name, "Finish\nresult:\t%s" % str(result))
+    return result
+  
   def getAcronymsForCompaniesWithFinancialReports(self):
     """
     Returns list<str>.
