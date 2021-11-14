@@ -62,7 +62,6 @@ export class ApplicativeUser {
   }
 
   static withAllAttributes(
-    amountOfCompaniesToInvest: Number,
     avatarAltText: string,
     avatarImgSrc: string,
     email: string,
@@ -72,7 +71,6 @@ export class ApplicativeUser {
       let result = new ApplicativeUser();
       try {
         let avatar = Avatar.withAllAttributes(avatarAltText, avatarImgSrc);
-        result.setAmountOfCompaniesToInvest(amountOfCompaniesToInvest);
         result.setAvatar(avatar);
         result.setEmail(email);
         result.setFirstName(firstName);
@@ -84,7 +82,6 @@ export class ApplicativeUser {
       return result;
   }
 
-  public amountOfCompaniesToInvest: Number;
   public avatar: Avatar;
   public email: string;
   public firstName: string;
@@ -92,19 +89,9 @@ export class ApplicativeUser {
 
   constructor() {
     this.avatar = new Avatar();
-    this.amountOfCompaniesToInvest = 0;
     this.email = "To be replaced";
     this.firstName = "To be replaced";
     this.lastName = "To be replaced";
-  }
-
-  public setAmountOfCompaniesToInvest(val: Number): void {
-    if (this.isAmountOfCompaniesToInvestLegal(val)) {
-      this.amountOfCompaniesToInvest = val;
-    }
-    else {
-      ApplicativeUser.throwError("setAmountOfCompaniesToInvest", "Expected an Integer.");
-    }
   }
 
   public setAvatar(...args: any[]): void {
@@ -155,13 +142,6 @@ export class ApplicativeUser {
     else {
       ApplicativeUser.throwError("_setAvatar", "Expected an object Avatar.");
     }
-  }
-
-  private isAmountOfCompaniesToInvestLegal(val: Number): boolean {
-    if (isInteger(val)) {
-      return true;
-    }
-    return false;
   }
 
   private isAvatarLegal(val: Avatar): boolean {

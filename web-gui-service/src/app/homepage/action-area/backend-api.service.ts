@@ -17,6 +17,7 @@ export class BackendApiService {
 
   public className: string;
 
+  private applicative_users_service_port: string;
   private hostname: string;
   private port: string;
   private protocol: string;
@@ -25,9 +26,10 @@ export class BackendApiService {
     private httpClient: HttpClient,
     private userService: UserService
     ) {
+    this.applicative_users_service_port = "3002";
     this.className = BackendApiService.name;
     this.hostname = "localhost";
-    this.port = "3000";
+    this.port = "3002";
     this.protocol = "http";
   }
 
@@ -64,12 +66,11 @@ export class BackendApiService {
     let parameters = this.parametersForLoginRequest(user);
     let requestUrl = this.urlForLoginRequest();
     let result = new Observable<ApplicativeUser>(subscriber => {
-      subscriber.next(this.userService.user);
-      // let futureResponse = this.httpClient.get<string>(requestUrl, { headers: headers, params: parameters });
-      // futureResponse.subscribe({
-      //   next: val => this.responseForLoginRequest(val, subscriber),
-      //   error: err => this.failedResponseForLoginRequest(err, subscriber)
-      // });
+      let futureResponse = this.httpClient.get<string>(requestUrl, { headers: headers, params: parameters });
+      futureResponse.subscribe({
+        next: val => this.responseForLoginRequest(val, subscriber),
+        error: err => this.failedResponseForLoginRequest(err, subscriber)
+      });
     });
     return result;
   }
@@ -92,27 +93,31 @@ export class BackendApiService {
     try {
       let result = new ApplicativeUser();
       let userJson = JSON.parse(val);
-      result.setAmountOfCompaniesToInvest(userJson.amount_of_companies_to_invest);
-      result.setAvatar(userJson.avatar.alt_text, userJson.avatar.img_src);
-      result.setEmail(userJson.email);
+      result.setEmail(userJson.user_id);
       result.setFirstName(userJson.first_name);
       result.setLastName(userJson.last_name);
       return result;
     }
     catch (err) {
-      let errMsg = `Failed to parse stringified json to ApplicativeUser.\nStringified json:\t${val}`;
+      let errMsg = `Failed to parse stringified json to ApplicativeUser.\nStringified json:\t${val}.\nError:\t${err}`;
       throw BackendApiService.getError("applicativeUserFromJson", errMsg);
     }
   }
 
   private _applicativeUserToParams(user: ApplicativeUser): HttpParams {
-    let result = new HttpParams();
-    result.append("fist_name", user.firstName);
-    result.append("last_name", user.lastName);
-    result.append("email", user.email);
+    let result = new HttpParams().appendAll({
+      "first_name": user.firstName,
+      "last_name": user.lastName,
+      "email": user.email
+    });
     return result;
   }
 
+  private _baseUrlForApplicativeUsersService(): string {
+    let result = `${this.protocol}://${this.hostname}:${this.applicative_users_service_port}`;
+    return result;
+  }
+  
   private _baseUrlForBackendRequest(): string {
     let result = `${this.protocol}://${this.hostname}:${this.port}`;
     return result;
@@ -199,7 +204,8 @@ export class BackendApiService {
 
   private responseForLoginRequest(val: string, subscriber: Subscriber<ApplicativeUser>): void {
     try {
-      let loggedInUser = this.applicativeUserFromJson(val);
+      let stringifiedVal = JSON.stringify(val);
+      let loggedInUser = this.applicativeUserFromJson(stringifiedVal);
       subscriber.next(loggedInUser);
     }
     catch (err) {
@@ -238,14 +244,14 @@ export class BackendApiService {
   }
 
   private urlForLoginRequest(): string {
-    let baseUrl = this._baseUrlForBackendRequest();
-    let result = `${baseUrl}/applicative_users`;
+    let baseUrl = this._baseUrlForApplicativeUsersService();
+    let result = `${baseUrl}/existing`;
     return result;
   }
 
   private urlForSignupRequest(): string {
-    let baseUrl = this._baseUrlForBackendRequest();
-    let result = `${baseUrl}/applicative_users/new`;
+    let baseUrl = this._baseUrlForApplicativeUsersService();
+    let result = `${baseUrl}/new`;
     return result;
   }
 }

@@ -42,7 +42,6 @@ export class UserService {
      * @TODO set img src of default icon.
      */
     let result = ApplicativeUser.withAllAttributes(
-      0,
       "Anonymous user avatar",
       "data:image/png;base64,BROKEN_VALUE",
       "some.user@domain.com",
