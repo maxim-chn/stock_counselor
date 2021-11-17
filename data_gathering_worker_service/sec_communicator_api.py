@@ -277,7 +277,7 @@ class SecCommunicator(Loggable):
       response_data -- dict -- a JSON format of the response from SEC.
     """
     actual_acronym = response_data["hits"]["hits"][0]["_source"]["tickers"].lower()
-    if not expected_val in actual_acronym:
+    if not expected_val.lower() in actual_acronym:
       raise RuntimeError(
         "Actual Company Acronym in SEC Response VS Expected: %s VS %s" % (actual_acronym, expected_val)
       )

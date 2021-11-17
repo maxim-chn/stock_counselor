@@ -47,5 +47,5 @@ create_user "create_data_gathering_main_service_user" "data_gathering_main_servi
 create_user "create_data_gathering_worker_service_user" "data_gathering_worker_service"
 create_user "create_recommendation_main_service_user" "recommendation_main_service"
 create_user "create_recommendation_worker_service_user" "recommendation_worker_service"
-populate_database "populate_applicative_users_database" "applicative_users"
-populate_database "populate_financial_user_profiles_database" "financial_user_profiles"
+#populate_database "populate_applicative_users_database" "applicative_users"
+#populate_database "populate_financial_user_profiles_database" "financial_user_profiles"

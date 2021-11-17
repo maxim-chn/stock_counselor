@@ -90,8 +90,8 @@ def startService(service_name):
       startRecommendationWorkerService(service_name)
     else:
       raise RuntimeError("Failed to map the service name to the relevant service object.")
-  except Exception(err):
-    err_msg = "%s -- %s -- Failed.\n%s" % (service_name, function_name, format_exc(max_error_chars, err))
+  except RuntimeError as err:
+    err_msg = "%s -- %s -- Failed.\n%s" % (service_name, function_name, str(err))
     getLogger(service_name).error(err_msg)
 
 

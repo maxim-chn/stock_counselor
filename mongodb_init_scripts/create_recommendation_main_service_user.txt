@@ -10,6 +10,7 @@ db.createUser({
   roles: [
     {"role": "read", "db": "applicative_users"},
     {"role": "readWrite", "db": "backend_tasks"},
+    {"role": "read", "db": "investment_recommendations"},
     {"role": "readWrite", "db": "test"}
   ]
 });

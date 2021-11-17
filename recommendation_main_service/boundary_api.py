@@ -53,7 +53,7 @@ def startRecommendationMainService(service_name):
   def monitor():
     return "Hello World!"
 
-  @app.route("/investment/recommendations/<user_id>/cancel")
+  @app.route("/recommendations/<user_id>/cancel")
   def cancel_recommendation(user_id):
     result = "Server error"
     try:
@@ -63,7 +63,7 @@ def startRecommendationMainService(service_name):
       getLogger(service_name).error("%s -- Server error.\n%s" % (service_name, str(err)))
     return result
 
-  @app.route('/investment/recommendations/<user_id>/new')
+  @app.route('/recommendations/<user_id>/new')
   def calculate_recommendation(user_id):
     result = "Server error"
     try:
@@ -71,6 +71,16 @@ def startRecommendationMainService(service_name):
       result = controller.calculateRecommendationFor(user_id)
     except RuntimeError as err:
       getLogger(service_name).error("%s -- Server error\n%s" % (service_name, str(err)))
+    return result
+
+  @app.route('/recommendations/<user_id>/summary')
+  def summary_of_investment_recommendations(user_id):
+    result = "Server error"
+    try:
+      controller = Controller(service_name)
+      result = controller.summaryOfInvestmentRecommendations(user_id)
+    except RuntimeError as err:
+      getLogger(service_name).error("%s -- Server error.\n%s" % (service_name, str(err)))
     return result
 
   app.run(host="localhost", port=3001, quiet=True)

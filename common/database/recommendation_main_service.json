@@ -12,6 +12,10 @@
       "database_name": "applicative_users",
       "collection_name": "applicative_users"
     },
+    "investment_recommendation": {
+      "database_name": "investment_recommendations",
+      "collection_name": "recommendation"
+    },
     "task": {
       "database_name": "backend_tasks",
       "collection_name": "recommendation"

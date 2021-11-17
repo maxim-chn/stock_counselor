@@ -103,10 +103,9 @@ def startApplicativeUsersService(service_name):
 
   @app.route("/existing")
   def login():
-    result = "Server error -- Route login failure."
     response.set_header('Access-Control-Allow-Origin', '*')
     response.set_header('Access-Control-Allow-Methods', 'GET')
-    print(response.headers)
+    result = "Server error -- Route login failure."
     try:
       controller = Controller(service_name)
       email = getEmailParamFrom(request)
@@ -122,6 +121,8 @@ def startApplicativeUsersService(service_name):
 
   @app.route("/new")
   def signup():
+    response.set_header('Access-Control-Allow-Origin', '*')
+    response.set_header('Access-Control-Allow-Methods', 'GET')
     result = "Server error -- Route signup failure."
     try:
       controller = Controller(service_name)

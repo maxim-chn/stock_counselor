@@ -1,4 +1,5 @@
 from datetime import datetime
+from json import dumps
 from traceback import format_exc
 
 class InvestmentRecommendation:
@@ -76,6 +77,24 @@ class InvestmentRecommendation:
     except Exception as err:
       err_msg = "%s -- toDocument -- Failed.\n%s" % (
         InvestmentRecommendation.class_name, format_exc(InvestmentRecommendation.max_error_chars, err)
+      )
+      raise RuntimeError(err_msg)
+
+  def toJson(self):
+    """
+    Returns str.
+    Raises RuntimeError.
+    """
+    try:
+      asDocument = self.toDocument()
+      return dumps(asDocument)
+    except RuntimeError as err:
+      err_msg = "%s -- toJson -- Failed.\n%s" % (InvestmentRecommendation.class_name, str(err))
+      raise RuntimeError(err_msg)
+    except Exception as err:
+      err_msg = "%s -- toJson -- Failed.\n%s" % (
+        InvestmentRecommendation.class_name,
+        format_exc(InvestmentRecommendation.max_error_chars, err)
       )
       raise RuntimeError(err_msg)
 

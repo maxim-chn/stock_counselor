@@ -1,5 +1,7 @@
+from common.investment_recommendation import InvestmentRecommendation
 from common.recommendation_backend_tasks_api import BackendTasks
 from common.backend_tasks.recommendation.task import Progress
+from common.database_api import DatabaseApi
 from common.loggable_api import Loggable
 
 class Controller(Loggable):
@@ -17,6 +19,7 @@ class Controller(Loggable):
     """
     super().__init__(service_name, "Controller")
     self._backend_tasks = BackendTasks(service_name)
+    self._database = DatabaseApi(service_name)
 
   def calculateRecommendationFor(self, user_id):
     """
@@ -77,6 +80,48 @@ class Controller(Loggable):
         raise RuntimeError(err_msg)
     
     self._debug("stopCalculatingRecommendationFor", "Finish\nresult:\t%s" % result)
+    return result
+
+  def summaryOfInvestmentRecommendations(self, user_id):
+    """
+    Returns str.
+    Raises RuntimeError.
+    Returns the collection of InvestmentRecommendations as JSON for the user.
+    Arguments:
+      - user_id -- str -- unique user id at the database.
+    """
+    function_name = "summaryOfInvestmentRecommendations"
+    self._debug(function_name, "Start\nuser_id:\t%s" % user_id)
+    result = "["
+
+    try:
+      filterBy = { "user_id": user_id }
+      investment_recommendation_documents = self._database.readInvestmentRecommendationDocumentsBy(filterBy)
+    except RuntimeError as err:
+      err_msg = "%s -- %s -- Failed at retrieving investment recommendation documents for the user.\n%s" % (
+        self._class_name,
+        function_name,
+        str(err)
+      )
+      raise RuntimeError(err_msg)
+
+    try:
+      for document in investment_recommendation_documents:
+        investment_recommendation = InvestmentRecommendation.fromDocument(document)
+        if len(result) < 2:
+          result += investment_recommendation.toJson()
+        else:
+          result += ",%s" % investment_recommendation.toJson()
+      result += "]"
+    except RuntimeError as err:
+      err_msg = "%s -- %s -- Failed at mapping investment_recommendation_document to JSON.\n%s" % (
+        self._class_name,
+        function_name,
+        str(err)
+      )
+      raise RuntimeError(err_msg)
+
+    self._debug(function_name, "Finish\nResult:\t%s" % result)
     return result
 
   def _calculationProgressFor(self, user_id):

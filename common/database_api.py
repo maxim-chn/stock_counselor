@@ -325,6 +325,32 @@ class DatabaseApi(Loggable):
       err_msg = "%s -- readFinancialUserProfileDocumentBy -- Failed.\n%s" % (self._class_name, str(err))
       raise RuntimeError(err_msg)
   
+  def readInvestmentRecommendationDocumentsBy(self, filter):
+    """
+    Returns list<dict>.
+    Raises RuntimeError.
+    Arguments:
+      - filter -- dict -- identifies documents to read.
+    """
+    try:
+      function_name = "readInvestmentRecommendationDocumentsBy"
+      self._debug(function_name, "Start\nfilter:\t%s" % str(filter))
+      result = self._findBy(
+        self._config["connection"]["host"],
+        self._config["connection"]["port"],
+        self._config["user"]["username"],
+        self._config["user"]["password"],
+        self._config["documents"]["investment_recommendation"]["database_name"],
+        self._config["documents"]["investment_recommendation"]["collection_name"],
+        filter
+      )
+      self._debug(function_name, "Finish\nResult:\t%s" % str(result))
+      return result
+    except RuntimeError as err:
+      err_msg = "%s -- %s -- Failed.\n%s" % (self._class_name, str(err))
+      raise RuntimeError(err_msg)
+
+
   def readTaskDocumentBy(self, filter):
     """
     Returns dict or None.

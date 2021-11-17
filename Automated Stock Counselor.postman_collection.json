@@ -1,0 +1,278 @@
+{
+	"info": {
+		"_postman_id": "b5949d63-4957-45e4-97e0-db3fafb8abb9",
+		"name": "Automated Stock Counselor",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "applicative_users_service",
+			"item": [
+				{
+					"name": "Singup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3002/new?email=jane.doe@domain.com&first_name=Jane&last_name=Doe&portfolio_risk_level=low",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"new"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "jane.doe@domain.com"
+								},
+								{
+									"key": "first_name",
+									"value": "Jane"
+								},
+								{
+									"key": "last_name",
+									"value": "Doe"
+								},
+								{
+									"key": "portfolio_risk_level",
+									"value": "low"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login as an existing user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3002/existing?email=john.doe@domain.com&first_name=John&last_name=Doe",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"existing"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "john.doe@domain.com"
+								},
+								{
+									"key": "first_name",
+									"value": "John"
+								},
+								{
+									"key": "last_name",
+									"value": "Doe"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login as a non-existing user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3002/existing?email=dont.exist@domain.com&first_name=Dont&last_name=Exist",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"existing"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "dont.exist@domain.com"
+								},
+								{
+									"key": "first_name",
+									"value": "Dont"
+								},
+								{
+									"key": "last_name",
+									"value": "Exist"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "data_gathering_service",
+			"item": [
+				{
+					"name": "Collect stock data PBCT",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/collect_stock_data/pbct",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"collect_stock_data",
+								"pbct"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Collect stock data FITB",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/collect_stock_data/fitb",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"collect_stock_data",
+								"fitb"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel stock data collection PBCT",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/cancel_stock_data_collection/pbct",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"cancel_stock_data_collection",
+								"pbct"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel stock data collection FITB",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/cancel_stock_data_collection/fitb",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"cancel_stock_data_collection",
+								"fitb"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "recommendation_worker_service",
+			"item": [
+				{
+					"name": "Create investment recommendations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3001/recommendations/jane.doe@domain.com/new",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"recommendations",
+								"jane.doe@domain.com",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel investment recommendations creation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3001/recommendations/jane.doe@domain.com/cancel",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"recommendations",
+								"jane.doe@domain.com",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Investment Recommendations Summary",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3001/recommendations/jane.doe@domain.com/summary",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"recommendations",
+								"jane.doe@domain.com",
+								"summary"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

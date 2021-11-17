@@ -55,20 +55,26 @@ def startDataGatheringMainService(service_name):
 
   @app.route("/cancel_stock_data_collection/<acronym_name>")
   def cancel_stock_data_collection(acronym_name):
-    result = "Server error"
+    response.set_header('Access-Control-Allow-Origin', '*')
+    response.set_header('Access-Control-Allow-Methods', 'GET')
+    result = "Server error -- route cancel_stock_data_collection"
     try:
       controller = Controller(service_name)
-      result = controller.stopCollectingFinancialDataFor(acronym_name)
+      collection_status = controller.stopCollectingFinancialDataFor(acronym_name)
+      result = "{\"Collection status\": \"%s\"}" % str(collection_status)
     except RuntimeError as err:
       getLogger(service_name).error("%s -- Server error.\n%s" % (service_name, str(err)))
     return result
 
   @app.route("/collect_stock_data/<acronym_name>")
   def collect_stock_data(acronym_name):
-    result = "Server error"
+    response.set_header('Access-Control-Allow-Origin', '*')
+    response.set_header('Access-Control-Allow-Methods', 'GET')
+    result = "Server error -- route collect_stock_data"
     try:
       controller = Controller(service_name)
-      result = controller.collectFinancialDataFor(acronym_name)
+      collection_status = controller.collectFinancialDataFor(acronym_name)
+      result = "{\"Collection status\": \"%s\"}" % str(collection_status)
     except RuntimeError as err:
       getLogger(service_name).error("%s -- Server error\n%s" % (service_name, str(err)))
     return result
